@@ -1,0 +1,15 @@
+{
+  "name": "advent",
+  "version": "2.0.16",
+  "description": "Advent of Code 2016",
+  "main": "Day01.js",
+  "dependencies": {
+    "console-control-strings": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
