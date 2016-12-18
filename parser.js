@@ -113,6 +113,11 @@ module.exports = function(input) {
         expect(getNumber(), expected);
     }
 
+    var expectOperator = function(expected)
+    {
+        expect(getOperator(), expected);
+    }
+
     var endOfLine = function()
     {
         skipSpaces();
@@ -125,7 +130,17 @@ module.exports = function(input) {
             throw "Was expecting end of line to be reached";
     }
 
+    var peek = function()
+    {
+        skipSpaces();
+        if (endOfLine())
+            return undefined;
+        else
+            return line[index];
+    }
+
     this.skipSpaces      = skipSpaces ;
+    this.peek            = peek;
     this.getToken        = getToken;
     this.getNumber       = getNumber;
     this.getSignedNumber = getSignedNumber;
@@ -135,5 +150,6 @@ module.exports = function(input) {
     this.expectDone      = expectDone;
     this.expectToken     = expectToken;
     this.expectNumber    = expectNumber;
+    this.expectOperator  = expectOperator;
 };
 

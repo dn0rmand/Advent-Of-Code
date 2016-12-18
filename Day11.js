@@ -1,227 +1,328 @@
-const consoleControl = require("console-control-strings");
 const prettyHrtime = require('pretty-hrtime');
+const parser = require('./parser.js');
 const maxSteps = 40;
 
-const DN_input = {
-    elevator: 1,
-    chips: {
-        A: 1,
-        B: 1,
-        C: 2,
-        D: 2,
-        E: 3,
-        F: 1,
-        G: 1
-    },
-    generators: {
-        A: 1,
-        B: 1,
-        C: 2,
-        D: 2,
-        E: 2,
-        F: 1,
-        G: 1
-    }
-}
+const puzzleData = [
+'The first floor contains a strontium generator, a strontium-compatible microchip, a plutonium generator, and a plutonium-compatible microchip.',
+'The second floor contains a thulium generator, a ruthenium generator, a ruthenium-compatible microchip, a curium generator, and a curium-compatible microchip.',
+'The third floor contains a thulium-compatible microchip.',
+'The fourth floor contains nothing relevant.',
+'The first floor contains a elerium generator, a elerium-compatible microchip, a dilithium generator, and a dilithium-compatible microchip.'
+];
 
-const Example_input = {
-    elevator: 1,
-    chips: {
-        A: 1,
-        B: 1
+const puzzleExample = [
+    'The first floor contains a strontium-compatible microchip, and a plutonium-compatible microchip.',
+    'The second floor contains a strontium generator.',
+    'The third floor contains a plutonium generator.',
+    'The fourth floor contains nothing relevant.'
+];
+
+var input = {
+    state: {
+        elevator:1,        
+        chips: {},
+        generators: {}
     },
-    generators: {
-        A:2,
-        B:3,
+    namesmap: {},
+    names: [],
+    getName: function(name) {
+        if (this.namesmap[name] === undefined) {
+            var i = this.names.length;
+            var n = 'A'.charCodeAt(0)+i;
+            var n = String.fromCharCode(n);
+            this.namesmap[name] = n;
+            this.names.push(n);
+            return n;
+        }
+        else
+            return this.namesmap[name];
     }
 };
 
-var input = DN_input;
-var _keys  = [];
+puzzleData.forEach((line) =>
+{    
+    var parse = new parser(line.toLowerCase());
+    parse.expectToken("the");
+    var floor = parse.getToken();
+    switch (floor)
+    {
+        case 'first':   floor = 1; break;
+        case 'second':  floor = 2; break;
+        case 'third':   floor = 3; break;
+        case 'fourth':  floor = 4; break;
+        default:
+            throw "Invalid floor";
+    }
 
-Object.keys(input.chips).forEach((chip) => {
-    _keys.push(chip);
+    parse.expectToken("floor");
+    parse.expectToken("contains");
+    var t = parse.getToken();
+    if (t === "nothing")
+        return;
+    if (t !== 'a')
+        throw "Invalid data";
+
+    while (t === 'a') 
+    {
+        var name = parse.getToken();
+        var type;
+        if (parse.peek() === '-')
+        {
+            parse.expectOperator('-');
+            parse.expectToken("compatible");
+            parse.expectToken("microchip");
+            type = "chips";
+        }
+        else
+        {
+            parse.expectToken("generator");
+            type = "generators";
+        }
+
+        name = input.getName(name);
+        input.state[type][name] = floor;
+
+        if (parse.peek() === '.')        
+            break;
+
+        parse.expectOperator(',');
+        var t = parse.getToken();
+        if (t === 'and')
+            t = parse.getToken();
+    }
 });
 
-_keys.sort();
+var _keys = input.names;
+var _keysLength = _keys.length;
 
 // ** ** **
 
-function stateObject(state) 
+function cloneState(state) 
 {
-    this.elevator = state.elevator;
-    this.step  = 0;
-    this.chips = {};
-    this.generators = {};
-    this.$key = undefined;
+    var clone = {
+        elevator: state.elevator,
+        step: 0,
+        chips: {},
+        generators: {}
+    };
 
     // Clone
-
-    for(var i = 0 ; i < _keys.length ; i++)
+    var c  = clone.chips;
+    var g  = clone.generators;
+    var sc = state.chips;
+    var sg = state.generators;
+    
+    for(var i = 0 ; i < _keysLength ; i++)
     {
         var key = _keys[i];
-        this.chips[key]      = state.chips[key];
-        this.generators[key] = state.generators[key];
+        c[key]  = sc[key];
+        g[key]  = sg[key];
     }
 
-    this.makeKey = function() 
+    return clone;
+}
+
+function makeKey(state) 
+{
+    if (state.$key !== undefined)
+        return state.$key;
+
+    var key = state.elevator; // Position of elevator is important
+
+    var pairs = [];
+    var couple= [];
+    var chips = state.chips;
+    var generators = state.generators;
+
+    for(var i = 0 ; i < _keysLength ; i++)
     {
-        if (this.$key !== undefined)
-            return this.$key;
+        var k = _keys[i];
+        var c = chips[k];
+        var g = generators[k];
 
-        var key = this.elevator; // Position of elevator is important
+        if (c === g)
+            pairs.push('P'+c); // It's a pair, doesn't matter which one  but the floor matter
+        else
+            pairs.push('D'+ c + g);
+    }
 
-        var pairs = [];
+    pairs.sort();
 
-        for(var i = 0 ; i < _keys.length ; i++)
-        {
-            var k = _keys[i];
-            var c = this.chips[k];
-            var g = this.generators[k];
+    key += pairs.join('');
 
-            if (c == g)
-                pairs.push('P'+c); // It's a pair, doesn't matter which one  but the floor matter
-            else
-                pairs.push('D'+ c + g);
-        }
+    state.$key = key;
+    return key;
+};
 
-        pairs.sort();
-        key += pairs.join('');
-        // for (var i = 0; i < pairs.length; i++)
-        //     key += 'P'+pairs[i];
-        this.$key = key;
-        return key;
-    };
-
-    this.isDone = function() 
+function isDone(state) 
+{
+    var chips = state.chips;
+    var generators = state.generators;
+    for(var i = 0 ; i < _keysLength ; i++)
     {
-        for(var i = 0 ; i < _keys.length ; i++)
-        {
-            var key = _keys[i];
-            if (this.chips[key] != 4 || this.generators[key] != 4)
-                return false;
-        }
+        var key = _keys[i];
+        if (chips[key] != 4 || generators[key] != 4)
+            return false;
+    }
 
+    return true;
+};
+
+function isBelowFloorsEmpty(state)
+{
+    var chips = state.chips;
+    var generators = state.generators;
+    var elevator = state.elevator;
+
+    if (elevator == 1)
         return true;
-    };
 
-    this.isValid = function()
+    for(var i = 0 ; i < _keysLength ; i++)
     {
-        for(var i = 0 ; i < _keys.length ; i++)
-        {
-            var key = _keys[i];
+        var key = _keys[i];
+        if (chips[key] < elevator || generators[key] < elevator)
+            return false;
+    }
 
-            if (this.chips[key] != this.generators[key])
+    return true;    
+}
+
+function isValid(state)
+{
+    var chips = state.chips;
+    var generators = state.generators;
+
+    for(var i = 0 ; i < _keysLength ; i++)
+    {
+        var key = _keys[i];
+
+        if (chips[key] != generators[key])
+        {
+            for(var j = 0 ; j < _keysLength ; j++)
             {
-                for(var j = 0 ; j < _keys.length ; j++)
+                if (i != j)
                 {
-                    if (i != j)
-                    {
-                        var key2 = _keys[j];
-                        if (this.chips[key] == this.generators[key2])
-                            return false;
-                    }
+                    var key2 = _keys[j];
+                    if (chips[key] === generators[key2])
+                        return false;
                 }
             }
         }
-
-        return true;
     }
 
-    this.possibleMoves = function(direction)
+    return true;
+}
+
+function possibleMoves(state, direction)
+{
+    var self = state;
+    var newLevel = state.elevator + direction;
+
+    function DoMove(collection, name) 
     {
-        function DoMove(collection, name) 
+        var len = collection.length;
+
+        for(var i = 0 ; i < len ; i++)
         {
-            for(var i = 0 ; i < collection.length ; i++)
+            var addClone1 = false;
+
+            var g1 = collection[i];
+            var clone1 = cloneState(self);
+
+            clone1.elevator  = newLevel;
+            clone1[name][g1] = newLevel;
+
+            if (isValid(clone1))
             {
-                var g1 = collection[i];
-                var clone1 = new stateObject(self);
-
-                clone1.elevator  = self.elevator + direction;
-                clone1[name][g1] = self.elevator + direction;
-
-                if (clone1.isValid())
-                    moves.push(clone1);
-
-                // Try to add a different generator
-
-                for(var j = 0 ; j < collection.length ; j++)
+                if (direction == 1)
+                    addClone1 = true;
+                else
                 {
-                    if (i == j)
-                        continue;
-
-                    var g2 = collection[j];
-                    var clone2 = new stateObject(clone1);
-        
-                    clone2.elevator  = self.elevator + direction;
-                    clone2[name][g2] = self.elevator + direction;
-
-                    if (clone2.isValid())
-                        moves.push(clone2);                    
-                } 
+                    moves.push(clone1);
+                    break;
+                }
             }
-        }
 
-        var self = this;
+            // Try to add a different generator
 
-        if (self.elevator + direction < 1 || self.elevator + direction > 4)
-            return [];
-
-        var moves = [];
-
-        // Make list of chips and generators on the current floor
-
-        var chips = [], generators = [], pairKey = null;
-
-        for(var i = 0 ; i < _keys.length ; i++)
-        {
-            var key = _keys[i];
-            if (self.chips[key] == self.elevator)
-                chips.push(key);
-
-            if (self.generators[key] == self.elevator)
+            for(var j = 0 ; j < len ; j++)
             {
-                generators.push(key);
-                if (pairKey == null && self.chips[key] == self.elevator)
-                    pairKey = key;
-            }
+                if (i === j)
+                    continue;
+
+                var g2 = collection[j];
+                var clone2 = cloneState(clone1);
+    
+                clone2.elevator  = newLevel;
+                clone2[name][g2] = newLevel;
+
+                if (isValid(clone2))
+                {
+                    addClone1 = false;
+                    moves.push(clone2);
+                    break;
+                }
+            } 
+
+            if (addClone1)
+                moves.push(clone1);
         }
-
-        // Only move 1 or 2 generators
-        
-        DoMove(generators, "generators");
-
-        // Only move 1 or 2 chips
-        
-        DoMove(chips, "chips");
-
-        // move first pair 
-
-        if (pairKey != null)
-        {
-            var k = pairKey;
-            var clone = new stateObject(self);
-
-            clone.elevator      = self.elevator + direction;
-            clone.chips[k]      = self.elevator + direction;
-            clone.generators[k] = self.elevator + direction;
-
-            if (clone.isValid())
-                moves.push(clone); 
-        }
-
-        return moves;
     }
 
-};
+    if (newLevel < 1 || newLevel > 4)
+        return [];
+
+    var moves = [];
+
+    // Make list of chips and generators on the current floor
+
+    var chips = [], generators = [], pairKey = undefined;
+
+    for(var i = 0 ; i < _keysLength ; i++)
+    {
+        var key = _keys[i];
+        if (self.chips[key] === self.elevator)
+            chips.push(key);
+
+        if (self.generators[key] === self.elevator)
+        {
+            generators.push(key);
+            if (pairKey === undefined && self.chips[key] === self.elevator)
+                pairKey = key;
+        }
+    }
+
+    // Only move 1 or 2 generators
+    
+    DoMove(generators, "generators");
+
+    // Only move 1 or 2 chips
+    
+    DoMove(chips, "chips");
+
+    // move first pair 
+
+    if (pairKey != null)
+    {
+        var k = pairKey;
+        var clone = cloneState(self);
+
+        clone.elevator      = newLevel;
+        clone.chips[k]      = newLevel;
+        clone.generators[k] = newLevel;
+
+        if (isValid(clone))
+            moves.push(clone);
+    }
+
+    return moves;
+}
 
 var _moves = {};
-var tests  = 0;
-var bestSolution = -1;
 
 function moveExist(move) 
 {
-    var key = move.makeKey();
+    var key = makeKey(move);
     var old = _moves[key];
     if (old === undefined)
     {
@@ -235,38 +336,29 @@ function moveExist(move)
     old.steps = move.steps;
 }
 
-function Execute(current, step)
+function Execute(current)
 {
-    if (bestSolution > 0 && step >= bestSolution)
-        return; // No Point continuing
+    var items = [0, 0, 0, 0];
 
-    if (current.isDone())
+    for(var i = 0; i < _keysLength; i++)
     {
-        if (bestSolution < 0 || bestSolution > step)
-            bestSolution = step;
-        console.log("Solved in " + step + " steps");
-        return;
+        var k = _keys[i];
+        var f1 = current.chips[k]-1;
+        var f2 = current.generators[k]-1;
+        items[f1]++;
+        items[f2]++;
     }
 
-    if (step > maxSteps)
-        return;
+    var m = 0;
 
-    current.steps = step;
-
-    if (moveExist(current))
-        return;
+    for (var i = 0; i < items.length-1; i++)
+    {
+        var it = items[i];
+        m += (2*(it-1) -1);
+        items[i+1] += it;
+    }
     
-    ++tests;
-
-    //if ((tests % 1000) == 0)
-    //   process.stdout.write(tests + " tries\r");
-
-    var moves    = current.possibleMoves(+1);
-    var moves    = moves.concat(current.possibleMoves(-1));
-
-    moves.forEach(function(move) {
-        Execute(move, step+1);
-    });
+    return m;
 }
 
 function Execute2(current)
@@ -283,8 +375,9 @@ function Execute2(current)
         for(var i = 0 ; i < moves.length ; i++)
         {
             var move = moves[i];
-            nextMoves = nextMoves.concat(move.possibleMoves(+1));
-            nextMoves = nextMoves.concat(move.possibleMoves(-1));
+            nextMoves = nextMoves.concat(possibleMoves(move, +1));
+            if (! isBelowFloorsEmpty(move))
+                nextMoves = nextMoves.concat(possibleMoves(move, -1));
         }
 
         moves = [];
@@ -292,7 +385,7 @@ function Execute2(current)
         for(var i = 0; i < nextMoves.length; i++)
         {
             var move = nextMoves[i];
-            if (move.isDone())
+            if (isDone(move))
             {
                 return step;
             }
@@ -303,7 +396,7 @@ function Execute2(current)
             }
         }
         
-        console.log("Step " + step + " has " + moves.length + " possibilites");
+        // console.log("Step " + step + " has " + moves.length + " possibilites");
     }
     console.log("No solution, Really!");
     return -1;
@@ -311,9 +404,7 @@ function Execute2(current)
 
 var start = process.hrtime();
 
-bestSolution = Execute2(new stateObject(input), 0);
-//if (bestSolution < 0)
-//    Execute(new stateObject(input), 0);
+var bestSolution = Execute(input.state, 0);
 
 var end = process.hrtime(start);
 
@@ -321,8 +412,7 @@ words = prettyHrtime(end, {verbose:true});
 console.log(words); // '1 millisecond 209 microseconds'
 
 if (bestSolution > 0)
-    console.log("Resolved in " + bestSolution + " steps")
-console.log("Calculated " + tests + " moves");
+    console.log("Resolved in " + bestSolution + " steps");
 process.exit(0);
 
 
