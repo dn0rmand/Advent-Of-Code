@@ -1,3 +1,5 @@
+module.exports = function()
+{
 var input = 
 [4,21,894
 ,419,794,987
@@ -1939,3 +1941,5 @@ for(var i = 0; i < input.length; i += 9)
 }
 
 console.log(valid + " good triangles for part 2");
+process.exit(0);
+}
