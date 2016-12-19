@@ -8,8 +8,8 @@ var days = [
     require("./Day05.js"),//5
     require("./Day06.js"),//6
     require("./Day07.js"),//7
-    // require("./Day08.js"),//8
-    // require("./Day09.js"),//9
+    require("./Day08.js"),//8
+    require("./Day09.js"),//9
     // require("./Day10.js"),//10
     // require("./Day11.js"),//11
     // require("./Day12.js"),//12
@@ -22,7 +22,7 @@ var days = [
     // require("./Day19.js"),//19
 ];
 
-var currentDay = 7;
+var currentDay = 9;
 
 process.$exit = process.exit;
 process.exit = function()
