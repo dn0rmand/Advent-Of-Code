@@ -65,11 +65,12 @@ module.exports = function()
         if (isKey(idx))
         {
             found++;
-            console.log("index " + idx + " for key " + found);
+            process.stdout.write("\rindex " + idx + " for key " + found);
         }
         // getNextHash();
         idx++;
     }
 
+    console.log('');
     process.exit(0);
 }

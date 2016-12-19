@@ -11,6 +11,7 @@ module.exports = function()
     var robots = [];
     var output = [];
     var values = [];
+    var botId = -1;
 
     // Initializing
     readInput1
@@ -18,17 +19,23 @@ module.exports = function()
         parseLine(line, true);
     })
     .on('close', () => {
-        console.log("initialized")
         // Processing now
 
         values.forEach(function(value) {
             var bot = getBot(value.id);
             addChip(bot, value.value)
         });
+
+        console.log('');
+        if (botId >= 0)
+            console.log("Bot comparing 17 and 61 is bot-" + botId);
+        else
+            console.log("No bots for 17 and 61 found!")
+        
         var o0 = output[0];
         var o1 = output[1];
         var o2 = output[2];
-        console.log(o0 * o1 * o2);
+        console.log("product of first 3 outputs: " + o0 * o1 * o2);
         process.exit(0);
     });
 
@@ -67,9 +74,10 @@ module.exports = function()
                     high = l;
                 }
 
-                console.log("Bot " + bot.id + " comparing " + low + " to " + high);
-                if (low == 17 && high == 61)
-                    console.log("Found it!!!");
+                process.stdout.write("\rBot " + bot.id + " comparing " + low + " to " + high);
+                if (low == 17 && high == 61 && botId < 0)
+                    botId = bot.id;
+
                 give(rule.low.to, rule.low.id, low);
                 give(rule.high.to, rule.high.id, high);
             });

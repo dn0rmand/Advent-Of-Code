@@ -8,21 +8,21 @@ var days = [
     require("./Day05.js"),//5
     require("./Day06.js"),//6
     require("./Day07.js"),//7
-    require("./Day08.js"),//8
-    require("./Day09.js"),//9
-    require("./Day10.js"),//10
-    require("./Day11.js"),//11
-    require("./Day12.js"),//12
-    require("./Day13.js"),//13
-    require("./Day14.js"),//14
-    require("./Day15.js"),//15
-    require("./Day16.js"),//16
-    require("./Day17.js"),//17
-    require("./Day18.js"),//18
-    require("./Day19.js"),//19
+    // require("./Day08.js"),//8
+    // require("./Day09.js"),//9
+    // require("./Day10.js"),//10
+    // require("./Day11.js"),//11
+    // require("./Day12.js"),//12
+    // require("./Day13.js"),//13
+    // require("./Day14.js"),//14
+    // require("./Day15.js"),//15
+    // require("./Day16.js"),//16
+    // require("./Day17.js"),//17
+    // require("./Day18.js"),//18
+    // require("./Day19.js"),//19
 ];
 
-var currentDay = 8;
+var currentDay = 7;
 
 process.$exit = process.exit;
 process.exit = function()
@@ -30,7 +30,7 @@ process.exit = function()
     if (currentDay < days.length)
     {
         console.log('');
-        console.log("Running Day " + currentDay + " puzzle");
+        console.log("Running Day " + currentDay + " puzzle of Advent of Code 2015");
         var puzzle = days[currentDay++];
         puzzle();
     }

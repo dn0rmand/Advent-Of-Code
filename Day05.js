@@ -23,9 +23,9 @@ module.exports = function()
 
     var seed = 2231250;
 
-    var password = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+    var password = ['*', '*', '*', '*', '*', '*', '*', '*'];
     var count    = 0;
-
+    var loop     = 0;
     while (count < 8)
     {
         var key  = input + (seed++);
@@ -35,15 +35,19 @@ module.exports = function()
             var index = +(hash[5]);
             if (isNaN(index) || index < 0 || index > 7)
                 continue;
-            if (password[index] == ' ')
+            if (password[index] == '*')
             {
                 count++;
                 password[index] = hash[6];
-                console.log(index + " - " + hash + " -> " + password);
+                loop = 0;
             }
         }
+        if (loop == 0)
+            process.stdout.write("\r" + seed  + ": " + password.join(''));
+        loop = (loop + 1) % 1000;
     }
-    console.log(seed);
-    console.log(password);
+    console.log('');
+    console.log("Seed: "+seed);
+    console.log("Password: " + password.join(''));
     process.exit(0);
 }

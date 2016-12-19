@@ -1,11 +1,13 @@
 module.exports = function()
 {
+    const sleep = require("sleep");
+    const consoleControl = require('console-control-strings')    
     const parser = require('./parser.js');
     const fs = require('fs');
     const readline = require('readline');
 
     const readInput = readline.createInterface({
-    input: fs.createReadStream('Data/Day08.data')
+        input: fs.createReadStream('Data/Day08.data')
     });
 
     var screen = []
@@ -17,31 +19,74 @@ module.exports = function()
             screen[y][x] = 0;
     }
 
+    process.stdout.write(consoleControl.hideCursor());
+
     readInput
     .on('line', (line) => { 
         processLine(line);
+        DrawScreen();
     })
     .on('close', () => {
+        var pixels = DrawScreen(true, 'brightRed');
         console.log("Done ...");
+        console.log(pixels + " pixels");
+        process.stdout.write(consoleControl.showCursor());
+        process.exit(0);
+    });
+
+    function wait()
+    {
+        sleep.usleep(50000);
+        // var start = process.hrtime();
+        // var end = process.hrtime(start);
+
+        // while(end[1] < 30000000)
+        //     end = process.hrtime(start);
+    }
+
+    function DrawScreen(final, color)
+    {
+        if (color === undefined)
+            color = "brightWhite";
+
+        process.stdout.write(consoleControl.color(color));
+        process.stdout.write(consoleControl.color('bgBlack'));
+
         var pixels = 0;
+        for(var x = 0; x < 52; x++)
+            process.stdout.write(' ');        
+
+        process.stdout.write(consoleControl.nextLine(1));                
+
         for(var y = 0; y < 6; y++)
         {
-            var l = "";
+            process.stdout.write(' ');
             for(var x = 0; x < 50; x++)
             {
                 if (screen[y][x])
                 {
                     pixels++;
-                    l += '#';
+                    process.stdout.write('#');
                 }
                 else
-                    l += ' '
+                    process.stdout.write(' ');
             }
-            console.log(l);            
+            process.stdout.write(' ');
+            process.stdout.write(consoleControl.nextLine(1));    
+        }    
+
+        for(var x = 0; x < 52; x++)
+            process.stdout.write(' ');        
+
+        process.stdout.write(consoleControl.nextLine(1));                
+        process.stdout.write(consoleControl.color('reset'));
+
+        if (final !== true) {
+            process.stdout.write('\x1b[8A');
+            wait();
         }
-        console.log(pixels + " pixels");
-        process.exit(0);
-    });
+        return pixels;
+    }
 
     function processLine(line)
     {

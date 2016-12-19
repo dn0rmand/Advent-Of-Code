@@ -45,5 +45,5 @@ module.exports = function()
     }
 
     console.log(safe + " safe tiles");
-    process.exit();
+    process.exit(0);
 }

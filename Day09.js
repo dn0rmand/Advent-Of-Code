@@ -10,7 +10,7 @@ module.exports = function()
     var result = 0;
     var total  = 0;
 
-    console.log(process('(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN'));
+    console.log(processLine('(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN'));
 
     readInput
     .on('line', (line) => { 
@@ -63,7 +63,7 @@ module.exports = function()
                 var l = s.length;
 
                 if (s.indexOf('(') >=0)
-                    l = process(s);
+                    l = processLine(s);
 
                 decompress += (l * count);
             }

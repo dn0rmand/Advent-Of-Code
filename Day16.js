@@ -22,9 +22,7 @@ module.exports = function()
                 buffer[idx++] = c ^ 1;
             }
             index = idx;
-            process.stdout.write('\r'+index);
         }
-        console.log('');
         console.log('Array created');
     }
 
@@ -49,14 +47,10 @@ module.exports = function()
     {
         makeChecksum(len);
         len = len / 2;
-        process.stdout.write('\r'+len+'         ');    
     }
 
-    console.log('');
     var x = buffer.slice(0, len)
     console.log(x.join(''));
 
     process.exit(0);
-
-    // 11100110111101110
 }
