@@ -1,12 +1,30 @@
 module.exports = function()
 {
+    const assert = require('assert');
     const consoleControl = require('console-control-strings')    
     
     const oldPassword = 'hxbxwxba';
 
-    var pass = findNewPassword(oldPassword);
+    // console.log('hijklmmn (false): ' + isValid('hijklmmn'));
+    // console.log('abbceffg (false): ' + isValid('abbceffg'));
+    // console.log('abbcegjk (false): ' + isValid('abbcegjk'));
+    // console.log('abcdffaa (true) : ' + isValid('abcdffaa'));
+    // console.log('ghjaabcc (true) : ' + isValid('ghjaabcc'));
+    // console.log('abcdeggg (false): ' + isValid('abcdeggg'));
 
-    console.log("New password is " + pass);
+    // var pwd = findNewPassword('abcdefgh');
+    // assert(pwd == 'abcdffaa', 'next password of abcdefgh should be abcdffaa');
+
+    // var pwd1 = findNewPassword('ghijklmn');
+    // assert(pwd1 == 'ghjaabcc', 'next password of ghijklmn should be ghjaabcc');
+
+    
+    console.log("Caculating new password for " + oldPassword);
+    var pass = findNewPassword(oldPassword);
+    console.log(oldPassword + " -> " + pass);
+    console.log("Caculating new password for " + pass);
+    var pass2 = findNewPassword(pass);
+    console.log(pass + " -> " + pass2);
     process.exit(0);
 
     function convertToArray(pwd)
@@ -66,11 +84,12 @@ module.exports = function()
 
             if (pairsCount < 2 && pairs[c] === undefined && c == password[i+1])
             {
+                pairs[c] = 1;
+                pairsCount++;
                 for(var j = i+2; j < password.length-1 ; j++)
                 {
                     if (password[j] == c && password[j+1] == c)
                     {
-                        pairs[c] = 1;
                         pairsCount++;
                         break;
                     }
@@ -95,12 +114,18 @@ module.exports = function()
 
         process.stdout.write(consoleControl.hideCursor());
 
+        var count = 0;
+
         while(! isValid(password))
         {
             incrementPassword(password);
-            process.stdout.write('\r');
-            for(var i = 0; i < password.length; i++) 
-                process.stdout.write(password[i]);            
+            if (count == 0)
+            {
+                process.stdout.write('\r');
+                for(var i = 0; i < password.length; i++) 
+                    process.stdout.write(password[i]);            
+            }
+            count = (count + 1) % 1000;
         }
 
         process.stdout.write(consoleControl.showCursor());

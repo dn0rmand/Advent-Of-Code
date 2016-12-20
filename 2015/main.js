@@ -12,7 +12,7 @@ var days = [
     require("./Day09.js"),//9
     require("./Day10.js"),//10
     require("./Day11.js"),//11
-    // require("./Day12.js"),//12
+    require("./Day12.js"),//12
     // require("./Day13.js"),//13
     // require("./Day14.js"),//14
     // require("./Day15.js"),//15
@@ -22,7 +22,7 @@ var days = [
     // require("./Day19.js"),//19
 ];
 
-var currentDay = 11;
+var currentDay = 12;
 
 process.$exit = process.exit;
 process.exit = function()
