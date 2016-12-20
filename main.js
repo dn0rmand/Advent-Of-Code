@@ -22,7 +22,10 @@ var days = [
     require("./Day19.js"),//19
 ];
 
-var currentDay = 8;
+const prettyHrtime = require('pretty-hrtime');
+
+var currentDay = 19;
+var start ;
 
 process.$exit = process.exit;
 process.exit = function()
@@ -32,14 +35,23 @@ process.exit = function()
         console.log('');
         console.log("Running Day " + currentDay + " puzzle");
         var puzzle = days[currentDay++];
+        
+        start = process.hrtime();
         puzzle();
     }
     else
     {
+        var end = process.hrtime(start);
+
+        words = prettyHrtime(end, {verbose:true});
         console.log("All Done!"); 
+        console.log(words); // '1 millisecond 209 microseconds'
         process.$exit(0); 
     }
 }
 
 process.exit(0);
+
+
+    var bestSolution = Execute(input.state, 0);
 
