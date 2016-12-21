@@ -33,6 +33,12 @@ process.exit = function()
 {
     if (currentDay < days.length)
     {
+        if (start !== undefined)
+        {
+            var end = process.hrtime(start);
+            words = prettyHrtime(end, {verbose:true});
+            console.log(words); // '1 millisecond 209 microseconds'            
+        }
         console.log('');
         console.log("Running Day " + currentDay + " puzzle");
         var puzzle = days[currentDay++];
