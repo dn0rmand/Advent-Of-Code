@@ -18,13 +18,13 @@ var days = [
     require("./Day15.js"),//15
     require("./Day16.js"),//16
     require("./Day17.js"),//17
-    // require("./Day18.js"),//18
+    require("./Day18.js"),//18
     // require("./Day19.js"),//19
 ];
 
 const prettyHrtime = require('pretty-hrtime');
 var start;
-var currentDay = 17;
+var currentDay = 18;
 
 process.$exit = process.exit;
 process.exit = function()
