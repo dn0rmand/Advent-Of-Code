@@ -41,7 +41,6 @@ module.exports = function()
     .on('close', () => {
        _allPaths = getAllPath();
        _segments = getSegments();
-       // console.log(_segments);
        var distance = getShortest();
        console.log("Shortest path is " + distance + " steps long");
         process.exit(0);

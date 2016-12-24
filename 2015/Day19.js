@@ -29,66 +29,43 @@ module.exports = function()
 
     function calibrate(converter, input)
     {
-        var molecules       = {}
-        var $conversionKeys = Object.keys(converter);
+        var molecules = {}
 
-        for (var i = 0; i < $conversionKeys.length; i++)
+        search(converter, input, function(molecule) {
+            molecules[molecule] = 1;
+        });
+
+        return Object.keys(molecules);
+    }
+
+    function search(converter, input, callback)
+    {
+        if (converter.$keys === undefined) 
+            converter.$keys = Object.keys(converter);
+
+        for (var i = 0; i < converter.$keys.length; i++)
         {
-            var search  = $conversionKeys[i];
-            var convert = converter[search];
+            var search  = converter.$keys[i];
             var index   = input.indexOf(search);
+            var convert = converter[search];
+            var slen    = search.length;
 
             while (index >= 0)
             {
                 for (var r = 0; r < convert.length ; r++)
                 {
-                    var molecule = input.substring(0, index) + convert[r] + input.substring(index+search.length);
-                    molecules[molecule] = 1;
-                }
+                    var molecule = input.substring(0, index) + convert[r] + input.substring(index+slen);
 
+                    callback(molecule);
+                }
                 index = input.indexOf(search, index+1);
             }
         }
-
-        return Object.keys(molecules);
-    }
-
-    function findShortestPath2(input)
-    {
-        function breadthFirst(molecules, step)
-        {
-            while (molecules.length > 0)
-            {
-                for(var i = 0 ; i < molecules.length; i++)
-                    if (molecules[i] == 'e')
-                        return step ; // Found it !!!
-                step++;
-
-                console.log(step + " -> " + molecules.length + " molecules to test");
-                var newMol = {};
-
-                for (var i = 0; i < molecules.length; i++)
-                {
-                    var mol = molecules[i];
-                    var mols = calibrate(decrypt, mol);
-                    for (var j = 0 ; j < mols.length; j++)
-                        newMol[mols[j]] = 1;
-                    mols = []; // Try to help GC
-                }
-
-                molecules = Object.keys(newMol);
-                newMol = {}; // Try to help GC
-            }
-
-            return step;
-        }
-
-        return breadthFirst([input], 0); // Done 1 step already
     }
 
     function findShortestPath(input)
     {
-        var minStep = 201;
+        var minStep = 205;
         var visited = {};
         var count   = 0;
         var maxDepth;
@@ -107,22 +84,17 @@ module.exports = function()
                 return true;
             }
 
-            if (visited[molecule] !== undefined)
+            var v = visited[molecule];
+            if (v !== undefined && v <= step)
                 return false;
-
-            visited[molecule] = 1;
+            visited[molecule] = step;
             
-            var keys = calibrate(decrypt, molecule);
+           if (typeof(global.gc) == "function")
+                global.gc();
 
-            // keys.sort(function(v1,v2) {
-            //     return v1.length - v2.length;
-            // });
-
-            for (var i = 0; i < keys.length; i++)
-            {
-                if (deepSearch(keys[i], step + 1) == true)
-                    break;
-            }
+            search(decrypt, molecule, function(molecule) {                
+                deepSearch(molecule, step+1);
+            });
 
             return false;
         }
