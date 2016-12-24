@@ -6,7 +6,7 @@ module.exports = function()
     const prettyHrtime = require('pretty-hrtime');
 
     const readInput = readline.createInterface({
-        input: fs.createReadStream('Data/Day23.data copy')
+        input: fs.createReadStream('Data/Day23.data')
     });
 
     var input      = [];
