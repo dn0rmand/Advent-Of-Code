@@ -4,7 +4,11 @@
   "description": "Advent of Code 2016",
   "main": "Day01.js",
   "dependencies": {
-    "console-control-strings": "^1.1.0"
+    "clone": "^2.1.0",
+    "console-control-strings": "^1.1.0",
+    "is-float": "^1.0.0",
+    "pretty-hrtime": "^1.0.3",
+    "sleep": "^5.0.0"
   },
   "devDependencies": {},
   "scripts": {
