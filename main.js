@@ -25,12 +25,12 @@ var days = [
     require("./Day22.js"),///22
     require("./Day23.js"),///23
     require("./Day24.js"),///24
-    // require("./Day25.js"),///25
+    require("./Day25.js"),///25
 ];
 
 const prettyHrtime = require('pretty-hrtime');
 
-var currentDay = 24;
+var currentDay = 25;
 var start ;
 
 process.$exit = process.exit;
