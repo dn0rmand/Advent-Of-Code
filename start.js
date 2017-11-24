@@ -1,5 +1,5 @@
-var     prompt = require('prompt');
-var     fs = require("fs");
+const   prompt = require('prompt');
+const   fs = require("fs");
 const   prettyHrtime = require('pretty-hrtime');
 
 process.$exit = process.exit;
@@ -44,7 +44,7 @@ prompt.get(properties, function (err, result)
 
     if (fs.existsSync(filename))
     {
-        var day = require(filename);
+        const day = require(filename);
 
         process.chdir(path);
 
@@ -54,7 +54,8 @@ prompt.get(properties, function (err, result)
         
         var start = process.hrtime();
 
-        process.exit = function() {
+        process.exit = function() 
+        {
             var end = process.hrtime(start);
             var words = prettyHrtime(end, {verbose:true});
     

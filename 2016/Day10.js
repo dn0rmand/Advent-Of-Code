@@ -2,7 +2,7 @@ module.exports = function()
 {
     const fs = require('fs');
     const readline = require('readline');
-    const parser = require('./parser.js');
+    const parser = require('../tools/parser.js');
 
     const readInput1 = readline.createInterface({
     input: fs.createReadStream('Data/Day10.data')

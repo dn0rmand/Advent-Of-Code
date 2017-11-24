@@ -1,6 +1,6 @@
 module.exports = function()
 {
-    const parser = require('./parser.js');
+    const parser = require('../tools/parser.js');
     const fs = require('fs');
     const readline = require('readline');
     const prettyHrtime = require('pretty-hrtime');

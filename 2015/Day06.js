@@ -2,10 +2,10 @@ module.exports = function()
 {
     const fs = require('fs');
     const readline = require('readline');
-    const parser = require("../parser.js");
+    const parser = require("../tools/parser.js");
 
     const readInput = readline.createInterface({
-        input: fs.createReadStream('2015/Data/Day06.data')
+        input: fs.createReadStream('Data/Day06.data')
     });
 
     var lights1 = [];

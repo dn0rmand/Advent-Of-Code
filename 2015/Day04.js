@@ -1,6 +1,6 @@
 module.exports = function() 
 {
-    var crypto = require('crypto');
+    const crypto = require('crypto');
     var input = 'bgvyzdsv';
     var index = -1;
 

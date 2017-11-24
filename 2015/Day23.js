@@ -1,13 +1,13 @@
 module.exports = function()
 {
-    const parser = require('../parser.js');
+    const parser = require('../tools/parser.js');
     const assert = require('assert');
     const fs = require('fs');
     const readline = require('readline');
     const prettyHrtime = require('pretty-hrtime');
 
     const readInput = readline.createInterface({
-        input: fs.createReadStream('2015/Data/Day23.data')
+        input: fs.createReadStream('Data/Day23.data')
     });
 
     var input      = [];

@@ -2,7 +2,7 @@ module.exports = function()
 {
     const sleep = require("sleep");
     const consoleControl = require('console-control-strings')    
-    const parser = require('./parser.js');
+    const parser = require('../tools/parser.js');
     const fs = require('fs');
     const readline = require('readline');
 

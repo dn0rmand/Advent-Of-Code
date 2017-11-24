@@ -1,7 +1,7 @@
 module.exports = function()
 {
     const prettyHrtime = require('pretty-hrtime');
-    const parser = require('./parser.js');
+    const parser = require('../tools/parser.js');
     const maxSteps = 40;
 
     const puzzleData = [

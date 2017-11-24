@@ -4,12 +4,12 @@
   "description": "Advent of Code",
   "main": "start.js",
   "dependencies": {
-    "clone": "^2.1.0",
+    "clone": "^2.1.1",
     "console-control-strings": "^1.1.0",
     "is-float": "^1.0.0",
     "pretty-hrtime": "^1.0.3",
     "prompt": "^1.0.0",
-    "sleep": "^5.0.0"
+    "sleep": "^5.1.1"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,6 +1,7 @@
 module.exports = function()
 {
-    var crypto = require('crypto');
+    const crypto = require('crypto');
+    
     var input = 'qzyelonm';
     //var input = 'abc'
     var hashes = [];

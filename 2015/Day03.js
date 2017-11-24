@@ -4,7 +4,7 @@ module.exports = function()
     const readline = require('readline');
 
     const readInput = readline.createInterface({
-    input: fs.createReadStream('2015/Data/Day03.data')
+    input: fs.createReadStream('Data/Day03.data')
     });
 
     //var presents = [];

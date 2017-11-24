@@ -6,7 +6,7 @@ module.exports = function()
     const consoleControl = require('console-control-strings')    
 
     const readInput = readline.createInterface({
-        input: fs.createReadStream('2015/Data/Day19.data')
+        input: fs.createReadStream('Data/Day19.data')
     });
 
     var conversions = { };

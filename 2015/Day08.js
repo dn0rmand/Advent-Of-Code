@@ -5,7 +5,7 @@ module.exports = function()
     const readline = require('readline');
 
     const readInput = readline.createInterface({
-        input: fs.createReadStream('2015/Data/Day08.data')
+        input: fs.createReadStream('Data/Day08.data')
     });
 
     var codeCount = 0;
