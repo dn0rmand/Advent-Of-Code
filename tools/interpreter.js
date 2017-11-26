@@ -38,6 +38,19 @@ module.exports = function()
             return +value;                
     }
 
+    this.getOpcode = function(code)
+    {
+        return opcode[code];
+    }
+    
+    this.getInstruction = function(code)
+    {
+        return {
+            code: opcode[code],
+            fn:   opcodeFunctions[code]
+        };
+    }
+
     this.add = function(code, fct, parseArguments)
     {
         opcode[code] = nextOpCode++;
@@ -47,24 +60,28 @@ module.exports = function()
 
     this.parse = async function(filename)
     {
-        var done;
+        self.reset();
 
-        this.reset();
-
-        var promise = new Promise(function (resolve) { 
-            done = resolve;
-         });
-
-        const readInput = readline.createInterface({
-            input: fs.createReadStream(filename)
-        });
-    
-        readInput
-        .on('line', (line) => { 
-            input.push(line);
-        })
-        .on('close', () => {
-           done();
+        var promise = new Promise(function (resolve,reject) 
+        { 
+            try
+            {
+                const readInput = readline.createInterface({
+                    input: fs.createReadStream(filename)
+                });
+            
+                readInput
+                    .on('line', (line) => { 
+                        input.push(line);
+                    })
+                    .on('close', () => {
+                        resolve();
+                    });
+            }
+            catch(error)
+            {
+                reject(error);
+            }
         });
 
         await promise;
@@ -115,6 +132,56 @@ module.exports = function()
 
     this.execute = function()
     {
+        function doMultiplication(cpy)
+        {
+            if (self.$current+5 >= self.$instructions.length)
+                return false;
+    
+            var jnz1 = self.$instructions[self.$current+3];
+    
+            if (jnz1.code !== opcode.jnz || jnz1.arg2 !== -2)
+                return false;
+            
+            var jnz2 = self.$instructions[self.$current+5];
+    
+            if (jnz2.code !== opcode.jnz || jnz2.arg2 !== -5)
+                return false;
+    
+            var dec2 = self.$instructions[self.$current+4];
+    
+            if (dec2.code !== opcode.dec)
+                return false;
+    
+            var inc  = self.$instructions[self.$current+1];
+            var dec1 = self.$instructions[self.$current+2];
+    
+            if (dec1.code === opcode.inc && inc.code === opcode.dec)
+            {
+                var i = dec1;
+                dec1 = inc;
+                inc  = i;
+            }
+    
+            if (inc.code !== opcode.inc || dec1.code !== opcode.dec ||
+                dec1.arg1 === dec2.arg2 ||
+                dec1.arg1 !== jnz1.arg1 || dec2.arg1 !== jnz2.arg1 ||
+                cpy.arg2 !== jnz1.arg1 || cpy.arg2 === cpy.arg1 ||
+                inc.arg1 === dec1.arg1 || inc.arg1 === dec2.arg)
+                return false;
+    
+            var v1  = cpy.arg1;
+            var v2  = self.$registers[dec2.arg1];
+    
+            if (typeof(v1) === "string")
+                v1 = self.$registers[v1];
+            
+            self.$registers[inc.arg1] += (v1*v2);
+            self.$registers[dec1.arg1] = 0;
+            self.$registers[dec2.arg1] = 0;
+    
+            return true;
+        }
+
         var start = process.hrtime();
 
         self.$current = 0;
@@ -122,6 +189,14 @@ module.exports = function()
         while (self.$current < self.$instructions.length)
         {
             var i = self.$instructions[self.$current];
+
+            if (i.code == opcode.cpy)
+            {
+                if (doMultiplication(i)) {
+                    self.$current += 6;
+                    continue;
+                }
+            }
 
             var offset = i.fn(i.arg1, i.arg2);
             if (offset === undefined)
