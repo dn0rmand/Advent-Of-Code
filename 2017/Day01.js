@@ -7,23 +7,41 @@ module.exports = function()
         input: fs.createReadStream('Data/Day01.data')
     });
 
-    var characters = 0;
-    var lines      = 0;
+    var part = 1;
+    
+    console.log("----- part 1 -----");
 
     readInput
     .on('line', (line) => { 
-        characters += line.length;
-        lines++;
-
         processLine(line);
     })
     .on('close', () => {
-        console.log(characters + ' characters in ' + lines + " lines");
         process.exit(0);
     });
 
     function processLine(line)
     {
-        console.log(line);
+        var total = 0;
+        var count = line.length;
+        var offset= 1;
+
+        if (line == "*")
+        {
+            console.log("----- part 2 -----");
+            part = 2;
+            return;
+        }
+
+        if (part == 2)
+            offset = count/2;
+
+        for (var i = 0; i < count; i++)
+        {
+            var c1 = line.charAt(i);
+            var c2 = line.charAt((i+offset) % count);
+            if (c1 == c2)
+                total += new Number(c1);
+        }
+        console.log("Total = " + total);
     }
 }
