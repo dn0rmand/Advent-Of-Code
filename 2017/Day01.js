@@ -40,7 +40,7 @@ module.exports = function()
             var c1 = line.charAt(i);
             var c2 = line.charAt((i+offset) % count);
             if (c1 == c2)
-                total += new Number(c1);
+                total += +c1;
         }
         console.log("Total = " + total);
     }
