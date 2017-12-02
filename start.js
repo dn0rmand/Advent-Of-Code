@@ -28,7 +28,7 @@ var properties = [
         minimum:1,
         maximum:25,
         warning: 'Enter a day number between 1 and 25',
-        default: '1'
+        default: '3'
     }
 ];
 

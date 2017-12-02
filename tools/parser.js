@@ -6,7 +6,7 @@ module.exports = function(input) {
 
     var skipSpaces = function()
     {
-        while (index < line.length && line[index] == ' ')
+        while (index < line.length && (line[index] == ' ' || line[index] == '\t'))
             index++;        
     }
 
