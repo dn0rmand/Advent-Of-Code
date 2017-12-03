@@ -90,7 +90,7 @@ module.exports = function()
         }
 
         let steps = Math.abs(x) + Math.abs(y);
-        console.log(target + " => " + x + "," + y + " Steps: " + steps);
+        console.log("Part 1: Position of " + target + " is {" + x + ", " + y + "}, " + steps + " steps away from 1");
     }
 
     function part2()
@@ -99,16 +99,21 @@ module.exports = function()
 
         let memory = {};
 
+        function makeKey(x, y)
+        {
+            return '$'+x+','+y;
+        }
+
         function get(x, y)
         {
-            let key = '$'+x+','+y;
+            let key = makeKey(x, y);
 
             return memory[key] || 0;
         }
 
         function set(x, y, value)
         {
-            let key = '$'+x+','+y;
+            let key = makeKey(x, y);
             
             return memory[key] = value;                       
         }
@@ -121,7 +126,7 @@ module.exports = function()
         {
             move();
 
-            var v = get(x, y)   + get(x, y-1) + get(x, y+1) +
+            var v = /*get(x, y) +*/ get(x, y-1) + get(x, y+1) +
                     get(x-1, y) + get(x-1, y-1) + get(x-1, y+1) +
                     get(x+1, y) + get(x+1, y-1) + get(x+1, y+1)
 
@@ -129,12 +134,13 @@ module.exports = function()
 
             if (v > target)
             {
-                console.log(x + "," + y + " => " + v);
+                console.log("Part 2: Value is " + v + " at position {" + x + ", " + y + "}");
                 break;
             }
         }
     }
 
     part1();
-    part2();            
+    part2();           
+    process.exit(0); 
 }
