@@ -8,9 +8,9 @@ module.exports = function()
         input: fs.createReadStream('Data/Day02.data')
     });
 
-    var checksum1 = 0;
-    var checksum2 = 0;
-    var dataSet   = 1;
+    let checksum1 = 0;
+    let checksum2 = 0;
+    let dataSet   = 1;
 
     readInput
     .on('line', (line) => { 
@@ -29,14 +29,12 @@ module.exports = function()
             return;
         }
 
-        var data = [];
-        var parse = new parser(line);
+        let data = [];
+        let parse = new parser(line);
 
         while(! parse.endOfLine())
         {
-            var c = parse.getValue();
-            if (! typeof c == 'Number')
-                throw 'Invalid number';
+            let c = parse.getNumber(true);
             data.push(c);
         }
         
@@ -48,12 +46,12 @@ module.exports = function()
 
     function calculateChecksum1(data)
     {
-        var max   = Number.MIN_SAFE_INTEGER, min=Number.MAX_SAFE_INTEGER;
-        var count = data.length;
+        let max   = Number.MIN_SAFE_INTEGER, min=Number.MAX_SAFE_INTEGER;
+        let count = data.length;
 
-        for(var i = 0; i < count; i++)
+        for(let i = 0; i < count; i++)
         {
-            var value = data[i];
+            let value = data[i];
 
             max = Math.max(value, max);
             min = Math.min(value, min);
@@ -64,16 +62,16 @@ module.exports = function()
     
     function calculateChecksum2(data)
     {
-        var count = data.length;
+        let count = data.length;
 
-        for(var i = 0; i < count; i++)
+        for(let i = 0; i < count; i++)
         {
-            var value1 = data[i];
+            let value1 = data[i];
 
-            for(var j = i+1; j < count; j++)
+            for(let j = i+1; j < count; j++)
             {
-                var value2 = data[j];
-                var result = Math.max(value1, value2) / Math.min(value1, value2);
+                let value2 = data[j];
+                let result = Math.max(value1, value2) / Math.min(value1, value2);
 
                 if (Math.round(result) == result)
                     return result;
@@ -85,7 +83,7 @@ module.exports = function()
 
     function logResult()
     {
-        var prefix;
+        let prefix;
 
         if (dataSet == 1)
             console.log('Test data for part 1 => Checksum is ' + checksum1);

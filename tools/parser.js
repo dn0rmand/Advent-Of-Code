@@ -1,24 +1,24 @@
 
 module.exports = function(input) {
 
-    var index = 0;
-    var line  = input;
+    let index = 0;
+    let line  = input;
 
-    var skipSpaces = function()
+    let skipSpaces = function()
     {
         while (index < line.length && (line[index] == ' ' || line[index] == '\t'))
             index++;        
     }
 
-    var getToken = function()
+    let getToken = function()
     {
-        var token = "";
+        let token = "";
 
         skipSpaces();
 
         while (index < line.length)
         {
-            var c = line[index];
+            let c = line[index];
             if (c >= 'a' && c <= 'z')
             {
                 index++;
@@ -31,16 +31,18 @@ module.exports = function(input) {
         return token;
     }
 
-    var getNumber = function()
+    let getNumber = function(throwOnError)
     {
-        var value = 0;
+        let value = 0;
+        let valid = false;
 
         skipSpaces();
         while(index < line.length)
         {
-            var c = line[index];
+            let c = line[index];
             if (c >= '0' && c <= '9')
             {
+                valid = true;
                 index++;
                 value = (value * 10) + (+c);
             }
@@ -48,28 +50,30 @@ module.exports = function(input) {
                 break;
         }
 
+        if (! valid && throwOnError == true)
+            throw "Valid number expected"
         return value;
     }     
 
-    var getSignedNumber = function()
+    let getSignedNumber = function(throwOnError)
     {
         skipSpaces();
-        var sign = '+';
+        let sign = '+';
         if (index < line.length)
         {
             if (line[index] == '+' || line[index] == '-')
                 sign = line[index++];
         }
-        var value = getNumber();
+        let value = getNumber(throwOnError);
         return sign == '-' ? -value : +value;
     }
 
-    var getOperator = function()
+    let getOperator = function()
     {
         skipSpaces();
         if (index < line.length)
         {
-            var c = line[index];
+            let c = line[index];
             if (c >= '0' && c <= '9') // Digit
                 return '';
             if (c >= 'a' && c <= 'z') // letter
@@ -81,12 +85,12 @@ module.exports = function(input) {
             return '';
     }
 
-    var getValue = function()
+    let getValue = function()
     {
         skipSpaces();
         if (endOfLine())
             return undefined;
-        var c = line[index];
+        let c = line[index];
         if (c >= '0' && c <= '9')
             return getNumber();
         else if (c == '-' || c == '+')
@@ -97,40 +101,40 @@ module.exports = function(input) {
         return undefined;
     }
 
-    var expect = function(value, expected)
+    let expect = function(value, expected)
     {
         if (value != expected)
             throw "Expected " + expected + " but got " + value;
     }
 
-    var expectToken = function(expected)
+    let expectToken = function(expected)
     {
         expect(getToken(), expected);
     }
 
-    var expectNumber = function(expected)
+    let expectNumber = function(expected)
     {
         expect(getNumber(), expected);
     }
 
-    var expectOperator = function(expected)
+    let expectOperator = function(expected)
     {
         expect(getOperator(), expected);
     }
 
-    var endOfLine = function()
+    let endOfLine = function()
     {
         skipSpaces();
         return index >= line.length;
     }
 
-    var expectDone = function()
+    let expectDone = function()
     {
         if (! endOfLine())
             throw "Was expecting end of line to be reached";
     }
 
-    var peek = function()
+    let peek = function()
     {
         skipSpaces();
         if (endOfLine())

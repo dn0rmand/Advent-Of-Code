@@ -5,18 +5,18 @@ module.exports = function()
     const readline = require('readline');
     const parser = require('../tools/parser.js');
     
-    var self = this;
+    let self = this;
 
-    var input            = [];
+    let input            = [];
 
     self.$registers      = {};
     self.$instructions   = [];
     self.$current ;
 
-    var nextOpCode = 1;
-    var opcode = {};
-    var opcodeFunctions = {};
-    var argumentParser = {};
+    let nextOpCode = 1;
+    let opcode = {};
+    let opcodeFunctions = {};
+    let argumentParser = {};
 
     this.reset = function()
     {        
@@ -28,7 +28,7 @@ module.exports = function()
 
     this.createArgument = function(value)
     {
-        var v;
+        let v;
 
         if (typeof value == 'string')        
             return value;
@@ -53,16 +53,19 @@ module.exports = function()
 
     this.add = function(code, fct, parseArguments)
     {
-        opcode[code] = nextOpCode++;
+        let opCode = nextOpCode++;
+        opcode[code] = opCode;
         opcodeFunctions[code] = fct;
         argumentParser[code] = parseArguments;
+
+        return opCode;
     }
 
     this.parse = async function(filename)
     {
         self.reset();
 
-        var promise = new Promise(function (resolve,reject) 
+        let promise = new Promise(function (resolve,reject) 
         { 
             try
             {
@@ -89,24 +92,24 @@ module.exports = function()
 
     this.compile = function()
     {
-        var start = process.hrtime();
+        let start = process.hrtime();
                         
         self.$registers      = {};
         self.$instructions   = [];
         self.$current        = undefined;
 
-        for(var current = 0; current < input.length; current++)
+        for(let current = 0; current < input.length; current++)
         {
-            var line  = input[current];
-            var parse = new parser(line);
-            var instruction = {
+            let line  = input[current];
+            let parse = new parser(line);
+            let instruction = {
                 code: 0,
                 fn: undefined,
                 arg1: undefined,
                 arg2: undefined
             };
 
-            var command = parse.getToken();
+            let command = parse.getToken();
 
             instruction.code = opcode[command];
             if (instruction.code === undefined)
@@ -124,89 +127,39 @@ module.exports = function()
             self.$instructions.push(instruction);
         }
 
-        var end = process.hrtime(start);
-        var words = prettyHrtime(end, {verbose:true});
+        let end = process.hrtime(start);
+        let words = prettyHrtime(end, {verbose:true});
 
         console.log("Compiled in " + words);
     }
 
+    this.doMultiplication = function() { return 0; }
+
     this.execute = function()
     {
-        function doMultiplication(cpy)
-        {
-            if (self.$current+5 >= self.$instructions.length)
-                return false;
-    
-            var jnz1 = self.$instructions[self.$current+3];
-    
-            if (jnz1.code !== opcode.jnz || jnz1.arg2 !== -2)
-                return false;
-            
-            var jnz2 = self.$instructions[self.$current+5];
-    
-            if (jnz2.code !== opcode.jnz || jnz2.arg2 !== -5)
-                return false;
-    
-            var dec2 = self.$instructions[self.$current+4];
-    
-            if (dec2.code !== opcode.dec)
-                return false;
-    
-            var inc  = self.$instructions[self.$current+1];
-            var dec1 = self.$instructions[self.$current+2];
-    
-            if (dec1.code === opcode.inc && inc.code === opcode.dec)
-            {
-                var i = dec1;
-                dec1 = inc;
-                inc  = i;
-            }
-    
-            if (inc.code !== opcode.inc || dec1.code !== opcode.dec ||
-                dec1.arg1 === dec2.arg2 ||
-                dec1.arg1 !== jnz1.arg1 || dec2.arg1 !== jnz2.arg1 ||
-                cpy.arg2 !== jnz1.arg1 || cpy.arg2 === cpy.arg1 ||
-                inc.arg1 === dec1.arg1 || inc.arg1 === dec2.arg)
-                return false;
-    
-            var v1  = cpy.arg1;
-            var v2  = self.$registers[dec2.arg1];
-    
-            if (typeof(v1) === "string")
-                v1 = self.$registers[v1];
-            
-            self.$registers[inc.arg1] += (v1*v2);
-            self.$registers[dec1.arg1] = 0;
-            self.$registers[dec2.arg1] = 0;
-    
-            return true;
-        }
-
-        var start = process.hrtime();
+        let start = process.hrtime();
 
         self.$current = 0;
 
         while (self.$current < self.$instructions.length)
         {
-            var i = self.$instructions[self.$current];
+            let i = self.$instructions[self.$current];
 
-            if (i.code == opcode.cpy)
-            {
-                if (doMultiplication(i)) {
-                    self.$current += 6;
-                    continue;
-                }
+            let offset = self.doMultiplication(i);
+            if (offset > 0) {
+                self.$current += offset;
+                continue;
             }
 
-            var offset = i.fn(i.arg1, i.arg2);
+            offset = i.fn(i.arg1, i.arg2);
             if (offset === undefined)
                 self.$current++;
             else
                 self.$current += offset;
         }
 
-        var end = process.hrtime(start);
-        var words = prettyHrtime(end, {verbose:true});
+        let end = process.hrtime(start);
+        let words = prettyHrtime(end, {verbose:true});
 
         console.log("Executed in " +words);
     }

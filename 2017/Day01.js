@@ -7,7 +7,7 @@ module.exports = function()
         input: fs.createReadStream('Data/Day01.data')
     });
 
-    var part = 1;
+    let part = 1;
     
     console.log("----- part 1 -----");
 
@@ -21,9 +21,9 @@ module.exports = function()
 
     function processLine(line)
     {
-        var total = 0;
-        var count = line.length;
-        var offset= 1;
+        let total = 0;
+        let count = line.length;
+        let offset= 1;
 
         if (line == "*")
         {
@@ -35,10 +35,10 @@ module.exports = function()
         if (part == 2)
             offset = count/2;
 
-        for (var i = 0; i < count; i++)
+        for (let i = 0; i < count; i++)
         {
-            var c1 = line.charAt(i);
-            var c2 = line.charAt((i+offset) % count);
+            let c1 = line.charAt(i);
+            let c2 = line.charAt((i+offset) % count);
             if (c1 == c2)
                 total += +c1;
         }
