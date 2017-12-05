@@ -7,23 +7,47 @@ module.exports = function()
         input: fs.createReadStream('Data/Day05.data')
     });
 
-    var characters = 0;
-    var lines      = 0;
+    let input1 = [];
+    let input2 = [];
 
     readInput
     .on('line', (line) => { 
-        characters += line.length;
-        lines++;
-
         processLine(line);
     })
     .on('close', () => {
-        console.log(characters + ' characters in ' + lines + " lines");
+        jump(input1, false)
+        jump(input2, true);
+
         process.exit(0);
     });
 
     function processLine(line)
     {
-        console.log(line);
+        let n = +line;
+        
+        if (isNaN(n))
+            throw 'invalid data';
+        input1.push(n);
+        input2.push(n);
+    }
+
+    function jump(input, part2)
+    {
+        let current = 0;
+        let steps = 0;
+
+        let count = input.length;
+        
+        while(current < count && current >= 0)
+        {
+            steps++;
+            let offset = input[current];   
+            if (part2 && offset >= 3)
+                input[current]--;         
+            else
+                input[current]++;
+            current += offset;
+        }
+        console.log((part2 ? 'Part 2' : 'Part 1') + ' executed in ' + steps + ' steps');
     }
 }
