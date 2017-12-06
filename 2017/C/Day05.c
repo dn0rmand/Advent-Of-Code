@@ -30,7 +30,7 @@ static long solve(int* input, int part)
 
 static void loadData()
 {
-    FILE* file = fopen("Data/Day05.data", "r");
+    FILE* file = fopen("../Data/Day05.data", "r");
 
     if (file == NULL)
     {

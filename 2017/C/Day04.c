@@ -33,7 +33,7 @@ int cmpfunc (const void * a, const void * b)
 
 void solve(int sort) 
 {
-    FILE* file = fopen("2017/Data/Day04.data", "r");
+    FILE* file = fopen("../Data/Day04.data", "r");
 
     if (file == NULL)
     {
