@@ -53,7 +53,7 @@ const day06 = function()
                 input[maxIndex]++;
             }
             // Make Key
-            var k = input.toString();
+            let k = input.toString();
             if (keys[k] !== undefined)
             {
                 size = steps - keys[k];
