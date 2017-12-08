@@ -1,4 +1,4 @@
-const day7 = function()
+module.exports = function()
 {
     const fs = require('fs');
     const readline = require('readline');
@@ -20,108 +20,7 @@ const day7 = function()
         process.exit(0);
     });
 
-    let towers      = {};
-    let roots       = [];
-
-    function getTower(name)
-    {
-        let tower = towers[name];
-        if (tower === undefined)
-        {
-            tower = { name: name, children: [] };
-            towers[name] = tower;
-        }
-        return tower;
-    }
-
-    function calculateWeight(tower)
-    {
-        let weight = tower.weight;
-        tower.children.forEach(child =>
-        {
-            weight += calculateWeight( child );
-        });
-        tower.totalWeight = weight;
-        return weight;
-    }
-
-    function findBadWeight(root)
-    {
-        // var w ;
-        // var bad = -1;
-
-        // if (root.children.length > 2)
-        // {
-        //     var w0 = root.children[0].totalWeight;
-        //     var w1 = root.children[1].totalWeight;
-        //     var w2 = root.children[2].totalWeight;
-        //     if (w0 == w1)
-        //         w = w0;
-        //     else if (w1 == w2)
-        //         w = w1;
-        //     else if (w0 == w2)
-        //         w = w0;
-        // }
-
-        // let result ;
-        let ref = 0;
-        let refGood = false;
-        let badNode = undefined;
-
-        for (let i = 0; i < root.children.length; i++)
-        {
-            let c = root.children[i];
-            let w = c.totalWeight;
-
-            if (i === 0)
-            {
-                ref = w;
-                badNode = c; // In case there is only 1 child 
-            }
-            else if (ref !== w)
-            {
-                if (! refGood && i < root.children.length-1)
-                {
-                    let w2 = root.children[i+1].totalWeight;
-                    if (w2 == ref)
-                    {
-                        badNode = c;
-                    }
-                    else // ref was bad!
-                    {
-                        ref = w;
-                        badNode = root.children[0];
-                    }
-                }
-                else                
-                    badNode = c;
-                break;
-            }
-            else 
-                refGood = true;
-        }
-
-        if (badNode === undefined) // It all good!!!????!!!???
-            return undefined;
-
-        if (badNode.totalWeight === ref) // wasn't bad
-            return undefined;
-
-        var badChild = findBadWeight(badNode);
-        if (badChild !== undefined)
-            return badChild;
-
-        badNode.expectedWeigth = badNode.weight - badNode.totalWeight + ref; 
-        return badNode;
-    }
-
-    function solve2(root)
-    {
-        calculateWeight(root);
-        var badNode = findBadWeight(root);
-        return badNode.expectedWeigth;
-    }
-
+    // Solve Part 1
     function solve1()
     {
         if (roots.length > 1)
@@ -131,6 +30,107 @@ const day7 = function()
         
         return roots[0];
     }   
+    
+    // Solve Part 2
+    function solve2(root)
+    {
+        calculateWeight(root);
+        let badProgram = findUnbalanced(root);
+        return badProgram.expectedWeigth;
+    }
+
+    let tower = {};
+    let roots = []; // Should end with only one item in it.
+
+    function getProgram(name)
+    {
+        let program = tower[name];
+        if (program === undefined)
+        {
+            program = { name: name, subTowers: [] };
+            tower[name] = program;
+        }
+        return program;
+    }
+
+    function calculateWeight(program)
+    {
+        let weight = program.weight;
+        program.subTowers.forEach(child =>
+        {
+            weight += calculateWeight( child );
+        });
+        program.totalWeight = weight;
+        return weight;
+    }
+
+    function checkIfBalanced(program)
+    {
+        if (program.balanced !== undefined)
+            return program.balanced;
+
+        let parent = program.parent;
+        if (parent === undefined || parent.subTowers.length == 1)
+        {
+            program.balanced = true;
+            return true;
+        }
+
+        // Check if at least one other sibling has the same total weight
+
+        let refWeight;
+
+        for(let i = 0; i < parent.subTowers.length; i++)
+        {
+            let child = parent.subTowers[i];
+            if (child === program) continue;
+            if (child.totalWeight === program.totalWeight)
+            {
+                program.balanced = true;
+                return true;
+            }
+            else
+                refWeight = child.totalWeight;           
+        }
+
+        if (parent.subTowers.length > 2) // More than 2 programs, must be not balanced
+        {
+            program.balanced = false;
+            program.expectedWeigth = (program.weight - program.totalWeight + refWeight);
+        }
+        else
+            program.balanced = true;
+
+        // Don't know, check the subTowers
+
+        for(let i = 0; i < program.subTowers.length; i++)
+        {
+            if (! checkIfBalanced(program.subTowers[i]))
+            {
+                program.balanced = false;
+                return false;
+            }
+        }
+
+        return program.balanced;
+    }
+
+    function findUnbalanced(root)
+    {
+        for(let i = 0; i < root.subTowers.length; i++)
+        {
+            let child = root.subTowers[i];
+            if (! checkIfBalanced(child))
+            {
+                let unbalanced = findUnbalanced(child);
+                if (unbalanced !== undefined)
+                    return unbalanced;
+                else
+                    return child; 
+            }
+        }
+        return undefined;
+    }    
 
     //
     // Parse input line and build tree as we go
@@ -139,10 +139,10 @@ const day7 = function()
     {
         let parse = new parser(line);
 
-        let tower = getTower(parse.getToken())
+        let program = getProgram(parse.getToken())
 
         parse.expectOperator('(');
-        tower.weight = parse.getNumber();
+        program.weight = parse.getNumber();
         parse.expectOperator(')');
 
         if (! parse.endOfLine())
@@ -150,25 +150,25 @@ const day7 = function()
             parse.expectOperator('-');
             parse.expectOperator('>');
 
-            let child = getTower(parse.getToken());
-            child.parent = tower;
-            tower.children.push( child ) ;
+            let child = getProgram(parse.getToken());
+            child.parent = program;
+            program.subTowers.push( child ) ;
 
             while (! parse.endOfLine())
             {
                 parse.expectOperator(',');
 
-                let child = getTower(parse.getToken());
+                let child = getProgram(parse.getToken());
 
-                child.parent = tower;
-                tower.children.push(child);
+                child.parent = program;
+                program.subTowers.push(child);
             }            
         }   
         
-        if (tower.parent === undefined)
+        if (program.parent === undefined)
         {
             // Add to list of possible roots
-            roots.push(tower);
+            roots.push(program);
         }
         else
         {
@@ -177,7 +177,3 @@ const day7 = function()
         }
     }
 }
-
-module.exports = day7;
-
-//day7();
