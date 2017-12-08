@@ -79,6 +79,16 @@ module.exports = function(input) {
             if (c >= 'a' && c <= 'z') // letter
                 return '';
             index++;
+
+            if (index < line.length)
+            {
+                let c2 = c + line[index];
+                if (c2 === '!=' || c2 === '<=' || c2 === '>=' || c2 === '==')
+                {
+                    index++;
+                    return c2;
+                }
+            }
             return c;
         }
         else
