@@ -12,6 +12,7 @@ typedef struct Program_s
     int                 weight;
     int                 totalWeight;  
     int                 balanced;  
+    int                 expectedWeigth;
     struct Program_s*   parent;
     struct Program_s*   child;
     struct Program_s*   sibling;
@@ -207,6 +208,99 @@ static Program* findRoot()
     return root;
 }
 
+static int calculateWeight(Program* program)
+{
+    int weight = program->weight;
+
+    for (Program* child = program->child; child != NULL; child = child->sibling)
+    {
+        weight += calculateWeight(child);
+    }
+
+    program->totalWeight = weight;
+
+    return weight;
+}
+
+static int checkIfBalanced(Program* program)
+{
+    if (program->balanced != -1) // SET?
+        return program->balanced;    
+
+    Program* parent = program->parent;
+    if (parent == NULL || (parent->child == program && program->sibling == NULL)) // No parent or no siblings
+    {
+        program->balanced = 1;
+        return 1;
+    }
+
+    // Check if at least one other sibling has the same total weight
+
+    int referenceWeight = -1;
+    int childCount = 0;
+
+    for(Program* sibling = parent->child; sibling != NULL; sibling = sibling->sibling)
+    {
+        if (sibling == program) // It's me ... skip it
+            continue;
+        childCount++;
+        if (sibling->totalWeight == program->totalWeight)
+        {
+            program->balanced = 1;
+            return 1;
+        }
+        else
+            referenceWeight = sibling->totalWeight;
+    }
+
+    if (childCount > 1) // 2 or more siblings, must be not balanced
+    {
+        program->balanced = 0;
+        program->expectedWeigth = program->weight - program->totalWeight + referenceWeight;
+        return 0;
+    }
+    else if (childCount == 1)
+    {
+        // Assume balanced
+
+        program->balanced = 0;
+        program->expectedWeigth = program->weight - program->totalWeight + referenceWeight;
+
+        // but check the sub programs
+
+        for(Program* child = program->child; child != NULL; child = child->sibling)
+        {
+            if (! checkIfBalanced(child))
+                return 0;
+        }
+
+        program->balanced = 1;
+        return 1;
+    }
+    else
+    {
+        program->balanced = 1;
+        return 1;
+    }
+}
+
+static Program* findUnbalanced(Program* root)
+{
+    for(Program* child = root->child; child != NULL; child = child->sibling)
+    {
+        if (! checkIfBalanced(child))
+        {
+            Program* unbalanced = findUnbalanced(child);
+            if (unbalanced != NULL)
+                return unbalanced;
+            else
+                return child;
+        }
+    }
+
+    return NULL;
+}
+
 static void execute() 
 {
     if (!parse())
@@ -219,6 +313,11 @@ static void execute()
         return;
 
     printf("Part 1: %s\n", root->name);
+
+    calculateWeight(root);
+    Program* badProgram = findUnbalanced(root);
+        
+    printf("Part 2: %i\n", badProgram == NULL ? -1 : badProgram->expectedWeigth);    
 }
 
 int main() 
