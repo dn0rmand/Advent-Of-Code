@@ -6,7 +6,7 @@ static int _input_1[1010];
 static int _input_2[1010];
 static int _count = 0;
 
-static long solve(int* input, int part) 
+static long solve(int* input, int part)
 {
     register long steps  = 0;
     register int current = 0;
@@ -30,7 +30,7 @@ static long solve(int* input, int part)
 
 static void loadData()
 {
-    FILE* file = fopen("../Data/Day05.data", "r");
+    FILE* file = fopen("Data/Day05.data", "r");
 
     if (file == NULL)
     {
@@ -51,7 +51,7 @@ static void loadData()
     fclose(file);
 }
 
-int main() 
+int day5(void)
 {
     clock_t start_t = clock();
 
@@ -68,5 +68,6 @@ int main()
     double total = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 
     printf("Executed in %lf seconds\n", total);
+	return 0;
 }
 

@@ -1,17 +1,18 @@
 #include <ctype.h>
+#include <time.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void printValid(int validCount)
+static void printValid(int validCount)
 {
     fprintf(stdout, "%i valid passphrase\n", validCount);
 }
 
-char* wordMap[500];
-int wordCount = 0;
+static char*	wordMap[500];
+static int		wordCount = 0;
 
-int addWord(char* word)
+static int addWord(char* word)
 {
     for(int i = 0; i < wordCount; i++)
     {
@@ -26,14 +27,14 @@ int addWord(char* word)
     return 1;
 }
 
-int cmpfunc (const void * a, const void * b) 
+static int cmpfunc(const void * a, const void * b)
 {
    return ( *(char*)a - *(char*)b );
 }
 
-void solve(int sort) 
+static void solve(int sort)
 {
-    FILE* file = fopen("../Data/Day04.data", "r");
+    FILE* file = fopen("Data/Day04.data", "r");
 
     if (file == NULL)
     {
@@ -69,7 +70,7 @@ void solve(int sort)
 
                     if (sort)
                     {
-                        qsort(start, len, 1, cmpfunc);                     
+                        qsort(start, len, 1, cmpfunc);
                     }
                     if (! addWord(start))
                     {
@@ -92,11 +93,18 @@ void solve(int sort)
             validCount++;
     }
     fclose(file);
-    printValid(validCount);        
+    printValid(validCount);
 }
 
-int main() 
+int day4(void)
 {
-    solve(0);
-    solve(1);
+	double ms = CLOCKS_PER_SEC / 1000;
+	
+	long start = clock();
+	solve(0);
+	solve(1);
+	long end = clock();
+	
+	printf("executed in %lf ms\n", (end-start) / ms);
+	return 0;
 }

@@ -6,24 +6,24 @@
 
 #define MAX_NAME_SIZE   20
 
-typedef struct Program_s  
+typedef struct PROGRAM_S
 {
     char*               name;
     int                 weight;
     int                 totalWeight;  
     int                 balanced;  
     int                 expectedWeigth;
-    struct Program_s*   parent;
-    struct Program_s*   child;
-    struct Program_s*   sibling;
-} Program;
+    struct PROGRAM_S*   parent;
+    struct PROGRAM_S*   child;
+    struct PROGRAM_S*   sibling;
+} PROGRAM;
 
-Program*    _programs[2000];
-int         _programCount = 0;
+static PROGRAM*    programs[2000];
+static int         programCount = 0;
 
-static Program* createProgram(char* name)
+static PROGRAM* createProgram(char* name)
 {
-    Program* p = (Program*) malloc(sizeof(Program));
+    PROGRAM* p = (PROGRAM*) malloc(sizeof(PROGRAM));
 
     p->name = name;
     p->weight = 0;
@@ -33,18 +33,18 @@ static Program* createProgram(char* name)
     p->child    = NULL; 
     p->sibling  = NULL;
 
-    _programs[_programCount++] = p;
+    programs[programCount++] = p;
 
     return p;
 }
 
-static Program* getProgram(char *name)
+static PROGRAM* getProgram(char *name)
 {
-    Program* p;
+    PROGRAM* p;
 
-    for(int i = 0; i < _programCount; i++)
+    for(int i = 0; i < programCount; i++)
     {
-        p = _programs[i];
+        p = programs[i];
 
         if (strcmp(p->name, name) == 0)
             return p;
@@ -131,7 +131,7 @@ static int isEOL(char** input)
 
 static int parse() 
 {
-    FILE* file = fopen("../Data/Day07.data", "r");
+    FILE* file = fopen("Data/Day07.data", "r");
 
     if (file == NULL)
     {
@@ -144,7 +144,7 @@ static int parse()
     {
         char*       line = fgets(buffer, 1024, file);
         char*       name = getToken(&line);
-        Program*    program = getProgram(name);
+        PROGRAM*    program = getProgram(name);
 
         if (! expect(&line, '('))
             return 0;
@@ -161,7 +161,7 @@ static int parse()
 
             name = getToken(&line);
 
-            Program* child = getProgram(name);
+            PROGRAM* child = getProgram(name);
 
             child->parent = program;
             child->sibling = program->child;
@@ -184,12 +184,12 @@ static int parse()
     return 1;
 }
 
-static Program* findRoot()
+static PROGRAM* findRoot()
 {
-    Program* root = NULL;
-    for(int i = 0; i < _programCount; i++)
+    PROGRAM* root = NULL;
+    for(int i = 0; i < programCount; i++)
     {
-        Program* p = _programs[i];
+        PROGRAM* p = programs[i];
         if (p->parent == NULL)
         {
             if (root == NULL)
@@ -208,11 +208,11 @@ static Program* findRoot()
     return root;
 }
 
-static int calculateWeight(Program* program)
+static int calculateWeight(PROGRAM* program)
 {
     int weight = program->weight;
 
-    for (Program* child = program->child; child != NULL; child = child->sibling)
+    for (PROGRAM* child = program->child; child != NULL; child = child->sibling)
     {
         weight += calculateWeight(child);
     }
@@ -222,12 +222,12 @@ static int calculateWeight(Program* program)
     return weight;
 }
 
-static int checkIfBalanced(Program* program)
+static int checkIfBalanced(PROGRAM* program)
 {
     if (program->balanced != -1) // SET?
         return program->balanced;    
 
-    Program* parent = program->parent;
+    PROGRAM* parent = program->parent;
     if (parent == NULL || (parent->child == program && program->sibling == NULL)) // No parent or no siblings
     {
         program->balanced = 1;
@@ -239,7 +239,7 @@ static int checkIfBalanced(Program* program)
     int referenceWeight = -1;
     int childCount = 0;
 
-    for(Program* sibling = parent->child; sibling != NULL; sibling = sibling->sibling)
+    for(PROGRAM* sibling = parent->child; sibling != NULL; sibling = sibling->sibling)
     {
         if (sibling == program) // It's me ... skip it
             continue;
@@ -268,7 +268,7 @@ static int checkIfBalanced(Program* program)
 
         // but check the sub programs
 
-        for(Program* child = program->child; child != NULL; child = child->sibling)
+        for(PROGRAM* child = program->child; child != NULL; child = child->sibling)
         {
             if (! checkIfBalanced(child))
                 return 0;
@@ -284,13 +284,13 @@ static int checkIfBalanced(Program* program)
     }
 }
 
-static Program* findUnbalanced(Program* root)
+static PROGRAM* findUnbalanced(PROGRAM* root)
 {
-    for(Program* child = root->child; child != NULL; child = child->sibling)
+    for(PROGRAM* child = root->child; child != NULL; child = child->sibling)
     {
         if (! checkIfBalanced(child))
         {
-            Program* unbalanced = findUnbalanced(child);
+            PROGRAM* unbalanced = findUnbalanced(child);
             if (unbalanced != NULL)
                 return unbalanced;
             else
@@ -301,26 +301,26 @@ static Program* findUnbalanced(Program* root)
     return NULL;
 }
 
-static void execute() 
+static void execute()
 {
     if (!parse())
     {
         printf("Failed to parse input\n");
         return;
     }
-    Program* root = findRoot();
+    PROGRAM* root = findRoot();
     if (root == NULL)
         return;
 
     printf("Part 1: %s\n", root->name);
 
     calculateWeight(root);
-    Program* badProgram = findUnbalanced(root);
+    PROGRAM* badProgram = findUnbalanced(root);
         
     printf("Part 2: %i\n", badProgram == NULL ? -1 : badProgram->expectedWeigth);    
 }
 
-int main() 
+int day7(void)
 {
     double ms = CLOCKS_PER_SEC / 1000;
 
@@ -329,4 +329,5 @@ int main()
     long end = clock();
 
     printf("executed in %lf ms\n", (end-start) / ms);
+	return 0;
 }

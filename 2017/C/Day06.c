@@ -9,18 +9,16 @@
 
 static int puzzleInput[INPUT_SIZE] = { 4, 10, 4, 1, 8, 4, 9, 14, 5, 1, 14, 15, 0, 15, 3, 5 };
 
-typedef struct entry_s  
+typedef struct ENTRY_S
 {
-    int             value[INPUT_SIZE];
-    int             step;
-	struct entry_s* next;
-} entry_t;
+    int         	value[INPUT_SIZE];
+    int         	step;
+	struct ENTRY_S* next;
+} ENTRY;
 
-entry_t*   hashTable[HASHTABLE_SIZE];	
+static ENTRY*   hashTable[HASHTABLE_SIZE];
 
-int matchLooking = 0;
-
-static int  makeHash(int* input)
+static int makeHash(int* input)
 {
     unsigned long hash = 0;
 
@@ -32,16 +30,15 @@ static int  makeHash(int* input)
     return hash % HASHTABLE_SIZE;
 }
 
-static int SaveState(int step)
+static int saveState(int step)
 {
     int hash = makeHash(puzzleInput);
 
-    entry_t* previous = hashTable[hash];
+    ENTRY* previous = hashTable[hash];
 
     if (previous != NULL)
     {
-        matchLooking++;
-        for(entry_t* c = previous; c != NULL; c = c->next)
+        for (ENTRY* c = previous; c != NULL; c = c->next)
         {
             if (memcmp(puzzleInput, c->value, sizeof(puzzleInput)) == 0)
             {
@@ -50,7 +47,7 @@ static int SaveState(int step)
         }
     }
 
-    entry_t* entry = (entry_t*) malloc(sizeof(entry_t));
+    ENTRY* entry = (ENTRY*) malloc(sizeof(ENTRY));
 
     memcpy(entry->value, puzzleInput, sizeof(puzzleInput));
     entry->step = step;
@@ -60,7 +57,7 @@ static int SaveState(int step)
     return 0;
 }
 
-static void solve() 
+static void solve()
 {
     int  steps = 0;
     int  size = 0;
@@ -96,7 +93,7 @@ static void solve()
 
         // Remember array
 
-        int previous = SaveState(steps);
+        int previous = saveState(steps);
 
         if (previous > 0)
         {
@@ -109,7 +106,7 @@ static void solve()
     printf("PART 2: Size of %i ( 8038 )\n", size);
 }
 
-int main() 
+int day6(void)
 {
     double ms = CLOCKS_PER_SEC / 1000;
 
@@ -118,4 +115,5 @@ int main()
     long end = clock();
 
     printf("executed in %lf ms\n", (end-start) / ms);
+	return 0;
 }
