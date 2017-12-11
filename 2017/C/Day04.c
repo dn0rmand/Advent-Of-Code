@@ -39,6 +39,7 @@ static void solve(int sort)
     if (file == NULL)
     {
         fprintf(stderr, "File not found!");
+		return;
     }
         
     char buffer[1024];
@@ -96,15 +97,8 @@ static void solve(int sort)
     printValid(validCount);
 }
 
-int day4(void)
+void day4(void)
 {
-	double ms = CLOCKS_PER_SEC / 1000;
-	
-	long start = clock();
 	solve(0);
 	solve(1);
-	long end = clock();
-	
-	printf("executed in %lf ms\n", (end-start) / ms);
-	return 0;
 }

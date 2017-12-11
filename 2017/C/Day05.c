@@ -2,20 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int _input_1[1010];
-static int _input_2[1010];
+static int _input_1[1024];
+static int _input_2[1024];
 static int _count = 0;
 
 static long solve(int* input, int part)
 {
-    register long steps  = 0;
-    register int current = 0;
+    long steps  = 0;
+    int current = 0;
 
     while (current >= 0 && current < _count)
     {
         steps++;
 
-        register int offset = input[current];
+        int offset = input[current];
 
         if (part == 2 && offset >= 3)
             input[current]--;
@@ -35,39 +35,40 @@ static void loadData()
     if (file == NULL)
     {
         printf("File not found!\n");
+		return;
     }
         
-    static char buffer[1024];
-    
+    static char buffer[32];
+
+	int count = 0;
     while (! feof(file))
     {
-        char* ptr = fgets(buffer, 1024, file);
+        char* ptr = fgets(buffer, 32, file);
         int value = atoi(ptr);
-
-        _input_1[_count] = _input_2[_count] = value;
-
-        _count++;
+		
+		_input_2[count] =
+        _input_1[count] = value;
+		
+		count++;
     }
+	
+	_count = count;
     fclose(file);
 }
 
-int day5(void)
+void day5(void)
 {
-    clock_t start_t = clock();
-
-    loadData();
-
-    long result_1 = solve(_input_1, 1);
-    long result_2 = solve(_input_2, 2);
-
-    clock_t end_t = clock();
-
-    printf("%li steps for part 1 ( expected 318883 )\n", result_1);
+	double ms = CLOCKS_PER_SEC / 1000;
+	
+	long start = clock();
+	loadData();
+	long end = clock();
+	
+	printf("Data loaded in %lf ms\n\n", (end-start) / ms);
+	
+	long result_1 = solve(_input_1, 1);
+	long result_2 = solve(_input_2, 2);
+	
+	printf("%li steps for part 1 ( expected 318883 )\n", result_1);
     printf("%li steps for part 2 ( expected 23948711 )\n", result_2);
-    
-    double total = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-
-    printf("Executed in %lf seconds\n", total);
-	return 0;
 }
-

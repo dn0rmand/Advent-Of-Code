@@ -57,7 +57,7 @@ static int saveState(int step)
     return 0;
 }
 
-static void solve()
+void day6(void)
 {
     int  steps = 0;
     int  size = 0;
@@ -106,14 +106,3 @@ static void solve()
     printf("PART 2: Size of %i ( 8038 )\n", size);
 }
 
-int day6(void)
-{
-    double ms = CLOCKS_PER_SEC / 1000;
-
-    long start = clock();    
-    solve();
-    long end = clock();
-
-    printf("executed in %lf ms\n", (end-start) / ms);
-	return 0;
-}

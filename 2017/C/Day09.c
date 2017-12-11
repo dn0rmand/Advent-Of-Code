@@ -59,13 +59,14 @@ static int processGroups(char** line, int score)
     return groupCount;
 }
 
-static void execute() 
+void day9(void)
 {
     FILE* file = fopen("Data/Day09.data", "r");
 
     if (file == NULL)
     {
         printf("File not found!\n");
+		return;
     }
         
     static char buffer[1024 *17]; // my input is 16K
@@ -85,14 +86,3 @@ static void execute()
     }
 }
 
-int day9(void)
-{
-    double ms = CLOCKS_PER_SEC / 1000;
-
-    long start = clock();    
-    execute();
-    long end = clock();
-
-    printf("executed in %lf ms\n", (end-start) / ms);
-	return 0;
-}

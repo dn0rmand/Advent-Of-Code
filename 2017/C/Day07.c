@@ -136,6 +136,7 @@ static int parse()
     if (file == NULL)
     {
         printf("File not found!\n");
+		return 0;
     }
         
     static char buffer[1024];
@@ -301,7 +302,7 @@ static PROGRAM* findUnbalanced(PROGRAM* root)
     return NULL;
 }
 
-static void execute()
+void day7(void)
 {
     if (!parse())
     {
@@ -320,14 +321,3 @@ static void execute()
     printf("Part 2: %i\n", badProgram == NULL ? -1 : badProgram->expectedWeigth);    
 }
 
-int day7(void)
-{
-    double ms = CLOCKS_PER_SEC / 1000;
-
-    long start = clock();    
-    execute();
-    long end = clock();
-
-    printf("executed in %lf ms\n", (end-start) / ms);
-	return 0;
-}

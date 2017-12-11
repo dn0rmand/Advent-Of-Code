@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		890717321FDDD7BE00FE1047 /* Day01.data in CopyFiles */ = {isa = PBXBuildFile; fileRef = 890717311FDDD64600FE1047 /* Day01.data */; };
+		890717331FDDD7BE00FE1047 /* Day02.data in CopyFiles */ = {isa = PBXBuildFile; fileRef = 890717301FDDD63700FE1047 /* Day02.data */; };
 		8908C3CC1FDD9837004D6C79 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8908C3CB1FDD9837004D6C79 /* main.c */; };
 		8908C3CE1FDD985B004D6C79 /* Day04.c in Sources */ = {isa = PBXBuildFile; fileRef = 8908C3CD1FDD985B004D6C79 /* Day04.c */; };
 		8908C3EC1FDD98A8004D6C79 /* Day05.c in Sources */ = {isa = PBXBuildFile; fileRef = 8908C3E81FDD98A8004D6C79 /* Day05.c */; };
@@ -19,6 +21,7 @@
 		8908C40C1FDDA04D004D6C79 /* Day07.data in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8908C3F71FDD9FD4004D6C79 /* Day07.data */; };
 		8908C40D1FDDA04D004D6C79 /* Day08.data in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8908C3FF1FDD9FD4004D6C79 /* Day08.data */; };
 		8908C40E1FDDA04D004D6C79 /* Day09.data in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8908C3FC1FDD9FD4004D6C79 /* Day09.data */; };
+		891F014F1FDDD58C0098A175 /* Day01.c in Sources */ = {isa = PBXBuildFile; fileRef = 891F014E1FDDD58B0098A175 /* Day01.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +31,8 @@
 			dstPath = Data;
 			dstSubfolderSpec = 16;
 			files = (
+				890717321FDDD7BE00FE1047 /* Day01.data in CopyFiles */,
+				890717331FDDD7BE00FE1047 /* Day02.data in CopyFiles */,
 				8908C4091FDDA04D004D6C79 /* Day04.data in CopyFiles */,
 				8908C40A1FDDA04D004D6C79 /* Day05.data in CopyFiles */,
 				8908C40B1FDDA04D004D6C79 /* Day06.data in CopyFiles */,
@@ -40,6 +45,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		890717301FDDD63700FE1047 /* Day02.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Day02.data; sourceTree = "<group>"; };
+		890717311FDDD64600FE1047 /* Day01.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Day01.data; sourceTree = "<group>"; };
 		8908C3CB1FDD9837004D6C79 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		8908C3CD1FDD985B004D6C79 /* Day04.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Day04.c; path = ../C/Day04.c; sourceTree = "<group>"; };
 		8908C3E81FDD98A8004D6C79 /* Day05.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Day05.c; path = ../C/Day05.c; sourceTree = "<group>"; };
@@ -52,6 +59,7 @@
 		8908C3FC1FDD9FD4004D6C79 /* Day09.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Day09.data; sourceTree = "<group>"; };
 		8908C3FF1FDD9FD4004D6C79 /* Day08.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Day08.data; sourceTree = "<group>"; };
 		8908C4011FDD9FD4004D6C79 /* Day04.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Day04.data; sourceTree = "<group>"; };
+		891F014E1FDDD58B0098A175 /* Day01.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Day01.c; path = ../C/Day01.c; sourceTree = "<group>"; };
 		8969306F1FDD96280006502A /* AoC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AoC; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -69,6 +77,8 @@
 		8908C3F01FDD9FD4004D6C79 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				890717311FDDD64600FE1047 /* Day01.data */,
+				890717301FDDD63700FE1047 /* Day02.data */,
 				8908C4011FDD9FD4004D6C79 /* Day04.data */,
 				8908C3FA1FDD9FD4004D6C79 /* Day05.data */,
 				8908C3F81FDD9FD4004D6C79 /* Day06.data */,
@@ -83,6 +93,7 @@
 		896930661FDD96270006502A = {
 			isa = PBXGroup;
 			children = (
+				891F014E1FDDD58B0098A175 /* Day01.c */,
 				8908C3CD1FDD985B004D6C79 /* Day04.c */,
 				8908C3E81FDD98A8004D6C79 /* Day05.c */,
 				8908C3EA1FDD98A8004D6C79 /* Day06.c */,
@@ -159,11 +170,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8908C3EC1FDD98A8004D6C79 /* Day05.c in Sources */,
-				8908C3ED1FDD98A8004D6C79 /* Day07.c in Sources */,
-				8908C3EE1FDD98A8004D6C79 /* Day06.c in Sources */,
-				8908C3EF1FDD98A8004D6C79 /* Day09.c in Sources */,
+				891F014F1FDDD58C0098A175 /* Day01.c in Sources */,
 				8908C3CE1FDD985B004D6C79 /* Day04.c in Sources */,
+				8908C3EC1FDD98A8004D6C79 /* Day05.c in Sources */,
+				8908C3EE1FDD98A8004D6C79 /* Day06.c in Sources */,
+				8908C3ED1FDD98A8004D6C79 /* Day07.c in Sources */,
+				8908C3EF1FDD98A8004D6C79 /* Day09.c in Sources */,
 				8908C3CC1FDD9837004D6C79 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
