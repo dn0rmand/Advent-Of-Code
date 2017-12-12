@@ -10,6 +10,7 @@
 #include <time.h>
 
 void day1(void);
+void day2(void);
 void day4(void);
 void day5(void);
 void day6(void);
@@ -32,6 +33,7 @@ void Execute(int dayNumber, void (*day)(void))
 int main(int argc, const char * argv[])
 {
 	Execute(1, day1);
+	Execute(2, day2);
 	Execute(4, day4);
 	Execute(5, day5);
 	Execute(6, day6);
