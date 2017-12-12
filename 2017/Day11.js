@@ -1,5 +1,4 @@
-// module.exports =
-(function()
+module.exports = function()
 {
     //#region FWK - Read file and load required modules
     const fs = require('fs');
@@ -64,4 +63,4 @@
 
         console.log('Distance = ' + distance + ' - Max is ' + maxDistance);
     }
-})();
+}
