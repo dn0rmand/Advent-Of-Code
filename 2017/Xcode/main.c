@@ -11,6 +11,7 @@
 
 void day1(void);
 void day2(void);
+void day3(void);
 void day4(void);
 void day5(void);
 void day6(void);
@@ -34,6 +35,7 @@ int main(int argc, const char * argv[])
 {
 	Execute(1, day1);
 	Execute(2, day2);
+	Execute(3, day3);
 	Execute(4, day4);
 	Execute(5, day5);
 	Execute(6, day6);
