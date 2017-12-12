@@ -1,6 +1,6 @@
 #if ! __PARSER__
 
-#define __PARSER
+#define __PARSER__
 
 void skipSpaces(char** input);
 char* getToken(char** input);
