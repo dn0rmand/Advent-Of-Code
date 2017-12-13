@@ -1,29 +1,21 @@
 module.exports = function()
 {
+    //#region FWK - Read file and load required modules
     const fs = require('fs');
     const readline = require('readline');
-
+    const parser = require('../tools/parser.js');
     const readInput = readline.createInterface({
         input: fs.createReadStream('Data/Day18.data')
     });
 
-    var characters = 0;
-    var lines      = 0;
+    readInput.on('line', (line) => processLine(line)).on('close', () => { dumpResult(); process.exit(0); });
+    //#endregion
 
-    readInput
-    .on('line', (line) => { 
-        characters += line.length;
-        lines++;
-
-        processLine(line);
-    })
-    .on('close', () => {
-        console.log(characters + ' characters in ' + lines + " lines");
-        process.exit(0);
-    });
+    function dumpResult()
+    {
+    }
 
     function processLine(line)
     {
-        console.log(line);
     }
 }
