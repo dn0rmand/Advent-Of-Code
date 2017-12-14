@@ -1,5 +1,4 @@
-//module.exports = 
-(function()
+module.exports = function()
 {
     //#region FWK - Read file and load required modules
     const fs = require('fs');
@@ -9,10 +8,70 @@
         input: fs.createReadStream('Data/Day13.data')
     });
 
+    const sleep = require("sleep");
+    const consoleControl = require('console-control-strings');
+    
     readInput.on('line', (line) => processLine(line)).on('close', () => { dumpResult(); process.exit(0); });
     //#endregion
 
     const layers = [];
+    let maxRange = 0;
+
+    function DrawScreen(final, myPosition, time)
+    {
+        function newLine()
+        {
+            for(let depth = 0; depth < layers.length; depth++)
+                process.stdout.write(' ');        
+
+            process.stdout.write('  ');        
+            process.stdout.write(consoleControl.nextLine(1));                
+        }
+
+        const color = "brightWhite";
+
+        process.stdout.write(consoleControl.hideCursor());
+        process.stdout.write(consoleControl.color(color));
+        process.stdout.write(consoleControl.color('bgBlack'));
+
+        newLine();
+
+        for(var y = 1; y <= maxRange; y++)
+        {
+            process.stdout.write(' ');
+            for(var depth = 0; depth < layers.length; depth++)
+            {
+                var range   = layers[depth];
+                var position= calculatePosition(range, time);
+                if (position == y)
+                {
+                    process.stdout.write('#');
+                }
+                else if (depth == myPosition && y == 1)
+                {
+                    process.stdout.write(consoleControl.color("brightRed"));
+                    process.stdout.write('✺');                
+                    process.stdout.write(consoleControl.color(color));
+                }
+                else
+                    process.stdout.write(' ');                
+            }
+            process.stdout.write(' ');
+            process.stdout.write(consoleControl.nextLine(1));    
+        }    
+
+        newLine();
+
+        process.stdout.write(consoleControl.color('reset'));
+
+        if (final !== true) {
+            let backCode = '\x1b[' + (2+maxRange) + 'A'; // consoleControl.previousLine(num = 1);
+            process.stdout.write(backCode);
+            sleep.usleep(80000);            
+        }
+
+        process.stdout.write(consoleControl.showCursor());
+    }
 
     function calculatePosition(range, pico)
     {
@@ -55,6 +114,7 @@
 
     function dumpResult()
     {
+        console.log(layers.length + 'x' + maxRange);
         solve1();
         solve2();
     }
@@ -77,6 +137,9 @@
         }
 
         console.log("Part 2: Delay to not get caugth is " + delay);
+
+        for(let position = 0 ; position < layers.length ; position++)
+            DrawScreen(position == layers.length-1, position, delay+position);
     }
 
     function processLine(line)
@@ -87,5 +150,7 @@
         let range = parse.getNumber();
 
         layers[depth] = range; 
+
+        maxRange = Math.max(range, maxRange);
     }
-})();
+}
