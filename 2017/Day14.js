@@ -1,5 +1,4 @@
-//module.exports = 
-(function()
+module.exports = function()
 {
     //#region FWK - Read file and load required modules
     const knotHashes = require('../tools/knotHashes.js');
@@ -30,16 +29,25 @@
 
     let disk;
     
-    disk = solve1(testInput);
-//    printDisk(disk);
-    solve2(disk);
-    verifyDisk(disk);
+    // runTest();
+    solvePuzzle();
 
-    disk = solve1(puzzleInput);
-//    printDisk(disk);
-    solve2(disk);
-    verifyDisk(disk);
-    
+    process.exit(0);
+
+    function runTest()
+    {
+        disk = solve1(testInput);
+        printDisk(disk);
+        solve2(disk);
+        verifyDisk(disk);
+    }
+
+    function solvePuzzle()
+    {
+        let disk = solve1(puzzleInput);
+        solve2(disk);
+    }
+
     function solve1(input)
     {
         let count=0;
@@ -135,4 +143,4 @@
             console.log(s);
         }
     }
-})();
+};

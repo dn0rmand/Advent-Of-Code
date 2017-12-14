@@ -38,7 +38,15 @@ module.exports = function()
 
         for(var y = 1; y <= maxRange; y++)
         {
-            process.stdout.write(' ');
+            if (y === 1 && myPosition < 0)
+            {
+                process.stdout.write(consoleControl.color("brightRed"));
+                process.stdout.write('✺');                
+                process.stdout.write(consoleControl.color(color));            
+            }
+            else
+                process.stdout.write(' ');
+
             for(var depth = 0; depth < layers.length; depth++)
             {
                 var range   = layers[depth];
@@ -56,7 +64,15 @@ module.exports = function()
                 else
                     process.stdout.write(' ');                
             }
-            process.stdout.write(' ');
+
+            if (y === 1 && myPosition >= layers.length)
+            {
+                process.stdout.write(consoleControl.color("brightRed"));
+                process.stdout.write('✺');                
+                process.stdout.write(consoleControl.color(color));            
+            }
+            else
+                process.stdout.write(' ');
             process.stdout.write(consoleControl.nextLine(1));    
         }    
 
@@ -64,7 +80,8 @@ module.exports = function()
 
         process.stdout.write(consoleControl.color('reset'));
 
-        if (final !== true) {
+        if (final !== true) 
+        {
             let backCode = '\x1b[' + (2+maxRange) + 'A'; // consoleControl.previousLine(num = 1);
             process.stdout.write(backCode);
             sleep.usleep(80000);            
@@ -138,8 +155,15 @@ module.exports = function()
 
         console.log("Part 2: Delay to not get caugth is " + delay);
 
+        let time = delay-50;
+
+        while (time < delay)
+            DrawScreen(false, -1, time++);
+
         for(let position = 0 ; position < layers.length ; position++)
-            DrawScreen(position == layers.length-1, position, delay+position);
+            DrawScreen(false, position, time++);
+
+        DrawScreen(true, layers.length, time++);
     }
 
     function processLine(line)
