@@ -131,7 +131,6 @@ module.exports = function()
 
     function dumpResult()
     {
-        console.log(layers.length + 'x' + maxRange);
         solve1();
         solve2();
     }

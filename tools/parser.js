@@ -19,13 +19,21 @@ module.exports = function(input) {
         while (index < line.length)
         {
             let c = line[index];
-            if (c >= 'a' && c <= 'z')
+            
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
             {
                 index++;
                 token += c;
             }
+            else if (token.length > 0 && c >= '0' &&  c <= '9')
+            {
+                index++;
+                token + c;
+            }
             else
+            {
                 break;
+            }
         }
 
         return token;
