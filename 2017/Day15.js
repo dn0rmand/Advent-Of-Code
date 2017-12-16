@@ -1,4 +1,4 @@
-module.exports =function()
+module.exports = function()
 {
     const PART1_COUNT = 40000000;
     const PART2_COUNT = 5000000;
@@ -6,13 +6,13 @@ module.exports =function()
     const A_FACTOR    = 16807;
     const B_FACTOR    = 48271;
 
-    let A = []; A.length = PART2_COUNT;
-    let B = []; B.length = PART2_COUNT;
+    const A = []; A.length = PART2_COUNT;
+    const B = []; B.length = PART2_COUNT;
 
     function generatorA() 
     {
         let count = PART1_COUNT;
-        let value = lastAValue = 722;
+        let value = 722;
         let ACount = 0;
 
         return function() 
@@ -24,10 +24,7 @@ module.exports =function()
                 let res = value & 0xFFFF;
 
                 if (ACount < PART2_COUNT && (res & 3) === 0)
-                {
                     A[ACount++] = res;
-                    lastAValue = value; 
-                }
 
                 count--;
                 return res;
@@ -41,6 +38,7 @@ module.exports =function()
                     if ((value & 3) === 0)
                         A[ACount++] = value & 0xFFFF;
                 }
+
                 return undefined; // means done!            
             }
         };
@@ -81,8 +79,8 @@ module.exports =function()
 
     function solve1()
     {
-        let a = generatorA();
-        let b = generatorB();
+        const a = generatorA();
+        const b = generatorB();
 
         let matches = 0;
 
@@ -112,6 +110,9 @@ module.exports =function()
         return matches;
     }
 
-    console.log("Part 1 = " + solve1() + " and Part 2 = " + solve2());
+    const part1 = solve1();
+    const part2 = solve2();
+
+    console.log("Part 1 = " + part1 + " and Part 2 = " + part2);
     process.exit(0);    
 }
