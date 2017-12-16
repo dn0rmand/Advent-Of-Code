@@ -1,56 +1,117 @@
 module.exports =function()
 {
-    function *generatorA1(count, mask) 
-    {
-        let A = 722;
-        while (count > 0) 
-        {
-            A = (A * 16807) % 2147483647;
+    const PART1_COUNT = 40000000;
+    const PART2_COUNT = 5000000;
+    const DIVIDER     = 2147483647;
+    const A_FACTOR    = 16807;
+    const B_FACTOR    = 48271;
 
-            if (mask === undefined || (A & mask) === 0)
+    let A = []; A.length = PART2_COUNT;
+    let B = []; B.length = PART2_COUNT;
+
+    function generatorA() 
+    {
+        let count = PART1_COUNT;
+        let value = lastAValue = 722;
+        let ACount = 0;
+
+        return function() 
+        {
+            if (count > 0) 
             {
+                value = (value * A_FACTOR) % DIVIDER;
+
+                let res = value & 0xFFFF;
+
+                if (ACount < PART2_COUNT && (res & 3) === 0)
+                {
+                    A[ACount++] = res;
+                    lastAValue = value; 
+                }
+
                 count--;
-                yield A & 0xFFFF;
+                return res;
             }
-        }
+            else
+            {
+                // Finish filling A Array for part 2
+                while (ACount < PART2_COUNT)
+                {
+                    value = (value * A_FACTOR) % DIVIDER;
+                    if ((value & 3) === 0)
+                        A[ACount++] = value & 0xFFFF;
+                }
+                return undefined; // means done!            
+            }
+        };
     }
 
-    function *generatorB1(count, mask) 
+    function generatorB() 
     {
-        let B = 354;
-        while (count > 0) 
-        {
-            B = (B * 48271) % 2147483647;
+        let count = PART1_COUNT;
+        let value = 354;
+        let BCount = 0;
 
-            if (mask === undefined || (B & mask) === 0)
+        return function() 
+        {
+            if (count > 0) 
             {
+                value = (value * B_FACTOR) % DIVIDER;
+                let res = value & 0xFFFF;
+
+                if (BCount < PART2_COUNT && (res & 7) === 0)
+                    B[BCount++] = res;
+
                 count--;
-                yield B & 0xFFFF;
+                return res;
+            } 
+            else
+            {
+                // Finish filling B Array for part 2
+                while (BCount < PART2_COUNT)
+                {
+                    value = (value * B_FACTOR) % DIVIDER;
+                    if ((value & 7) === 0)
+                        B[BCount++] = value & 0xFFFF;
+                }
+                return undefined; // means done!            
             }
-        }
+        };
     }
-      
-    function solve(count, maskA, maskB)
+
+    function solve1()
     {
-        let a = generatorA1(count, maskA);
-        let b = generatorB1(count, maskB);
+        let a = generatorA();
+        let b = generatorB();
+
         let matches = 0;
 
         while(true)
         {
-            let v1 = a.next();
-            let v2 = b.next();
+            let v1 = a();
+            let v2 = b();
 
-            if (v1.done || v2.done)
+            if (v1 === undefined || v2 === undefined)
                 break;
 
-            if (v1.value === v2.value)
+            if (v1 === v2)
                 matches++;
         }
 
         return matches;
     }
 
-    console.log("Part 1 = " + solve(40000000) + " and Part 2 = " + solve(5000000, 3, 7));
+    function solve2()
+    {
+        let matches = 0;
+        for(let i = 0; i < PART2_COUNT; i++)
+        {
+            if (A[i] === B[i])
+                matches++;
+        }
+        return matches;
+    }
+
+    console.log("Part 1 = " + solve1() + " and Part 2 = " + solve2());
     process.exit(0);    
 }
