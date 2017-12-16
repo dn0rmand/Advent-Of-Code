@@ -17,6 +17,7 @@ void day5(void);
 void day6(void);
 void day7(void);
 void day9(void);
+void day15(void);
 
 void Execute(int dayNumber, void (*day)(void))
 {
@@ -41,7 +42,8 @@ int main(int argc, const char * argv[])
 	Execute(6, day6);
 	Execute(7, day7);
 	Execute(9, day9);
-	
+	Execute(15, day15);
+
 	printf("Press ENTER to finish");
 	getchar();
 	return 0;
