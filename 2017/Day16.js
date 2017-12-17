@@ -127,6 +127,6 @@ module.exports = function()
                     break;
                 }
             }
-        })
+        });
     }
 }
