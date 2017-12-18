@@ -1,10 +1,10 @@
 module.exports = function()
-{    
+{
     const prettyHrtime = require('pretty-hrtime');
     const fs = require('fs');
     const readline = require('readline');
     const parser = require('../tools/parser.js');
-    
+
     let self = this;
 
     let input            = [];
@@ -19,7 +19,7 @@ module.exports = function()
     let argumentParser = {};
 
     this.reset = function()
-    {        
+    {
         input                = [];
         self.$registers      = {};
         self.$instructions   = [];
@@ -30,19 +30,19 @@ module.exports = function()
     {
         let v;
 
-        if (typeof value == 'string')        
+        if (typeof value == 'string')
             return value;
         else if (value === undefined)
             throw "Invalid value"
         else
-            return +value;                
+            return +value;
     }
 
     this.getOpcode = function(code)
     {
         return opcode[code];
     }
-    
+
     this.getInstruction = function(code)
     {
         return {
@@ -72,7 +72,7 @@ module.exports = function()
                 const readInput = readline.createInterface({
                     input: fs.createReadStream(filename)
                 });
-            
+
                 readInput
                     .on('line', (line) => { 
                         input.push(line);
@@ -90,10 +90,10 @@ module.exports = function()
         await promise;
     } 
 
-    this.compile = function()
+    this.compile = function(trace)
     {
         let start = process.hrtime();
-                        
+
         self.$registers      = {};
         self.$instructions   = [];
         self.$current        = undefined;
@@ -117,7 +117,7 @@ module.exports = function()
 
             instruction.fn = opcodeFunctions[command];
             argumentParser[command](instruction, parse);
-            
+
             // Pre-define registers
             if (instruction.arg1 !== undefined && typeof(instruction.arg1) === "string")
                self. $registers[instruction.arg1.value] = 0;
@@ -128,27 +128,27 @@ module.exports = function()
         }
 
         let end = process.hrtime(start);
-        let words = prettyHrtime(end, {verbose:true});
 
-        console.log("Compiled in " + words);
+        if (trace === true)
+            console.log("Compiled in " + prettyHrtime(end, {verbose:true}));
     }
 
     this.doMultiplication = function() { return 0; }
 
-    this.execute = function()
+    this.runStep = function()
     {
-        let start = process.hrtime();
+        if (self.$current === undefined)
+            self.$current = 0;
 
-        self.$current = 0;
-
-        while (self.$current < self.$instructions.length)
+        if (self.$current < self.$instructions.length)
         {
             let i = self.$instructions[self.$current];
 
             let offset = self.doMultiplication(i);
-            if (offset > 0) {
+            if (offset > 0) 
+            {
                 self.$current += offset;
-                continue;
+                return;
             }
 
             offset = i.fn(i.arg1, i.arg2);
@@ -157,10 +157,22 @@ module.exports = function()
             else
                 self.$current += offset;
         }
+    }
+
+    this.execute = function(trace)
+    {
+        let start = process.hrtime();
+
+        self.$current = 0;
+
+        while (self.$current < self.$instructions.length)
+        {
+            self.runStep();
+        }
 
         let end = process.hrtime(start);
-        let words = prettyHrtime(end, {verbose:true});
 
-        console.log("Executed in " +words);
+        if (trace === true)
+            console.log("Executed in " +  prettyHrtime(end, {verbose:true}));
     }
 }
