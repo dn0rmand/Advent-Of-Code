@@ -17,7 +17,7 @@
 
     function dumpResult()
     {
-        solve1();
+        solve();
     }
 
     function processLine(line)
@@ -31,7 +31,7 @@
     const LEFT = 3;
     const RIGHT= 4;
 
-    function solve1()
+    function solve()
     {
         let loot = '';
         let steps = 0;
