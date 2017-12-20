@@ -4,8 +4,6 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
 
     let vm = new compiler();
 
-    vm.sent = 0;
-        
     function convert(arg1)
     {
         if (typeof(arg1) === "string")
@@ -19,7 +17,7 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         arg1 => {
             let v = convert(arg1);
             sndQueue.push(v);
-            vm.sent++;
+            vm.didSend(v);
         },
         (instruction, parser) => {
             instruction.arg1 = vm.createArgument(parser.getValue());
@@ -103,6 +101,10 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
 
     vm.didReceive = function(value) {
         // does nothing by default
+    }
+
+    vm.didSend = function(value) {
+        // does nothing by default        
     }
     
     return vm;

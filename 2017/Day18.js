@@ -18,15 +18,18 @@ module.exports = async function()
         let queue = [];
         let vm = await create(0, queue, queue);
 
+        let last = -1;
+
+        vm.didSend = function(value) {
+            last = value;
+        };
         vm.didReceive = function(value)
         {
-            if (queue.length > 0)
-                value = queue.pop(); // We want the last value not the first one!!!!
-            console.log('Part 1: ' + value + ' (4601)');
-            vm.$current = 10000; // Move out to stop program
+            vm.$current = vm.$instructions.length + 10; // Move out to stop program
         };
 
         vm.execute();
+        console.log('Part 1: ' + last + ' (4601)');
     }    
 
     async function solve2()
@@ -39,9 +42,16 @@ module.exports = async function()
             await create(1, queue1, queue0)
         ];
 
+        let counter = 0;
+
+        vms[1].didSend = function(value)
+        {
+            counter++;
+        };
+
         compiler.run(vms);
 
-        console.log("Program 1 sent " + vms[1].sent + " times (6858)");
+        console.log("Program 1 sent " + counter + " times (6858)");
     }
 
     await solve1();
