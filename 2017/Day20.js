@@ -1,5 +1,4 @@
-//module.exports = 
-(function()
+module.exports = function()
 {
     //#region FWK - Read file and load required modules
     const fs = require('fs');
@@ -12,80 +11,26 @@
     readInput.on('line', (line) => processLine(line)).on('close', () => { dumpResult(); process.exit(0); });
     //#endregion
 
-    let particles1 = [];
-    let particles2 = [];
+    let particules = [];
 
     function dumpResult()
     {
-        particles1.sort((a, b) => {
-            let sa = Math.abs(a.acceleration.x) + Math.abs(a.acceleration.y) + Math.abs(a.acceleration.z);
-            let sb = Math.abs(b.acceleration.x) + Math.abs(b.acceleration.y) + Math.abs(b.acceleration.z);
-            
-            if (sa < sb)
-                return -1;
-            else if  (sa > sb)
-                return 1;
-
-            if (a.delta  < b.delta)
-                return -1;
-            if (a.delta > b.delta)
-                return 1;
-            return 0;
-        });
-        
-        let a = particles1[0];
-        let sa = Math.abs(a.acceleration.x) + Math.abs(a.acceleration.y) + Math.abs(a.acceleration.z);
-
-        let subSet = particles1.filter( b => {
-            let sb = Math.abs(b.acceleration.x) + Math.abs(b.acceleration.y) + Math.abs(b.acceleration.z);
-            return sb <= sa;
-        });
-
-        console.log(p.id);
-
-        executeStep(particles2);
-
-        for(let i = 0; i < 1000; i++)
-        {
-            executeStep(particles2);
-        }
-        
-        solve1();
-        solve2();
+        console.log("Doing part 2 first is an optimization")
+        solve0(particules);
+        solve2(particules);
+        solve1(particules);  
     }
 
     function processLine(line)
     {
-        function clone(p)
-        {
-            return {
-                position: {
-                    x: p.position.x,
-                    y: p.position.y,
-                    z: p.position.z
-                },
-                acceleration: {
-                    x: p.acceleration.x,
-                    y: p.acceleration.y,
-                    z: p.acceleration.z
-                },
-                velocity: {
-                    x: p.acceleration.x,
-                    y: p.acceleration.y,
-                    z: p.acceleration.z
-                },
-                distance: p.distance,
-                id: p.id
-            };
-        }
-
         let parse = new parser(line);
 
         let particle = {
-            position: { x:0, y:0, z:0},
-            velocity: { x:0, y:0, z:0},
-            acceleration: { x:0, y:0, z:0},
-            distance:0
+            position: { x:0, y:0, z:0, value:0},
+            velocity: { x:0, y:0, z:0, value:0},
+            acceleration: { x:0, y:0, z:0, value:0},
+            distance:0,
+            id:0
         }
         parse.expectToken('p');
         parse.expectOperator('=');
@@ -96,7 +41,7 @@
         parse.expectOperator(',');
         particle.position.z = parse.getSignedNumber(true);
         parse.expectOperator('>');
-        particle.distance = Math.abs(particle.position.x) + Math.abs(particle.position.y) + Math.abs(particle.position.z);
+
         parse.expectOperator(',');
 
         parse.expectToken('v');
@@ -121,47 +66,142 @@
         particle.acceleration.z = parse.getSignedNumber(true);
         parse.expectOperator('>');
 
-        particle.id = particles1.length;
+        particle.acceleration.value = Distance(particle.acceleration);
+        particle.distance = Distance(particle.position);
 
-        particles1.push(particle);
-        particles2.push(clone(particle));
+        particle.id = particules.length;
+
+        particules.push(particle);
+    }
+
+    function Distance(a)
+    {
+        return Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z);        
+    }
+
+    function solve0(particles)
+    {
+        // pos(t) = p + vt + t* (t+1)/2 * a
+
+        let t = 1000000; // 1 million
+
+        let result  = -1;
+        let distance= Number.MAX_VALUE;
+        let tt = (t * (t+1)) / 2;
+
+        for(let i = 0; i < particles.length; i++)
+        {
+            let p = particles[i];
+
+            let x =  p.position.x + (t * p.velocity.x) + (tt * p.acceleration.x);
+            let y =  p.position.y + (t * p.velocity.y) + (tt * p.acceleration.y);
+            let z =  p.position.z + (t * p.velocity.z) + (tt * p.acceleration.z);
+
+            let d = Distance({x: x, y:y, z:z});
+
+            if (d < distance)
+            {
+                distance = d
+                result   = p.id;
+            }
+        }
+
+        console.log("Part 1: " + result + " (308) with math");
     }
 
     function solve1(particles)
     {        
-        // Find closest to 0,0,0
+        let compareAcceleration = (a, b) => 
+        {
+            return (a.acceleration.value - b.acceleration.value);
+        };
 
-        particles.sort((a, b) => {
-            if (a.distance < b.distance)
-                return -1;
-            if (a.distance > b.distance)
-                return 1;
-            return 0;
+        let compareDistance = (a, b) => 
+        {
+            return a.distance - b.distance;
+        };
+        
+        function check(xa, xv, xp)
+        {
+            if (xa >= 0 && xv >= 0 && xp >= 0)
+                return true;
+            if (xa <= 0 && xv <= 0 && xp <= 0)
+                return true;
+                
+            return false;            
+        }
+
+        particles.sort(compareAcceleration);
+
+        let a  = particles[0];
+
+        particles = particles.filter( b => 
+        {
+            return b.acceleration.value <= a.acceleration.value;
         });
 
-        let p = particles[0];
+        let steps = 0 ;
 
-        console.log("Part 1: " + p.id + " (308)");
+        while(true)
+        {
+            let o = particles.find( b => 
+            {
+                if (! check(b.acceleration.x, b.velocity.x, b.position.x))
+                    return true;
+
+                if (! check(b.acceleration.y, b.velocity.y, b.position.y))
+                    return true;
+
+                if (! check(b.acceleration.z, b.velocity.z, b.position.z))
+                    return true;
+
+                return false;
+            });
+
+            if (o === undefined)
+                break;
+
+            steps++;
+            executeStep(particles);                              
+        }
+
+        particles.sort(compareDistance);
+
+        console.log("Part 1: " + particles[0].id + " (308) in " + steps + " steps");
     }
     
     function solve2(particles)
     {
-        let notCollided = 0;
-        for(let i = 0; i < particles.length; i++)
-        {
-            if (particles[i].collided !== true)
-                notCollided++;
-        }
+        let notCollided = -1;
+        let count       = 0;
 
-        console.log("Part 2: " + notCollided + " (504)");
+        for(let i = 0; i < 1000000; i++) // one million ma
+        {
+            let value = executeStep(particles);
+
+            if (value === notCollided)
+            {
+                count++;
+                if (count > 100) // didn't change for 200 iteration ... must be done
+                {
+                    count = i+1;
+                    break;
+                }
+            }
+            else
+            {
+                count       = 1;
+                notCollided = value;
+            }
+        }
+                
+        console.log("Part 2: " + notCollided + " (504) in " + count + " steps");
     }
 
     function executeStep(particles)
     {
-        let positions = {
-
-        };
-
+        let positions = { };
+        let notCollided = 0;
         for(let i = 0; i < particles.length; i++)
         {
             var p = particles[i];
@@ -173,23 +213,30 @@
             p.position.x += p.velocity.x;
             p.position.y += p.velocity.y;
             p.position.z += p.velocity.z;
-
-            let distance = Math.abs(p.position.x) + Math.abs(p.position.y) + Math.abs(p.position.z);
-            p.delta = distance - p.distance;
-            p.distance = distance;
+            
+            p.distance = Distance(p.position);
 
             if (p.collided !== true)
             {
-                let key = p.position.x + ',' + p.position.y + ', ' + p.position.z;
-                let o = positions[key];
+                let key = p.position.x + ',' + p.position.y + ',' + p.position.z;
+                let o   = positions[key];
+
                 if (o === undefined)
-                    positions[key] = p;
-                else
                 {
-                    p.collided = true;
-                    o.collided = true;
+                    positions[key] = p;
+                    notCollided++;
                 }
+                else if (o.collided !== true)
+                {
+                    o.collided = true;
+                    p.collided = true;
+                    notCollided--;
+                }
+                else
+                    p.collided = true;
             }
         }
+
+        return notCollided;
     }
-})();
+}
