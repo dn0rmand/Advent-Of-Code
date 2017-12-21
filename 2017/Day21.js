@@ -26,13 +26,13 @@ module.exports = function()
 
     function dumpResult()
     {
-        solve(5, 1, 162);
-        solve(18, 2, 2264586);
+        let output = solve(image, 5, 1, 162);
+        solve(output, 18 - 5, 2, 2264586);
     }
 
-    function solve(steps, part, expected)
+    function solve(image, steps, part, expected)
     {
-        let output = execute(steps);
+        let output = execute(image, steps);
 
         let pixels = 0;
 
@@ -42,23 +42,27 @@ module.exports = function()
                     pixels++;
                     
         console.log("Part " + part + ": " + pixels + " pixels (" + expected + ")");  
+        return output;
     }
 
-    function execute(steps)
+    function execute(image, steps)
     {
         function makeKey(input, x, y, size)
         {
-            let array = [];
+            let key = '';
+
             for(let yy = 0; yy < size; yy++)
             {
-                array[yy] = [];
+                if (yy > 0)
+                    key += '/';
+
                 for(let xx = 0; xx < size ; xx++)
                 {
-                    array[yy].push(input[y+yy][x+xx]);
+                    key += input[y+yy][x+xx];
                 }
             }
 
-            return arrayToKey(array);
+            return key;
         }
 
         function set(output, x, y, value)
