@@ -23,10 +23,8 @@ const day22 = function()
 
     const PuzzleInput = [];    
 
-    function Map(puzzle)
+    function PuzzleMap(puzzle)
     {
-        const offset = 500;
-
         const directions = [
             { x: 0, y:-1 }, // UP
             { x: 1, y: 0 }, // RIGHT
@@ -36,7 +34,7 @@ const day22 = function()
 
         this.direction  = 0; // UP
         this.infections = 0;
-        this.data       = [];
+        this.data       = new Map();//[];
 
         this.turnRight = function()
         {
@@ -63,34 +61,41 @@ const day22 = function()
             this.y += m.y;
         };
 
+        let max = Number.MIN_VALUE;
+        let min = Number.MIN_VALUE;
+
+        function makeKey(x, y)
+        {
+/*          
+            // Gives around 201x167, so 1000 should be safe  
+
+            if (x > max)
+            {
+                max = x;
+                console.log("MAX: " + max);
+            }
+            if (x < min)
+            {
+                min = x;
+                console.log("MIN: " + min);
+            }
+*/
+            // Add 500 to make sure x and y are positive before doing bit stuff.
+
+            return ((y + 1000) << 16) | (x + 1000);
+        }
+
         this.set = function(x, y, value)
         {
             if (value === '#')
                 this.infections++;
             
-            x += offset;
-            y += offset;
-            if (x < 0 || y < 0)
-                console.log('IGH');
-
-            let row = this.data[y];
-            if (row === undefined)
-                row = this.data[y] = [];
-            
-            row[x] = value;
+            this.data.set(makeKey(x,y), value);
         };
 
         this.get = function(x, y)
         {
-            x += offset;
-            y += offset;
-            if (x < 0 || y < 0)
-                console.log('IGH');
-            let row = this.data[y];
-            if (row === undefined)
-                return '.';
-            
-            let c = row[x];
+            let c = this.data.get(makeKey(x,y));
 
             if (c === undefined)
                 c = '.';
@@ -159,7 +164,7 @@ const day22 = function()
 
     function solve1()
     {
-        let map = new Map(PuzzleInput);
+        let map = new PuzzleMap(PuzzleInput);
         map.infections = 0;
 
         for(let i = 0; i < 10000; i++)
@@ -172,7 +177,7 @@ const day22 = function()
 
     function solve2()
     {
-        let map = new Map(PuzzleInput);
+        let map = new PuzzleMap(PuzzleInput);
         map.infections = 0;
 
         for(let i = 0; i < 10000000; i++)
@@ -186,4 +191,4 @@ const day22 = function()
 
 module.exports = day22;
 
-//day22();
+// day22();
