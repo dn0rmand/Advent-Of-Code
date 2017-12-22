@@ -28,11 +28,11 @@ var properties = [
         minimum:1,
         maximum:25,
         warning: 'Enter a day number between 1 and 25',
-        default: '16'
+        default: '22'
     }
 ];
 
-prompt.get(properties, function (err, result) 
+let promptResult = function (err, result) 
 {
     var path = "./" + result.year;
     var filename = path + "/Day";
@@ -70,4 +70,6 @@ prompt.get(properties, function (err, result)
     {
         console.log(filename + " not found");
     }
-});
+};
+prompt.get(properties, promptResult);
+//promptResult(undefined, { year:2017, day:20 });
