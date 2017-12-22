@@ -15,10 +15,14 @@ module.exports = function()
 
     function dumpResult()
     {
-        console.log("Doing part 2 first is an optimization")
-        solve0(particules);
-        solve2(particules);
-        solve1(particules);  
+        console.log("Calulus solution");
+        solve1b(particules);
+        solve2b(particules);
+        console.log();
+
+        console.log("Brute force: Doing part 2 first is an optimization")
+        solve2a(particules);
+        solve1a(particules);  
     }
 
     function processLine(line)
@@ -79,10 +83,10 @@ module.exports = function()
         return Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z);        
     }
 
-    function solve0(particles)
-    {
-        // pos(t) = p + vt + t* (t+1)/2 * a
+    //#region Calculus Solution
 
+    function solve1b(particles)
+    {
         let t = 1000000; // 1 million
 
         let result  = -1;
@@ -106,10 +110,152 @@ module.exports = function()
             }
         }
 
-        console.log("Part 1: " + result + " (308) with math");
+        console.log("Part 1: " + result + " (308)");
     }
 
-    function solve1(particles)
+    function solve2b(particles)
+    {
+        function solveEquation(A,B,C)
+        {
+            function IsInteger(value)
+            {
+                if (value < 0)
+                    return false;
+
+                if (Math.ceil(value) !== value)
+                    return false;
+
+                return true;
+            }
+
+            if (A === 0)
+            {
+                if (B === 0)
+                    return C === 0 ? undefined : [];
+
+                let sol = -C/B;                
+                return IsInteger(sol) ? [sol] : [];
+            }
+
+            let delta = B*B - 4*A*C;
+            if (delta < 0)
+                return [];
+
+            delta = Math.sqrt(delta);
+            let sol1 = (-delta - B)/(2*A);
+            let sol2 = (+delta - B)/(2*A);
+
+            let result = [];
+
+            if (IsInteger(sol1))
+                result.push(sol1);
+            if (IsInteger(sol2))
+                result.push(sol2);
+
+            return result;
+        }
+
+        function collisionTime(p1, p2)
+        {
+            function intersect(a1, a2)
+            {
+                if (a1 === undefined)
+                    return a2;
+                if (a2 === undefined)
+                    return a1;
+
+                let a = [];
+
+                for(let i = 0; i < a1.length; i++) 
+                    for(let j = 0; j < a2.length; j++)
+                        if (a1[i] === a2[j])
+                            a.push(a1[i]);
+
+                return a;
+            }   
+
+            let Ax = p1.acceleration.x - p2.acceleration.x;
+            let Vx = p1.velocity.x - p2.velocity.x;
+            let Px = p1.position.x - p2.position.x;
+
+            let solutions = solveEquation(Ax, Vx+Vx+Ax, Px+Px);
+            if (solutions !== undefined && solutions.length === 0) // no solutions
+                return undefined;
+
+            let Ay = p1.acceleration.y - p2.acceleration.y;
+            let Vy = p1.velocity.y - p2.velocity.y;
+            let Py = p1.position.y - p2.position.y;
+
+            solutions = intersect(solutions, solveEquation(Ay, Vy+Vy+Ay, Py+Py));
+            if (solutions !== undefined && solutions.length === 0)
+                return undefined;
+
+            let Az = p1.acceleration.z - p2.acceleration.z;
+            let Vz = p1.velocity.z - p2.velocity.z;
+            let Pz = p1.position.z - p2.position.z;
+
+            solutions = intersect(solutions, solveEquation(Az, Vz+Vz+Az, Pz+Pz));
+
+            if (solutions === undefined) // any time is good, so time 1 it is
+                return 1;
+            else if (solutions.length > 0)
+                return solutions.sort()[0]; // smallest value
+            else
+                return undefined;
+        }
+
+        let collisions = [];
+        let len = particles.length;
+
+        // Calculate possible collisions
+        for(let i = 0; i < len; i++)
+        {
+            let p1 = particles[i];
+
+            for(let j = i+1; j < len; j++)
+            {
+                if (i === j) continue;
+
+                let p2 = particles[j];
+                    
+                let time = collisionTime(p1, p2);
+
+                if (time === undefined)
+                    continue;
+                
+                collisions.push({ p1: p1, p2: p2, time:time });
+            }
+        }
+        // Sort collision per time
+        collisions.sort((a, b) => { return a.time - b.time; });
+
+        for(let i = 0; i < collisions.length; i++)
+        {
+            let c = collisions[i];
+
+            if (c.p1.collided !== undefined && c.p2.collided !== undefined) // both already collided so ignore
+                continue;
+
+            if (c.p1.collided === undefined && c.p2.collided === undefined) // not colliged yet, do it
+            {
+                c.p1.collided = c.p2.collided = c.time;
+                len -= 2;
+            }
+            else if (c.p1.collided === c.time || c.p2.collided === c.time) // one was collided at the same time
+            {
+                c.p1.collided = c.p2.collided = c.time;
+                len -= 1;
+            }
+        }
+
+        console.log("Part 2: " + len + " (504)");
+        return len;
+    }
+
+    //#endregion
+
+    //#region Brute force solution
+    function solve1a(particles)
     {        
         let compareAcceleration = (a, b) => 
         {
@@ -170,7 +316,7 @@ module.exports = function()
         console.log("Part 1: " + particles[0].id + " (308) in " + steps + " steps");
     }
     
-    function solve2(particles)
+    function solve2a(particles)
     {
         let notCollided = -1;
         let count       = 0;
@@ -198,9 +344,14 @@ module.exports = function()
         console.log("Part 2: " + notCollided + " (504) in " + count + " steps");
     }
 
+    let totalSteps = 0;
+
     function executeStep(particles)
     {
+        totalSteps++;
+
         let positions = { };
+
         let notCollided = 0;
         for(let i = 0; i < particles.length; i++)
         {
@@ -233,10 +384,13 @@ module.exports = function()
                     notCollided--;
                 }
                 else
+                {
                     p.collided = true;
+                }
             }
         }
 
         return notCollided;
     }
+    //#endregion
 }
