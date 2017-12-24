@@ -93,98 +93,13 @@ const day23 = module.exports = async function()
         }
     }
 
-    function asJS(vm, name, registerToReturn)
-    {
-        let compiled = 'function ' + name + '() {';
- 
-        let first = true;
-        Object.keys(vm.$registers).forEach(k => 
-        {
-            if (first)
-            {
-                first = false;
-                compiled += 'let ';
-            }
-            else
-                compiled += ', ';
-
-            compiled += k + '=' + vm.$registers[k];
-        });
-        compiled += ';';
-
-        let lines = [];
-
-        // Find required labels
-
-        for(let p = 0; p < vm.$instructions.length; p++)
-        {
-            let i = vm.$instructions[p];
-            let ins = i.asJS(i.arg1, i.arg2, p);
-            let s = ins.split('case_state=');
-            if (s.length == 2)
-            {
-                let label = +(s[1].split(';')[0]);
-                lines[label] = 1;
-            }
-        };
-        
-        lines[0] = 1;
-
-        // Generate instructions
-
-        compiled += 'let case_state=0;' +
-                    'while(case_state!=-1) {'+
-                    'switch(case_state) {';
-        
-        let convertedIf = false;
-        let bracket = 0;
-
-        for(let p = 0; p < vm.$instructions.length; p++)
-        {
-            let i = vm.$instructions[p];
-            if (lines[p] !== undefined)
-                compiled += 'case '+p+":";
-            let js = i.asJS(i.arg1, i.arg2, p);
-
-            if (js === undefined || js === '')
-                continue;
-
-            convertedIf = js.endsWith('{');
-            if (convertedIf)
-                bracket++;
-            else if (registerToReturn === 'm' && i.code == vm.opCodes.mul)
-                js += '; m++;/* counting mul usage */';
-            else if (! js.endsWith('}'))
-                js += ';'
-
-            compiled += js;
-            if (! convertedIf && bracket > 0)
-            {
-                let close = '';
-                while (bracket > 0)
-                {
-                    close += '}';
-                    bracket--;
-                }
-                compiled += close;
-            }
-        };
-
-        compiled += 'case -1: case_state=-1; break;}}';
-
-        if (registerToReturn !== undefined) 
-            compiled += 'return '+registerToReturn+';';
-        compiled += '}';
-        return compiled;
-    }
-
     function solve1(vm, compiled)
     {
         let mulCount = 0;
 
         if (compiled)
         {
-            let part1Function = asJS(vm, '__PART1__', 'm');
+            let part1Function = vm.compileToJavascript('__PART1__', 'm');
             eval(part1Function);
     
             mulCount = __PART1__();
@@ -221,48 +136,12 @@ const day23 = module.exports = async function()
             vm.$registers.a = 1;
 
             vm.optimize = function(i) {}
-
-            // vm.optimize = function(i)
-            // {
-            //     function check(p, code, arg1, arg2)
-            //     {
-            //         let i = vm.$instructions[p];
-            //         return (i.code === code && i.arg1 === arg1 && i.arg2 === arg2);
-            //     }
-
-            //     let p = vm.$current;
-            //     if (check(p, vm.opCodes.jnz, 'g', -13)) // Shortcut the loop if f is 0
-            //     {
-            //         if (vm.$registers.f === 0)
-            //             return 1;
-            //     }
-            //     else
-            //     {
-            //         // Convert a set of instructions to a single modulo and if it's 0, set f to 0
-
-            //         if (check(p++, vm.opCodes.set, 'e', 2))
-            //         if (check(p++, vm.opCodes.set, 'g', 'd'))
-            //         if (check(p++, vm.opCodes.mul, 'g', 'e'))
-            //         if (check(p++, vm.opCodes.sub, 'g', 'b'))
-            //         if (check(p++, vm.opCodes.jnz, 'g', 2))
-            //         if (check(p++, vm.opCodes.set, 'f', 0))
-            //         if (check(p++, vm.opCodes.sub, 'e', -1))
-            //         if (check(p++, vm.opCodes.set, 'g', 'e'))
-            //         if (check(p++, vm.opCodes.sub, 'g', 'b'))
-            //         if (check(p++, vm.opCodes.jnz, 'g', -8))
-            //         {
-            //             vm.$registers.f = (vm.$registers.b % vm.$registers.d);
-            //             return p - vm.$current;
-            //         }
-            //     }
-            // }
-
             vm.execute(false);
             nonPrime = vm.$registers.h;
         }
         else
         {
-            let part2Function = asJS(vm, '__PART2__', 'h');
+            let part2Function = vm.compileToJavascript('__PART2__', 'h');
             eval(part2Function);    
             nonPrime = __PART2__();                
         }

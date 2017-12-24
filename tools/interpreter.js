@@ -79,7 +79,7 @@ module.exports = function()
 
                 readInput
                     .on('line', (line) => { 
-                        var l = line.split('//')[0];
+                        let l = line.split('//')[0];
                         if (l.trim().length !== 0)
                             input.push(l);
                     })

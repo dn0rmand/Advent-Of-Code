@@ -226,6 +226,91 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
     
     vm.opCodes = opCode;
 
+    vm.compileToJavascript = function(name, registerToReturn)
+    {
+        let compiled = 'function ' + name + '() {';
+ 
+        let first = true;
+        Object.keys(vm.$registers).forEach(k => 
+        {
+            if (first)
+            {
+                first = false;
+                compiled += 'let ';
+            }
+            else
+                compiled += ', ';
+
+            compiled += k + '=' + vm.$registers[k];
+        });
+        compiled += ';';
+
+        let lines = [];
+
+        // Find required labels
+
+        for(let p = 0; p < vm.$instructions.length; p++)
+        {
+            let i = vm.$instructions[p];
+            let ins = i.asJS(i.arg1, i.arg2, p);
+            let s = ins.split('case_state=');
+            if (s.length == 2)
+            {
+                let label = +(s[1].split(';')[0]);
+                lines[label] = 1;
+            }
+        };
+        
+        lines[0] = 1;
+
+        // Generate instructions
+
+        compiled += 'let case_state=0;' +
+                    'while(case_state!=-1) {'+
+                    'switch(case_state) {';
+        
+        let convertedIf = false;
+        let bracket = 0;
+
+        for(let p = 0; p < vm.$instructions.length; p++)
+        {
+            let i = vm.$instructions[p];
+            if (lines[p] !== undefined)
+                compiled += 'case '+p+":";
+            let js = i.asJS(i.arg1, i.arg2, p);
+
+            if (js === undefined || js === '')
+                continue;
+
+            convertedIf = js.endsWith('{');
+            if (convertedIf)
+                bracket++;
+            else if (registerToReturn === 'm' && i.code == vm.opCodes.mul)
+                js += '; m++;/* counting mul usage */';
+            else if (! js.endsWith('}'))
+                js += ';'
+
+            compiled += js;
+            if (! convertedIf && bracket > 0)
+            {
+                let close = '';
+                while (bracket > 0)
+                {
+                    close += '}';
+                    bracket--;
+                }
+                compiled += close;
+            }
+        };
+
+        compiled += 'case -1: case_state=-1; break;}}';
+
+        if (registerToReturn !== undefined) 
+            compiled += 'return '+registerToReturn+';';
+        compiled += '}';
+        return compiled;
+    }
+    
     return vm;
 };
 
