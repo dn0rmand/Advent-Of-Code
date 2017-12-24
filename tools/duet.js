@@ -4,15 +4,29 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
 
     let vm = new compiler();
 
+    function isNumber(n) 
+    { 
+        return typeof(n) === "number"; 
+    }
+
     function convert(arg1)
     {
         if (typeof(arg1) === "string")
-            return vm.$registers[arg1];
+            return vm.$registers[arg1] || 0;
         else 
             return arg1;
     }
 
-    vm.add(
+    let opCode = {};
+    
+    opCode.nop = vm.add(
+        'nop',
+        (arg1, arg2) => {},
+        (instruction, parser) => {},
+        (arg1, arg2) => { return ''; } // does nothing
+    );
+
+    opCode.snd = vm.add(
         'snd',
         arg1 => {
             let v = convert(arg1);
@@ -21,10 +35,13 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         },
         (instruction, parser) => {
             instruction.arg1 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            return 'throw "not supported"';
         }
     );
     
-    vm.add(
+    opCode.set = vm.add(
         'set',
         (arg1, arg2) => {
             vm.$registers[arg1] = convert(arg2);
@@ -32,43 +49,87 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         (instruction, parser) => {
             instruction.arg1 = parser.getToken();
             instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            return arg1 + '=' + arg2;
         }
     );
     
-    vm.add(
+    opCode.add = vm.add(
         'add',
         (arg1, arg2) => {
-            vm.$registers[arg1] += convert(arg2);
+            vm.$registers[arg1] = convert(arg1) + convert(arg2);
         },
         (instruction, parser) => {
             instruction.arg1 = parser.getToken();
             instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            if (arg2 === 0)
+                return '';
+            else if (arg2 === -1)
+                return arg1 + '--';
+            else if (arg2 === 1)
+                return arg1 + '++';
+            else if (isNumber(arg2) && arg2 < 0)
+                return arg1 + '-=' + (-arg2);
+            else
+                return arg1 + '+=' + arg2;
         }
     );
     
-    vm.add(
+    opCode.sub = vm.add(
+        'sub',
+        (arg1, arg2) => {
+            vm.$registers[arg1] = convert(arg1) - convert(arg2);
+        },
+        (instruction, parser) => {
+            instruction.arg1 = parser.getToken();
+            instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            if (arg2 === 0)
+                return '';
+            else if (arg2 === 1)
+                return arg1 + '--';
+            else if (arg2 === -1)
+                return arg1 + '++';
+            else if (isNumber(arg2) && arg2 < 0)
+                return arg1 + '+=' + (-arg2);
+            else
+                return arg1 + '-=' + arg2;
+        }
+    );
+
+    opCode.mul = vm.add(
         'mul',
         (arg1, arg2) => {
-            vm.$registers[arg1] *= convert(arg2);
+            vm.$registers[arg1] = convert(arg1) * convert(arg2);
         },
         (instruction, parser) => {
             instruction.arg1 = parser.getToken();
             instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            return arg1 + '*=' + arg2;
         }
     );
     
-    vm.add(
+    opCode.mod = vm.add(
         'mod',
         (arg1, arg2) => {
-            vm.$registers[arg1] = vm.$registers[arg1] % convert(arg2);
+            vm.$registers[arg1] = convert(arg1) % convert(arg2);
         },
         (instruction, parser) => {
             instruction.arg1 = parser.getToken();
             instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2) => {
+            return arg1 + '%=' + arg2;
         }
     );
     
-    vm.add(
+    opCode.rcv = vm.add(
         'rcv',
         (arg1) => {
             if (rcvQueue.length > 0)
@@ -82,10 +143,42 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         },
         (instruction, parser) => {
             instruction.arg1 = parser.getToken();
+        },
+        (arg1, arg2) => {
+            return 'throw "not supported"';
         }
     );
     
-    vm.add(
+    opCode.jnz = vm.add(
+        'jnz',
+        (arg1, arg2) => {
+            if (convert(arg1) != 0)
+            {
+                return convert(arg2);
+            }
+        },
+        (instruction, parser) => {
+            instruction.arg1 = vm.createArgument(parser.getValue());
+            instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2, pos) => {
+            if (isNumber(arg1))
+            {
+                if (arg1 !== 0)
+                    return $goto(pos, arg2);
+                else
+                    return '';
+            }
+            else if (arg2 === 2)
+            {
+                return 'if ('+arg1+'==0) {';
+            }
+            else
+                return 'if (' + arg1 + '!=0) {' + $goto(pos, arg2) + '}';
+        }
+    );
+
+    opCode.jgz = vm.add(
         'jgz',
         (arg1, arg2) => {
             if (convert(arg1) > 0)
@@ -96,8 +189,32 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         (instruction, parser) => {
             instruction.arg1 = vm.createArgument(parser.getValue());
             instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2, pos) => {
+            if (isNumber(arg1))
+            {
+                if (arg1 > 0)
+                    return $goto(pos, arg2);
+                else
+                    return '';
+            }
+            else
+                return 'if (' + arg1 + '>0) {' + $goto(pos, arg2) + '}';
         }
     );
+
+    function $goto(pos, arg2)
+    {
+        if (typeof(arg2) === "string")
+            throw "arg2 cannot be a register";
+
+        let label = pos + arg2;
+        if (label >= vm.$instructions.length)
+            label = 'case_state=-1; continue;';
+        else
+            label = 'case_state=' + label + '; continue';  
+        return label;          
+    }
 
     vm.didReceive = function(value) {
         // does nothing by default
@@ -107,6 +224,8 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         // does nothing by default        
     }
     
+    vm.opCodes = opCode;
+
     return vm;
 };
 

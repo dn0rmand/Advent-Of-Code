@@ -66,7 +66,7 @@ const day24 = module.exports = function()
                     {
                         used[key] = 1;
                         buildBriges(newEnd, total + component[0] + component[1], count+1);
-                        delete used[key];        
+                        used[key] = undefined;        
                     }
                 }
             }

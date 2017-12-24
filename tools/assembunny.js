@@ -14,6 +14,17 @@ module.exports.create = function()
     let vm = new interpreter();
     let opCode = {};
 
+    opCode.out = vm.add(
+        'out',
+        arg1 => {
+            if (typeof(arg1) === "string")
+                arg1 = vm.$registers[arg1];
+            vm.transmit(arg1);
+        },
+        (instruction, parser) => {
+            instruction.arg1 = parser.getValue(); 
+        }
+    );
     opCode.inc = vm.add(
         'inc', 
         function(arg1) 
@@ -141,7 +152,9 @@ module.exports.create = function()
         }
     )
 
-    vm.doMultiplication = function(cpy)
+    vm.transmit = function(value) {};
+
+    vm.optimize = function(cpy)
     {
         if (cpy.code !== opCode.cpy)
             return 0;

@@ -17,6 +17,9 @@ module.exports = function()
     let opcode = {};
     let opcodeFunctions = {};
     let argumentParser = {};
+    let asJS = {};
+
+    this.getCurrentLine = function() { return input[self.$current]; }
 
     this.reset = function()
     {
@@ -47,17 +50,18 @@ module.exports = function()
     {
         return {
             code: opcode[code],
-            fn:   opcodeFunctions[code]
+            fn:   opcodeFunctions[code],
+            asJS: asJS[code],
         };
     }
 
-    this.add = function(code, fct, parseArguments)
+    this.add = function(code, fct, parseArguments, js)
     {
         let opCode = nextOpCode++;
         opcode[code] = opCode;
         opcodeFunctions[code] = fct;
         argumentParser[code] = parseArguments;
-
+        asJS[code] = js;
         return opCode;
     }
 
@@ -75,7 +79,9 @@ module.exports = function()
 
                 readInput
                     .on('line', (line) => { 
-                        input.push(line);
+                        var l = line.split('//')[0];
+                        if (l.trim().length !== 0)
+                            input.push(l);
                     })
                     .on('close', () => {
                         resolve();
@@ -105,6 +111,7 @@ module.exports = function()
             let instruction = {
                 code: 0,
                 fn: undefined,
+                asJS: undefined,
                 arg1: undefined,
                 arg2: undefined
             };
@@ -116,13 +123,14 @@ module.exports = function()
                 throw "Invalid " + line;
 
             instruction.fn = opcodeFunctions[command];
+            instruction.asJS = asJS[command];
             argumentParser[command](instruction, parse);
 
             // Pre-define registers
             if (instruction.arg1 !== undefined && typeof(instruction.arg1) === "string")
-               self. $registers[instruction.arg1.value] = 0;
-            if (instruction.arg2 !== undefined && typeof(instruction.arg1) === "string")
-                self.$registers[instruction.arg2.value] = 0;
+               self.$registers[instruction.arg1] = 0;
+            if (instruction.arg2 !== undefined && typeof(instruction.arg2) === "string")
+                self.$registers[instruction.arg2] = 0;
 
             self.$instructions.push(instruction);
         }
@@ -133,7 +141,7 @@ module.exports = function()
             console.log("Compiled in " + prettyHrtime(end, {verbose:true}));
     }
 
-    this.doMultiplication = function() { return 0; }
+    this.optimize = function() { }
 
     this.runStep = function()
     {
@@ -144,8 +152,8 @@ module.exports = function()
         {
             let i = self.$instructions[self.$current];
 
-            let offset = self.doMultiplication(i);
-            if (offset > 0) 
+            let offset = self.optimize(i);
+            if (offset !== undefined && offset !== 0) 
             {
                 self.$current += offset;
                 return;
