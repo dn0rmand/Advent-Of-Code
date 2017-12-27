@@ -126,9 +126,15 @@ const day23 = module.exports = async function()
         // A should be 1
         vm.$registers.a = 1;
         // Optimize code 
-        optimize(vm);
+        vm.optimize(2);
 
-        if (! compiled)
+        if (compiled)
+        {
+            let part2Function = vm.compileToJavascript('__PART2__', 'h');
+            eval(part2Function);    
+            nonPrime = __PART2__();                
+        }
+        else
         {
             // Reset all registers
             Object.keys(vm.$registers).forEach(k => { vm.$registers[k] = 0; });
@@ -138,12 +144,6 @@ const day23 = module.exports = async function()
             vm.optimize = function(i) {}
             vm.execute(false);
             nonPrime = vm.$registers.h;
-        }
-        else
-        {
-            let part2Function = vm.compileToJavascript('__PART2__', 'h');
-            eval(part2Function);    
-            nonPrime = __PART2__();                
         }
         
         console.log('Part 2: ' + nonPrime + ' non-prime values (911)');

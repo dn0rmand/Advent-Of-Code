@@ -17,15 +17,11 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             return arg1;
     }
 
+    let closeBracketAt = [];
+    let doAt = [];
+
     let opCode = {};
     
-    opCode.nop = vm.add(
-        'nop',
-        (arg1, arg2) => {},
-        (instruction, parser) => {},
-        (arg1, arg2) => { return ''; } // does nothing
-    );
-
     opCode.snd = vm.add(
         'snd',
         arg1 => {
@@ -51,7 +47,7 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             instruction.arg2 = vm.createArgument(parser.getValue());
         },
         (arg1, arg2) => {
-            return arg1 + '=' + arg2;
+            return arg1 + '=' + arg2 + ';';
         }
     );
     
@@ -68,13 +64,13 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             if (arg2 === 0)
                 return '';
             else if (arg2 === -1)
-                return arg1 + '--';
+                return arg1 + '--;';
             else if (arg2 === 1)
-                return arg1 + '++';
+                return arg1 + '++;';
             else if (isNumber(arg2) && arg2 < 0)
-                return arg1 + '-=' + (-arg2);
+                return arg1 + '-=' + (-arg2) + ';';
             else
-                return arg1 + '+=' + arg2;
+                return arg1 + '+=' + arg2 + ';';
         }
     );
     
@@ -91,13 +87,13 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             if (arg2 === 0)
                 return '';
             else if (arg2 === 1)
-                return arg1 + '--';
+                return arg1 + '--;';
             else if (arg2 === -1)
-                return arg1 + '++';
+                return arg1 + '++;';
             else if (isNumber(arg2) && arg2 < 0)
-                return arg1 + '+=' + (-arg2);
+                return arg1 + '+=' + (-arg2) + ';';
             else
-                return arg1 + '-=' + arg2;
+                return arg1 + '-=' + arg2 + ';';
         }
     );
 
@@ -111,7 +107,7 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             instruction.arg2 = vm.createArgument(parser.getValue());
         },
         (arg1, arg2) => {
-            return arg1 + '*=' + arg2;
+            return arg1 + '*=' + arg2 + ';';
         }
     );
     
@@ -125,7 +121,7 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             instruction.arg2 = vm.createArgument(parser.getValue());
         },
         (arg1, arg2) => {
-            return arg1 + '%=' + arg2;
+            return arg1 + '%=' + arg2 + ';';
         }
     );
     
@@ -165,16 +161,25 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
             if (isNumber(arg1))
             {
                 if (arg1 !== 0)
-                    return $goto(pos, arg2);
+                {
+                    let gto = $goto(pos, arg2);
+                    if (gto === '}')
+                        return '} while(true);'
+                    return gto;
+                }
                 else
                     return '';
             }
-            else if (arg2 === 2)
-            {
-                return 'if ('+arg1+'==0) {';
-            }
             else
-                return 'if (' + arg1 + '!=0) {' + $goto(pos, arg2) + '}';
+            {
+                let gto = $goto(pos, arg2);
+                if (gto === '{')
+                    return 'if (' + arg1 + ' === 0) {';
+                else if (gto === '}')
+                    return '} while (' + arg1 + ' !== 0);';
+                else
+                    return 'if (' + arg1 + ' !== 0) {' + gto + '}';
+            }
         }
     );
 
@@ -193,16 +198,65 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
         (arg1, arg2, pos) => {
             if (isNumber(arg1))
             {
-                if (arg1 > 0)
-                    return $goto(pos, arg2);
-                else
-                    return '';
-            }
+                let gto = $goto(pos, arg2);
+                if (gto === '}')
+                    return '} while(true);'
+                return gto;
+        }
             else
-                return 'if (' + arg1 + '>0) {' + $goto(pos, arg2) + '}';
+            {
+                let gto = $goto(pos, arg2);
+                if (gto === '{')
+                    return 'if (' + arg1 + ' <= 0) {';
+                else if (gto === '}')
+                    return '} while (' + arg1 + ' > 0);';
+                else
+                    return 'if (' + arg1 + ' > 0) {' + gto + '}';
+            }
         }
     );
 
+    // internal instruction for optimization / compilation
+    opCode.nop = vm.add(
+        'nop',
+        (arg1, arg2) => {},
+        (instruction, parser) => {},
+        (arg1, arg2) => { return ''; } // does nothing
+    );
+
+    opCode.jz = vm.add(
+        'jz',
+        (arg1, arg2) => {
+            if (convert(arg1) == 0)
+            {
+                return convert(arg2);
+            }
+        },
+        (instruction, parser) => {
+            instruction.arg1 = vm.createArgument(parser.getValue());
+            instruction.arg2 = vm.createArgument(parser.getValue());
+        },
+        (arg1, arg2, pos) => {
+            if (isNumber(arg1))
+            {
+                let gto = $goto(pos, arg2);
+                if (gto === '}')
+                    return '} while(true);'
+                return gto;
+        }
+            else
+            {
+                let gto = $goto(pos, arg2);
+                if (gto === '{')
+                    return 'if (' + arg1 + ' !== 0) {';
+                else if (gto === '}')
+                    return '} while (' + arg1 + ' === 0);';
+                else
+                    return 'if (' + arg1 + ' === 0) {' + gto + '}';
+            }
+        }
+    );
+    
     function $goto(pos, arg2)
     {
         if (typeof(arg2) === "string")
@@ -210,10 +264,19 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
 
         let label = pos + arg2;
         if (label >= vm.$instructions.length)
-            label = 'case_state=-1; continue;';
+        {
+            return 'return;';
+        }
+        else if (label > pos)
+        {
+            closeBracketAt[label] = 1;
+            return '{';
+        }
         else
-            label = 'case_state=' + label + '; continue';  
-        return label;          
+        {
+            doAt[label] = 1;
+            return '}';  
+        }
     }
 
     vm.didReceive = function(value) {
@@ -226,91 +289,234 @@ module.exports.create = function(pid, sndQueue, rcvQueue)
     
     vm.opCodes = opCode;
 
+    vm.optimize = function(pass)
+    {
+        function check(p, code, arg1, arg2)
+        {
+            if (p >= vm.$instructions.length)
+                return false;
+            let i = vm.$instructions[p];
+            if (i.code !== code)
+                return false;
+            if (arg1 !== undefined && i.arg1 !== arg1)
+                return false;
+            if (arg2 !== undefined && i.arg2 != arg2)
+                return false;
+            return true;
+        }
+
+        function convertTo(i, code)
+        {
+            let i2 = vm.getInstruction(code);
+            i.code = i2.code;
+            i.fn = i2.fn;
+            i.asJS = i2.asJS;
+        }
+
+        for(let c = 0; c < vm.$instructions.length; c++)
+        {
+            let p = c;
+
+            let i1 = vm.$instructions[c];
+
+            // convert sub -value to add +value and vice versa
+
+            if (i1.code === vm.opCodes.add && isNumber(i1.arg2) && i1.arg2 < 0)
+            {
+                i1.arg2 = -i1.arg2;
+                convertTo(i1, 'sub');
+            }
+            else if (i1.code === vm.opCodes.sub && isNumber(i1.arg2) && i1.arg2 < 0)
+            {
+                i1.arg2 = -i1.arg2;
+                convertTo(i1, 'add');
+            }
+
+            // convert jnz x 2 + jnz 1 n => nop + jz x n
+
+
+            if (check(p++, vm.opCodes.jnz, undefined, 2))
+            if (check(p++, vm.opCodes.jnz))
+            {
+                let i2 = vm.$instructions[c+1];
+                if (! isNumber(i1.arg1) && isNumber(i2.arg1) && i2.arg1 !== 0)
+                {
+                    i2.arg1 = i1.arg1;
+                    convertTo(i2, 'jz');
+                    convertTo(i1, 'nop');
+                    c++;
+                }
+            }
+
+            if (pass === 2)
+            {
+                // Convert a set of instructions to a single modulo and if it's 0, set f to 0
+
+                p = c;
+
+                if (check(p++, vm.opCodes.set, 'e', 2))
+                if (check(p++, vm.opCodes.set, 'g', 'd'))
+                if (check(p++, vm.opCodes.mul, 'g', 'e'))
+                if (check(p++, vm.opCodes.sub, 'g', 'b'))
+                if (check(p++, vm.opCodes.jnz, 'g', 2))
+                if (check(p++, vm.opCodes.set, 'f', 0))
+                if (check(p++, vm.opCodes.add, 'e', 1)) // !!!!! was converted to 'add' by optimize(1);
+                if (check(p++, vm.opCodes.set, 'g', 'e'))
+                if (check(p++, vm.opCodes.sub, 'g', 'b'))
+                if (check(p++, vm.opCodes.jnz, 'g', -8))
+                {
+                    let i = vm.$instructions[c++];
+
+                    convertTo(i, 'set');
+                    i.arg1 = 'g';
+                    i.arg2 = 'b';
+
+                    i = vm.$instructions[c++];
+
+                    convertTo(i, 'mod');
+                    i.arg1 = 'g';
+                    i.arg2 = 'd';
+
+                    i = vm.$instructions[c++];
+
+                    convertTo(i, 'jnz');
+                    i.arg1 = 'g';
+                    i.arg2 = 2;
+
+                    i = vm.$instructions[c++];
+                    
+                    convertTo(i, 'set');
+                    i.arg1 = 'f';
+                    i.arg2 = 0;
+
+                    // insert nop instruction to avoid breaking the jumps
+
+                    while (c < p)
+                    {
+                        i = vm.$instructions[c++];
+
+                        convertTo(i, 'nop');
+                        i.arg1 = i.arg2 = undefined;                      
+                    }
+                    c--; // back track 1
+                }           
+            } 
+        }
+    }
+    
     vm.compileToJavascript = function(name, registerToReturn)
     {
-        let compiled = 'function ' + name + '() {';
- 
-        let first = true;
-        Object.keys(vm.$registers).forEach(k => 
+        let instructions;
+        let mul;
+        let code        = [];
+
+        function add(line)       { code.push(line); }
+        function generatedCode() { return code.join(''); }
+
+        function getInstructions()
         {
-            if (first)
+            // Just in case we call it multiple times
+            mul    = [];
+            instructions = [];
+            closeBracketAt = [];
+            doAt = [];
+
+            for(let p = 0; p < vm.$instructions.length; p++)
             {
-                first = false;
-                compiled += 'let ';
+                let i = vm.$instructions[p];
+                let js = i.asJS(i.arg1, i.arg2, p);
+    
+                if (registerToReturn !== undefined)
+                    js = js.replace('return;', 'return ' + registerToReturn + ';');
+
+                instructions.push(js);
+    
+                if (registerToReturn === 'm' && i.code == vm.opCodes.mul)
+                    mul.push(1);
+                else
+                    mul.push(0);
             }
-            else
-                compiled += ', ';
+        }
 
-            compiled += k + '=' + vm.$registers[k];
-        });
-        compiled += ';';
-
-        let lines = [];
-
-        // Find required labels
-
-        for(let p = 0; p < vm.$instructions.length; p++)
+        function makeRegisters()
         {
-            let i = vm.$instructions[p];
-            let ins = i.asJS(i.arg1, i.arg2, p);
-            let s = ins.split('case_state=');
-            if (s.length == 2)
+            let line  = '';
+            let first = true;
+            Object.keys(vm.$registers).forEach(k => 
             {
-                let label = +(s[1].split(';')[0]);
-                lines[label] = 1;
-            }
-        };
-        
-        lines[0] = 1;
+                if (first)
+                {
+                    first = false;
+                    line += 'let ';
+                }
+                else
+                    line += ', ';
+    
+                line += k + '=' + vm.$registers[k];
+            });     
+            return line + ';';       
+        }
+
+        // Optimize to convert jnz + jnz into jz
+
+        vm.optimize(1); // pass 1
+        //vm.print();
+
+        // function header
+        add('function ' + name + '() {');
+        add(makeRegisters());
+
+        // to emulate gotos
+
+        getInstructions();
 
         // Generate instructions
-
-        compiled += 'let case_state=0;' +
-                    'while(case_state!=-1) {'+
-                    'switch(case_state) {';
         
-        let convertedIf = false;
-        let bracket = 0;
+        for(let p = 0; p < instructions.length; p++)
+        {            
+            if (closeBracketAt[p] === 1)
+            {
+                closeBracketAt[p] = 0;
+                add('}');
+            }
+            if (doAt[p] === 1)
+            {
+                doAt[p] = 0;
+                add('do {');
+            }
 
-        for(let p = 0; p < vm.$instructions.length; p++)
-        {
-            let i = vm.$instructions[p];
-            if (lines[p] !== undefined)
-                compiled += 'case '+p+":";
-            let js = i.asJS(i.arg1, i.arg2, p);
+            let js = instructions[p];
 
             if (js === undefined || js === '')
                 continue;
 
-            convertedIf = js.endsWith('{');
-            if (convertedIf)
-                bracket++;
-            else if (registerToReturn === 'm' && i.code == vm.opCodes.mul)
-                js += '; m++;/* counting mul usage */';
-            else if (! js.endsWith('}'))
-                js += ';'
+            add(js);
 
-            compiled += js;
-            if (! convertedIf && bracket > 0)
-            {
-                let close = '';
-                while (bracket > 0)
-                {
-                    close += '}';
-                    bracket--;
-                }
-                compiled += close;
-            }
+            if (mul[p])
+                add('m++;/* counting mul usage */');                    
         };
 
-        compiled += 'case -1: case_state=-1; break;}}';
-
+        // return value
         if (registerToReturn !== undefined) 
-            compiled += 'return '+registerToReturn+';';
-        compiled += '}';
-        return compiled;
+            add('return '+registerToReturn+';');
+        else
+            add('return;');
+
+        // finish function
+        add('}');
+
+        return generatedCode();
     }
     
+    vm.print = function()
+    {
+        for(let p = 0; p < vm.$instructions.length; p++)
+        {
+            let i = vm.$instructions[p];
+            console.log(vm.getOpcodeName(i.code) + ' ' + i.arg1 + ' ' + i.arg2);
+        }
+    }
+
     return vm;
 };
 

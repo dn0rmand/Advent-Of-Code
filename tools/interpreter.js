@@ -46,6 +46,15 @@ module.exports = function()
         return opcode[code];
     }
 
+    this.getOpcodeName = function(code)
+    {
+        let k = Object.keys(opcode);
+        for (let i = 0; i < k.length; i++)
+            if (opcode[k[i]] === code)
+                return k[i];
+        return '???';
+    }
+
     this.getInstruction = function(code)
     {
         return {
