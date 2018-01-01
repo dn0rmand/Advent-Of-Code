@@ -8,8 +8,10 @@
     "console-control-strings": "^1.1.0",
     "eslint": "^4.13.1",
     "is-float": "^1.0.0",
+    "js-base64": "^2.4.0",
     "pretty-hrtime": "^1.0.3",
     "prompt": "^1.0.0",
+    "prompt-sync": "^4.1.5",
     "sleep": "^5.1.1"
   },
   "devDependencies": {},
