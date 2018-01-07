@@ -1,4 +1,6 @@
 module.exports = function () {
+    const console = require('simple-console-color');
+    
     // process.stdin.setRawMode(true);
     // process.stdin.resume();
     process.stdout.resume();
@@ -17,11 +19,16 @@ module.exports = function () {
             return (input.length !== 0);
         },
 
-        didRead: function(input) {
+        willRead: function() {
 
         },
 
+        didRead: function(input) {
+            console.logYellow('> ' + input);
+        },
+
         read: function (callback) {
+            self.willRead();
             if (input.length === 0) {
                 process.stdin.once('data', (data) => {
                     input.push(...data);

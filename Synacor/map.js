@@ -1,53 +1,18 @@
-module.exports = function()
+module.exports = function(input, output)
 {    
+    const console = require('simple-console-color');
+
     function getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
     }
 
-    const fs = require('fs');    
-    const input = require('./input.js')();
-    const output = require('./output.js')();
-
-    let combinaisons = {
-
-    };
-
-    let coins = [
-        "red coin",
-        "shiny coin",
-        "corroded coin",
-        "concave coin",
-        "blue coin"        
-    ];
-
-    combinaisons[coins.join(',')] = 1;
-
-    function shuffleCoins()
-    {
-        do 
-        {
-            let c = coins ;
-            coins = [];
-    
-            while(c.length > 0)
-            {
-                let i = getRandomInt(0, c.length);
-                let coin = c[i];
-                coins.push(coin);
-                c.splice(i,1);
-            }
-            let key = coins.join(',');
-            if (combinaisons[key] === undefined)
-            {
-                combinaisons[key] = 1;
-                break;
-            }
-            console.log(key + ' already tried');
-        }
-        while (1);
-    }
+    const fs        = require('fs');    
+    const $didPrint = output.didPrint;
+    const $didRead  = input.didRead;
+    const $willRead = input.willRead;
+    const $exit     = process.exit;
 
     const ROOM       = 1;
     const OBJECTS    = 2;
@@ -55,55 +20,35 @@ module.exports = function()
     const INVENTORY  = 4;
     const NONE       = 0;
 
-    let $map = {
-        rooms: {},
-        currentId: 0,
-        ids: {}
-    };
-
-    let history      = [];
     let rooms        = {};
+    let ids          = {};
+    let nextId       = 1;
     let status       = NONE;
     let currentRoom  = null;
-    let lastRoom     = 0;
-    let previousRoom = 0;
+    let lastRoom     = undefined;
+    let previousRoom = undefined;
     let lastDirection= null;
 
-    const MAP_FILE_PATH = 'data/map.json';
-    const HISTORY_FILE_PATH = 'data/history.json';
-
-    function loadHistory()
-    {
-        if (fs.existsSync(HISTORY_FILE_PATH))
-        {
-            let h = fs.readFileSync(HISTORY_FILE_PATH);
-            h = JSON.parse(h);    
-            for(let i = 0; i < h.history.length; i++) 
-                input.addCommand(h.history[i]);   
-        }
-    }
-    
-    function saveHistory()
-    {
-        fs.writeFileSync(HISTORY_FILE_PATH, JSON.stringify({ history: history }));        
-    }
+    const MAP_FILE_PATH = 'data/map-v1.json';
 
     function cleanUpMap()
     {
         let modified = true;
         let needSaving = false;
+        let ids = Object.keys(rooms);
 
         while (modified)
         {
             modified = false;
-            for(let i = 1; i <= $map.currentId; i++)
+            for(let i = 0; i < ids.length ; i++)
             {
-                let room  = $map.rooms[i];
+                let id    = ids[i];
+                let room  = rooms[id];
                 if (room.deadEnd === true)
                     continue;
 
                 let isDead = true;
-                let exits = Object.keys($map.rooms[i].exits);
+                let exits = Object.keys(room.exits);
                 for (let e = 0; e < exits.length; e++)
                 {
                     let k = room.exits[exits[e]];
@@ -112,7 +57,7 @@ module.exports = function()
                         isDead = false;
                         break;
                     }
-                    let r = $map.rooms[k];
+                    let r = rooms[k];
                     if (r.deadEnd !== true)
                     {
                         isDead = false;
@@ -131,17 +76,21 @@ module.exports = function()
         return needSaving;
     }
 
-    function saveMap() {
+    function saveMap() 
+    {
         cleanUpMap();
 
-        let ids = $map.ids;
-        $map.ids = 'not JSON compatible';
-        // Save map before exiting!!!!
-        fs.writeFileSync(MAP_FILE_PATH, JSON.stringify($map));        
-        $map.ids = ids;
+        let map = {
+            rooms: rooms,
+            ids: ids,
+            nextId: nextId
+        };
+
+        fs.writeFileSync(MAP_FILE_PATH, JSON.stringify(map));        
     }
 
-    function loadMap() {
+    function loadMap() 
+    {
         let map = undefined;
 
         if (fs.existsSync(MAP_FILE_PATH))
@@ -149,56 +98,29 @@ module.exports = function()
             let json = fs.readFileSync(MAP_FILE_PATH);    
 
             map  = JSON.parse(json);
-
-            // Build list of ids
-                        
-            let rooms = Object.keys(map.rooms);
-            let ids   = {};
-            for(let i = 0; i < rooms.length; i++)
-            {
-                let r = map.rooms[rooms[i]];
-                let k = r.name + ' : ' + r.description;
-                ids[k] = r.id;
-            }
-            map.ids = ids;
         }
 
-        if (map === undefined)
+        if (map !== undefined)
         {
-            input.addCommand('go south');
-            input.addCommand('go north');
-            input.addCommand('take tablet');
-            input.addCommand('use tablet');
-            input.addCommand('go doorway');
-            input.addCommand('go north');
-            input.addCommand('go north');
-            input.addCommand('go bridge');
-            input.addCommand('go continue');
-            input.addCommand('go down');
-            input.addCommand('go east');
-            input.addCommand('take empty lantern');
-            input.addCommand('go west');
-            input.addCommand('go west');
-            input.addCommand('go passage');
-            input.addCommand('go ladder');        
+            rooms = map.rooms;
+            nextId= map.nextId;
+            ids = map.ids;
+
+            if (cleanUpMap())
+                saveMap();
         }
-        else
-            $map = map;
-
-        if (cleanUpMap())
-            saveMap();
     }
 
-    function trace(message) {
-        console.debug('## ' + message);
+    function trace(message) 
+    {
+        console.logRed('## ' + message);
     }
 
-    let $exit = process.exit;
-
-    process.exit = function(code) {
-        if (lastRoom > 0)
+    process.exit = function(code) 
+    {
+        if (lastRoom !== undefined)
         {
-            let r = $map.rooms[lastRoom];
+            let r = rooms[lastRoom];
             r.deadEnd = true;
         }
         saveMap();
@@ -206,20 +128,20 @@ module.exports = function()
         $exit(code);
     }
 
-    function makeId(name, description)
+    function makeId(room)
     {
-        let key = name + ' : ' + description;
-        let id = $map.ids[key];
+        key = room.name + "|" + room.description;
+        let id = ids[key]; 
         if (id === undefined)
         {
-            id = $map.ids[key] = ++($map.currentId);
+            id = ids[key] = nextId++;
         }
         return id;
     }
 
     function getNextDirection()
     {
-        let current = $map.rooms[lastRoom];
+        let current = lastRoom === undefined ? undefined : rooms[lastRoom];
         if (current === undefined)
             throw "In a room that doesn't exist";
 
@@ -229,132 +151,93 @@ module.exports = function()
         
         if (exits.length === 0) // No exits???
             throw "Dead end ... no exit";
-        let defaultExit = null;
-        let possibleExits = [];
 
-        for(let i = 0; i < exits.length; i++)
-        {
-            let exit = exits[i];
-            let destination = current.exits[exit];
+        // get non-visited rooms    
+        let notVisited = exits.filter(exit => {
+            let room = current.exits[exit];
+            return room === 0;
+        });
 
-            if (destination === 0)
-            {
-                defaultExit = exits[i];
-                break;
-            }
-            else
-            {
-                let room = $map.rooms[destination];
-                if (room.deadEnd !== true)
-                    possibleExits.push(exit)
-            }
-        }
-        if (defaultExit == null) // all visited so pick a random one
+        if (notVisited.length > 0)
         {
-            if (possibleExits.length === 0)
-                possibleExits = exits; // Use all ?
-            
-            let x = getRandomInt(0, possibleExits.length);
-            defaultExit = possibleExits[x];
+            exits = notVisited;
         }
-        
-        return defaultExit;
+        else
+        {
+            // get visited and not dead-end rooms    
+            let visited = exits.filter(exit => {
+                let room = current.exits[exit]; 
+                return (room !== 0 && rooms[room].deadEnd !== true);
+            });
+            if (visited.length === 0)
+                return exits[0]; // Take first one and die!!!
+            exits = visited;
+        }
+
+        // pick randomly
+        let x = getRandomInt(0, exits.length);
+        exit = exits[x];        
+        return exit;
     }
 
-    function read(callback)
+    input.willRead = function()
     {        
+        $willRead();
+
         if (currentRoom != null)
         {
             let current = currentRoom;
-            currentRoom = null;
-            current.id = makeId(current.name, current.description);
 
-            previousRoom = lastRoom;
-            lastRoom     = current.id;
+            currentRoom      = null;
+            current.id       = makeId(current);
+            previousRoom     = lastRoom;
+            lastRoom         = current.id;
 
-            if (lastDirection != null && previousRoom > 0)
+            if (lastDirection != null && previousRoom !== undefined)
             {
-                let p = $map.rooms[previousRoom];
+                let p = rooms[previousRoom];
                 p.exits[lastDirection] = lastRoom;
                 lastDirection = null;
             }
 
-            let old = $map.rooms[current.id];
+            let old = rooms[current.id];
             if (old !== undefined)
             {
                 trace("Already visited");
-                let exits1 = Object.keys(old.exits);
-                let exits2 = Object.keys(current.exits)
-                if (exits1.length !== exits2.length)
-                    trace('Not same amount of exits !!!');
-                else
-                {
-                    let same = true;
-                    for(let i = 0; same && i < exits1.length; i++)
-                    {
-                        let k = exits1[i];
-                        let x = current.exits[k];
-                        if (x === undefined)
-                            same = false;
-                    }
-                    for(let i = 0; same && i < exits2.length; i++)
-                    {
-                        let k = exits2[i];
-                        let x = old.exits[k];
-                        if (x === undefined)
-                            same = false;
-                    }
-                    if (! same)
-                        trace('Not the same list of exits');
-                }
             }
             else
             {
-                $map.rooms[current.id] = current;
+                rooms[current.id] = current;
             }
         }
         status = NONE;
 
-        // if (! input.hasInput())
-        // {
-        //     let direction = getNextDirection();
-        //     input.addCommand('go ' + direction);
-        // }
-
-        input.read(callback);
+        if (! input.hasInput())
+        {
+            let direction = getNextDirection();
+            input.addCommand('go ' + direction);
+        }
     }
     
     input.didRead = function(command)
     {
-        console.log('>'+command);
+        $didRead(command);
+
         if (command.startsWith('go '))
         {
-            lastDirection = command.substring(3).trim();
-            history.push(command);
+            let direction = command.substring(3).trim();
+            lastDirection = direction;
         }
         else
         {
             switch (command)
             {
-                case 'use coins':
-                    coins.forEach(c => { input.addCommand('use ' + c)});
-                    break;
-                case 'take coins':
-                    coins.forEach(c => { input.addCommand('take ' + c)});
-                    shuffleCoins();
-                    input.addCommand('use coins');
-                    break;
-                case 'save history':
-                    saveHistory();
-                    break;
                 case 'save map':
                     saveMap();
                     break;
                 case 'halt':
+                    lastRoom = undefined; // prevent setting deadEnd
                     process.exit(0);
-                    break;
-                default:
-                    history.push(command);
                     break;
             }
         }
@@ -362,16 +245,20 @@ module.exports = function()
 
     output.didPrint = function(output)
     {
-        console.log(output);
-
+        $didPrint(output);
+        
         if (output === '')
         {
             status = NONE;
         }
-        else if (output === 'As you place the last coin, they are all released onto the floor.')
+        else if (output === "That door is locked.")
         {
-            // retake all the coins
-            input.addCommand('take coins');
+            let coins = [ "red coin", "shiny coin", "corroded coin", "concave coin", "blue coin" ];
+            coins.forEach(c => { input.addCommand('use ' + c)});
+        }
+        else if (output === "I don't understand; try 'help' for instructions.")
+        {
+            input.addCommand('look');
         }
         else if (output.startsWith('=='))
         {
@@ -407,6 +294,10 @@ module.exports = function()
                         currentRoom.objects = [];
                     let object = output.substring(2).trim();
                     currentRoom.objects.push(object);
+                    input.addCommand("take " + object);
+                    input.addCommand("use " + object);
+                    if (object === "can")
+                        input.addCommand("use lantern");
                     break;
                 case EXITS:
                     if (currentRoom == null)
@@ -423,10 +314,4 @@ module.exports = function()
     }
 
     loadMap();
-    loadHistory();
-
-    return {
-        read: read,
-        print: output.print
-    };
 }

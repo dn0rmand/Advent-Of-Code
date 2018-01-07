@@ -3,10 +3,14 @@ const synacor = module.exports = function()
     const fs = require('fs');
 
     const vm = require('./vm.js')();
-    const map = require('./map.js')();
+    const input = require('./input.js')();
+    const output = require('./output.js')();
+    
+    require('./map.js')(input, output);
+    require('./history.js')(input, output);
 
-    vm.read = map.read;
-    vm.print = map.print;
+    vm.read  = input.read;
+    vm.print = output.print;
     
     let inputStream = fs.createReadStream('Data/challenge.bin');
 
