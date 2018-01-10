@@ -98,5 +98,5 @@ module.exports = function(input, output)
         }
     }
 
-    //loadHistory();
+    loadHistory();
 }

@@ -1,4 +1,7 @@
 module.exports = function () {
+
+    const disassembler = require('./disassembler.js')();
+
     function getRegisterName(register) {
         if (typeof (register) !== "number")
             throw "Invalid Argument";
@@ -30,11 +33,23 @@ module.exports = function () {
         $stack: [],
         $memory: [],
         $current: 0,
+        $maxAddress:0,
 
         read: function (callback) {},
         print: function (value) {},
         resume: function () {
             while (this.$current >= 0) {
+                let PTR = this.$current;
+
+                // disassembler.$current = this.$current;
+                // disassembler.$memory  = this.$memory;
+                // let display = disassembler.execute();
+
+                // To know what to disassemble
+                if (this.$current > this.$maxAddress)
+                    this.$maxAddress = this.$current;
+                //
+
                 let code = this.readMemory(this.$current++);
                 if (code >= this.$opcodes.length)
                     throw "Invalid opcode";
@@ -45,9 +60,19 @@ module.exports = function () {
                     args.push(this.readMemory(this.$current++));
                 }
 
-                let willCallback = instruction.fn(...args);
-                if (willCallback === true)
-                    break;
+                if (PTR === 0x1571)
+                {
+                    // Fake validation
+                    this.$registers.A = 6;
+                    // And skip actuall call to validation function
+                    // The right H register value is 
+                }
+                else
+                {
+                    let willCallback = instruction.fn(...args);
+                    if (willCallback === true)
+                        break;
+                }
             }
         },
         execute: function () {
@@ -59,9 +84,18 @@ module.exports = function () {
             let lo = this.$memory[addr];
             let hi = this.$memory[addr + 1];
 
-            return (hi << 8) | lo;
+            let value = (hi << 8) | lo;
+
+            return value; 
         },
         writeMemory: function (addr, value) {
+            if (addr === 3952)
+            {                
+                console.log("Orb's weight set to " + value);
+                value = 30;
+                this.$registers.A = 30;
+            }
+
             addr <<= 1; // 2 bytes per address
             let lo = value & 0xFF;
             let hi = (value >> 8) & 0xFF;
@@ -86,6 +120,18 @@ module.exports = function () {
                 return arg1;
 
             let reg = getRegisterName(arg1);
+
+            if (reg === 'H')
+            {
+                let v = this.$registers[reg];
+                if (v === undefined)
+                    this.$registers[reg] = 0;
+                else
+                    this.$registers[reg] = 25734; // 0x6486
+
+                return v || 0;
+            }
+            
             return this.$registers[reg] || 0;
         }
     };

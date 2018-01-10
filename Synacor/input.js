@@ -1,9 +1,7 @@
 module.exports = function () {
-    const console = require('simple-console-color');
-    
     // process.stdin.setRawMode(true);
     // process.stdin.resume();
-    process.stdout.resume();
+    // process.stdout.resume();
 
     let input = [];
     let command = '';
@@ -24,7 +22,7 @@ module.exports = function () {
         },
 
         didRead: function(input) {
-            console.logYellow('> ' + input);
+            console.log('> ' + input);
         },
 
         read: function (callback) {

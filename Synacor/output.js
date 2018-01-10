@@ -1,12 +1,11 @@
 module.exports = function () {
     //process.stdout.resume();
-    const console = require('simple-console-color');
 
     let output = '';
 
     let self = {
         didPrint: function (output) {
-            console.logBlue(output);
+            console.log(output);
         },
         print: function (v) {
 

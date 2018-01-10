@@ -1,0 +1,477 @@
+<svg width="600pt" height="1500pt" viewBox="0.00 0.00 100 1500.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(-1150 1480)">
+        <!-- 0a3f -->
+        <g id="node151" class="node">
+            <title>0a3f</title>
+            <ellipse fill="none" stroke="black" cx="1055" cy="-1368" rx="86.3788" ry="18"></ellipse>
+            <text text-anchor="middle" x="1055" y="-1363.8" font-family="Times,serif" font-size="14.00">Vault Antechamber 22</text>
+        </g>
+        <!-- 09fe&#45;&gt;0a3f -->
+        <g id="edge204" class="edge">
+            <title>09fe-&gt;0a3f</title>
+            <path fill="none" stroke="black" d="M1024.33,-1459.29C1017.95,-1454.01 1011.95,-1447.53 1008.45,-1440 1001.7,-1425.49 1001.3,-1418.32 1008.45,-1404 1010.65,-1399.6 1013.69,-1395.6 1017.19,-1392.02"></path>
+            <polygon fill="black" stroke="black" points="1019.67,-1394.49 1024.85,-1385.25 1015.04,-1389.24 1019.67,-1394.49"></polygon>
+            <text text-anchor="middle" x="1023.78" y="-1417.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 09f9&#45;&gt;09f4 -->
+        <g id="edge208" class="edge">
+            <title>09f9-&gt;09f4</title>
+            <path fill="none" stroke="black" d="M1223.84,-1494.38C1218.97,-1505.89 1211.12,-1520.55 1200,-1530 1189.65,-1538.8 1176.88,-1545.47 1164.11,-1550.51"></path>
+            <polygon fill="black" stroke="black" points="1162.59,-1547.34 1154.38,-1554.04 1164.98,-1553.92 1162.59,-1547.34"></polygon>
+            <text text-anchor="middle" x="1227.83" y="-1516.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a3f&#45;&gt;09fe -->
+        <g id="edge214" class="edge">
+            <title>0a3f-&gt;09fe</title>
+            <path fill="none" stroke="black" d="M1054.18,-1386.34C1053.39,-1403.04 1052.19,-1428.55 1051.28,-1447.93"></path>
+            <polygon fill="black" stroke="black" points="1047.78,-1447.82 1050.8,-1457.97 1054.77,-1448.15 1047.78,-1447.82"></polygon>
+            <text text-anchor="middle" x="1069.17" y="-1417.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a2b -->
+        <g id="node155" class="node">
+            <title>0a2b</title>
+            <ellipse fill="none" stroke="black" cx="1048" cy="-738" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1048" y="-733.8" font-family="Times,serif" font-size="14.00">Vault Lock +</text>
+        </g>
+        <!-- 0a3f&#45;&gt;0a2b -->
+        <g id="edge210" class="edge">
+            <title>0a3f-&gt;0a2b</title>
+            <path fill="none" stroke="black" d="M1031.94,-1350.61C1012.56,-1334.74 988,-1308.76 988,-1279 988,-1279 988,-1279 988,-827 988,-801.664 1005.19,-778.241 1021.16,-761.94"></path>
+            <polygon fill="black" stroke="black" points="1023.61,-764.444 1028.35,-754.97 1018.74,-759.418 1023.61,-764.444"></polygon>
+            <text text-anchor="middle" x="1002.78" y="-1048.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a44 -->
+        <g id="node157" class="node">
+            <title>0a44</title>
+            <ellipse fill="none" stroke="black" cx="1144" cy="-1278" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1144" y="-1273.8" font-family="Times,serif" font-size="14.00">Vault Lock -</text>
+        </g>
+        <!-- 0a3f&#45;&gt;0a44 -->
+        <g id="edge212" class="edge">
+            <title>0a3f-&gt;0a44</title>
+            <path fill="none" stroke="black" d="M1066.54,-1349.78C1074.26,-1338.9 1085.03,-1324.89 1096.24,-1314 1100.98,-1309.39 1106.35,-1304.89 1111.74,-1300.73"></path>
+            <polygon fill="black" stroke="black" points="1114.18,-1303.28 1120.13,-1294.52 1110.01,-1297.66 1114.18,-1303.28"></polygon>
+            <text text-anchor="middle" x="1107.88" y="-1318.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a2b&#45;&gt;0a3f -->
+        <g id="edge220" class="edge">
+            <title>0a2b-&gt;0a3f</title>
+            <path fill="none" stroke="black" d="M1045.82,-756.167C1043.77,-773.881 1041,-802.325 1041,-827 1041,-1279 1041,-1279 1041,-1279 1041,-1299.63 1044.8,-1322.64 1048.44,-1339.95"></path>
+            <polygon fill="black" stroke="black" points="1045.07,-1340.92 1050.65,-1349.93 1051.9,-1339.41 1045.07,-1340.92"></polygon>
+            <text text-anchor="middle" x="1056.17" y="-1048.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a17 -->
+        <g id="node160" class="node">
+            <title>0a17</title>
+            <ellipse fill="none" stroke="black" cx="1054" cy="-648" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1054" y="-643.8" font-family="Times,serif" font-size="14.00">Vault Lock 4</text>
+        </g>
+        <!-- 0a2b&#45;&gt;0a17 -->
+        <g id="edge216" class="edge">
+            <title>0a2b-&gt;0a17</title>
+            <path fill="none" stroke="black" d="M1032.99,-720.563C1025.42,-710.233 1018.75,-696.533 1023.45,-684 1024.87,-680.2 1026.92,-676.542 1029.28,-673.117"></path>
+            <polygon fill="black" stroke="black" points="1032.15,-675.133 1035.66,-665.134 1026.68,-670.765 1032.15,-675.133"></polygon>
+            <text text-anchor="middle" x="1038.78" y="-688.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a30 -->
+        <g id="node162" class="node">
+            <title>0a30</title>
+            <ellipse fill="none" stroke="black" cx="1154" cy="-828" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1154" y="-823.8" font-family="Times,serif" font-size="14.00">Vault Lock 4</text>
+        </g>
+        <!-- 0a2b&#45;&gt;0a30 -->
+        <g id="edge218" class="edge">
+            <title>0a2b-&gt;0a30</title>
+            <path fill="none" stroke="black" d="M1073,-754.038C1082.1,-759.888 1092.29,-766.888 1101,-774 1111.82,-782.83 1122.88,-793.57 1132.08,-803.067"></path>
+            <polygon fill="black" stroke="black" points="1129.59,-805.527 1139.02,-810.357 1134.66,-800.701 1129.59,-805.527"></polygon>
+            <text text-anchor="middle" x="1131.88" y="-778.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a44&#45;&gt;0a3f -->
+        <g id="edge226" class="edge">
+            <title>0a44-&gt;0a3f</title>
+            <path fill="none" stroke="black" d="M1138.55,-1296.36C1134.34,-1307.57 1127.6,-1321.9 1118,-1332 1112.9,-1337.36 1106.8,-1342.12 1100.43,-1346.25"></path>
+            <polygon fill="black" stroke="black" points="1098.42,-1343.38 1091.64,-1351.52 1102.02,-1349.38 1098.42,-1343.38"></polygon>
+            <text text-anchor="middle" x="1143.83" y="-1318.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a44&#45;&gt;0a30 -->
+        <g id="edge222" class="edge">
+            <title>0a44-&gt;0a30</title>
+            <path fill="none" stroke="black" d="M1127.9,-1260.71C1113.29,-1244.12 1094,-1216.94 1094,-1189 1094,-1189 1094,-1189 1094,-917 1094,-891.664 1111.19,-868.241 1127.16,-851.94"></path>
+            <polygon fill="black" stroke="black" points="1129.61,-854.444 1134.35,-844.97 1124.74,-849.418 1129.61,-854.444"></polygon>
+            <text text-anchor="middle" x="1108.78" y="-1048.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a49 -->
+        <g id="node166" class="node">
+            <title>0a49</title>
+            <ellipse fill="none" stroke="black" cx="1250" cy="-1188" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1250" y="-1183.8" font-family="Times,serif" font-size="14.00">Vault Lock 9</text>
+        </g>
+        <!-- 0a44&#45;&gt;0a49 -->
+        <g id="edge224" class="edge">
+            <title>0a44-&gt;0a49</title>
+            <path fill="none" stroke="black" d="M1160.9,-1260.74C1172.31,-1249.99 1187.84,-1235.77 1202.24,-1224 1207.69,-1219.54 1213.65,-1214.96 1219.45,-1210.64"></path>
+            <polygon fill="black" stroke="black" points="1221.76,-1213.29 1227.75,-1204.55 1217.62,-1207.64 1221.76,-1213.29"></polygon>
+            <text text-anchor="middle" x="1213.88" y="-1228.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a17&#45;&gt;0a2b -->
+        <g id="edge232" class="edge">
+            <title>0a17-&gt;0a2b</title>
+            <path fill="none" stroke="black" d="M1054.21,-666.212C1054.2,-676.594 1053.96,-690.075 1053,-702 1052.79,-704.57 1052.52,-707.238 1052.21,-709.904"></path>
+            <polygon fill="black" stroke="black" points="1048.72,-709.582 1050.86,-719.957 1055.66,-710.509 1048.72,-709.582"></polygon>
+            <text text-anchor="middle" x="1069.17" y="-688.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a03 -->
+        <g id="node169" class="node">
+            <title>0a03</title>
+            <ellipse fill="none" stroke="black" cx="1060" cy="-18" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1060" y="-13.8" font-family="Times,serif" font-size="14.00">Vault Lock *</text>
+        </g>
+        <!-- 0a17&#45;&gt;0a03 -->
+        <g id="edge228" class="edge">
+            <title>0a17-&gt;0a03</title>
+            <path fill="none" stroke="black" d="M1032.39,-631.451C1013.14,-615.623 988,-589.174 988,-559 988,-559 988,-559 988,-107 988,-79.8824 1008.73,-56.5279 1027.95,-40.7066"></path>
+            <polygon fill="black" stroke="black" points="1030.3,-43.312 1036.03,-34.3983 1025.99,-37.7952 1030.3,-43.312"></polygon>
+            <text text-anchor="middle" x="1002.78" y="-328.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a1c -->
+        <g id="node171" class="node">
+            <title>0a1c</title>
+            <ellipse fill="none" stroke="black" cx="1154" cy="-558" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1154" y="-553.8" font-family="Times,serif" font-size="14.00">Vault Lock *</text>
+        </g>
+        <!-- 0a17&#45;&gt;0a1c -->
+        <g id="edge230" class="edge">
+            <title>0a17-&gt;0a1c</title>
+            <path fill="none" stroke="black" d="M1057.33,-629.878C1060.31,-618.482 1065.74,-603.85 1075.24,-594 1083.27,-585.666 1093.63,-579.173 1104.19,-574.169"></path>
+            <polygon fill="black" stroke="black" points="1105.69,-577.337 1113.47,-570.147 1102.9,-570.915 1105.69,-577.337"></polygon>
+            <text text-anchor="middle" x="1086.88" y="-598.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a30&#45;&gt;0a2b -->
+        <g id="edge240" class="edge">
+            <title>0a30-&gt;0a2b</title>
+            <path fill="none" stroke="black" d="M1112.12,-816.197C1097.78,-810.828 1082.55,-803.049 1071.34,-792 1064.09,-784.847 1058.92,-775.051 1055.32,-765.826"></path>
+            <polygon fill="black" stroke="black" points="1058.57,-764.512 1052.01,-756.192 1051.95,-766.787 1058.57,-764.512"></polygon>
+            <text text-anchor="middle" x="1084.83" y="-778.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a30&#45;&gt;0a44 -->
+        <g id="edge238" class="edge">
+            <title>0a30-&gt;0a44</title>
+            <path fill="none" stroke="black" d="M1151.82,-846.167C1149.77,-863.881 1147,-892.325 1147,-917 1147,-1189 1147,-1189 1147,-1189 1147,-1209.38 1146.19,-1232.4 1145.41,-1249.79"></path>
+            <polygon fill="black" stroke="black" points="1141.91,-1249.65 1144.93,-1259.81 1148.9,-1249.98 1141.91,-1249.65"></polygon>
+            <text text-anchor="middle" x="1162.17" y="-1048.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a30&#45;&gt;0a1c -->
+        <g id="edge234" class="edge">
+            <title>0a30-&gt;0a1c</title>
+            <path fill="none" stroke="black" d="M1154,-809.828C1154,-764.447 1154,-641.059 1154,-586.071"></path>
+            <polygon fill="black" stroke="black" points="1157.5,-586.029 1154,-576.029 1150.5,-586.029 1157.5,-586.029"></polygon>
+            <text text-anchor="middle" x="1168.78" y="-688.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a35 -->
+        <g id="node175" class="node">
+            <title>0a35</title>
+            <ellipse fill="none" stroke="black" cx="1259" cy="-918" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1259" y="-913.8" font-family="Times,serif" font-size="14.00">Vault Lock -</text>
+        </g>
+        <!-- 0a30&#45;&gt;0a35 -->
+        <g id="edge236" class="edge">
+            <title>0a30-&gt;0a35</title>
+            <path fill="none" stroke="black" d="M1179.04,-843.993C1188.14,-849.838 1198.32,-856.847 1207,-864 1217.57,-872.711 1228.32,-883.32 1237.29,-892.752"></path>
+            <polygon fill="black" stroke="black" points="1234.97,-895.403 1244.35,-900.331 1240.09,-890.63 1234.97,-895.403"></polygon>
+            <text text-anchor="middle" x="1237.88" y="-868.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a49&#45;&gt;0a44 -->
+        <g id="edge246" class="edge">
+            <title>0a49-&gt;0a44</title>
+            <path fill="none" stroke="black" d="M1245.03,-1206.17C1240.97,-1217.58 1234.22,-1232.22 1224,-1242 1215.45,-1250.19 1204.66,-1256.64 1193.81,-1261.65"></path>
+            <polygon fill="black" stroke="black" points="1192.14,-1258.56 1184.3,-1265.69 1194.88,-1265 1192.14,-1258.56"></polygon>
+            <text text-anchor="middle" x="1249.83" y="-1228.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a49&#45;&gt;0a35 -->
+        <g id="edge242" class="edge">
+            <title>0a49-&gt;0a35</title>
+            <path fill="none" stroke="black" d="M1238.11,-1170.22C1220.89,-1143.9 1192.03,-1091.05 1201.45,-1044 1208.77,-1007.44 1228.55,-969.002 1242.88,-944.561"></path>
+            <polygon fill="black" stroke="black" points="1245.93,-946.289 1248.07,-935.913 1239.93,-942.688 1245.93,-946.289"></polygon>
+            <text text-anchor="middle" x="1216.78" y="-1048.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a4e -->
+        <g id="node180" class="node">
+            <title>0a4e</title>
+            <ellipse fill="none" stroke="black" cx="1336" cy="-1098" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1336" y="-1093.8" font-family="Times,serif" font-size="14.00">Vault Lock *</text>
+        </g>
+        <!-- 0a49&#45;&gt;0a4e -->
+        <g id="edge244" class="edge">
+            <title>0a49-&gt;0a4e</title>
+            <path fill="none" stroke="black" d="M1260.92,-1170.32C1268.48,-1159.39 1279.15,-1145.13 1290.24,-1134 1294.78,-1129.44 1299.92,-1124.97 1305.09,-1120.82"></path>
+            <polygon fill="black" stroke="black" points="1307.35,-1123.49 1313.13,-1114.6 1303.07,-1117.95 1307.35,-1123.49"></polygon>
+            <text text-anchor="middle" x="1301.88" y="-1138.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a03&#45;&gt;0a17 -->
+        <g id="edge250" class="edge">
+            <title>0a03-&gt;0a17</title>
+            <path fill="none" stroke="black" d="M1054.09,-35.9653C1048.51,-53.5176 1041,-81.836 1041,-107 1041,-559 1041,-559 1041,-559 1041,-579.591 1044.53,-602.603 1047.91,-619.93"></path>
+            <polygon fill="black" stroke="black" points="1044.52,-620.821 1049.96,-629.911 1051.37,-619.411 1044.52,-620.821"></polygon>
+            <text text-anchor="middle" x="1056.17" y="-328.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a08 -->
+        <g id="node183" class="node">
+            <title>0a08</title>
+            <ellipse fill="none" stroke="black" cx="1135" cy="-108" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1135" y="-103.8" font-family="Times,serif" font-size="14.00">Vault Lock 8</text>
+        </g>
+        <!-- 0a03&#45;&gt;0a08 -->
+        <g id="edge248" class="edge">
+            <title>0a03-&gt;0a08</title>
+            <path fill="none" stroke="black" d="M1085.89,-33.9556C1094,-39.5099 1102.51,-46.3454 1109,-54 1115.62,-61.8072 1121.03,-71.5895 1125.17,-80.6177"></path>
+            <polygon fill="black" stroke="black" points="1122.02,-82.1582 1129.16,-89.9889 1128.46,-79.4169 1122.02,-82.1582"></polygon>
+            <text text-anchor="middle" x="1131.88" y="-58.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a1c&#45;&gt;0a17 -->
+        <g id="edge258" class="edge">
+            <title>0a1c-&gt;0a17</title>
+            <path fill="none" stroke="black" d="M1137.06,-575.302C1125.86,-585.941 1110.76,-600.025 1097,-612 1092.14,-616.23 1086.88,-620.64 1081.76,-624.848"></path>
+            <polygon fill="black" stroke="black" points="1079.46,-622.209 1073.92,-631.238 1083.88,-627.636 1079.46,-622.209"></polygon>
+            <text text-anchor="middle" x="1129.83" y="-598.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a1c&#45;&gt;0a30 -->
+        <g id="edge256" class="edge">
+            <title>0a1c-&gt;0a30</title>
+            <path fill="none" stroke="black" d="M1161.43,-575.88C1163.75,-581.562 1166.18,-587.987 1168,-594 1179.86,-633.124 1182.75,-643.339 1187,-684 1191.31,-725.302 1176.76,-771.976 1165.61,-800.441"></path>
+            <polygon fill="black" stroke="black" points="1162.22,-799.479 1161.7,-810.06 1168.71,-802.115 1162.22,-799.479"></polygon>
+            <text text-anchor="middle" x="1203.17" y="-688.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a1c&#45;&gt;0a08 -->
+        <g id="edge252" class="edge">
+            <title>0a1c-&gt;0a08</title>
+            <path fill="none" stroke="black" d="M1134.35,-541.03C1116.86,-524.889 1094,-498.216 1094,-469 1094,-469 1094,-469 1094,-197 1094,-174.389 1105.26,-151.309 1115.98,-134.462"></path>
+            <polygon fill="black" stroke="black" points="1119.13,-136.039 1121.8,-125.786 1113.32,-132.138 1119.13,-136.039"></polygon>
+            <text text-anchor="middle" x="1108.78" y="-328.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a21 -->
+        <g id="node187" class="node">
+            <title>0a21</title>
+            <ellipse fill="none" stroke="black" cx="1260" cy="-468" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1260" y="-463.8" font-family="Times,serif" font-size="14.00">Vault Lock 11</text>
+        </g>
+        <!-- 0a1c&#45;&gt;0a21 -->
+        <g id="edge254" class="edge">
+            <title>0a1c-&gt;0a21</title>
+            <path fill="none" stroke="black" d="M1159.41,-539.849C1163.76,-528.441 1170.86,-513.806 1181.24,-504 1189.73,-495.971 1200.38,-489.584 1211.07,-484.583"></path>
+            <polygon fill="black" stroke="black" points="1212.63,-487.72 1220.42,-480.539 1209.85,-481.294 1212.63,-487.72"></polygon>
+            <text text-anchor="middle" x="1192.88" y="-508.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a35&#45;&gt;0a30 -->
+        <g id="edge266" class="edge">
+            <title>0a35-&gt;0a30</title>
+            <path fill="none" stroke="black" d="M1217.62,-906.099C1203.46,-900.72 1188.41,-892.96 1177.34,-882 1170.1,-874.831 1164.94,-865.032 1161.34,-855.809"></path>
+            <polygon fill="black" stroke="black" points="1164.59,-854.495 1158.02,-846.179 1157.97,-856.773 1164.59,-854.495"></polygon>
+            <text text-anchor="middle" x="1190.83" y="-868.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a35&#45;&gt;0a49 -->
+        <g id="edge264" class="edge">
+            <title>0a35-&gt;0a49</title>
+            <path fill="none" stroke="black" d="M1258.43,-936.029C1256.91,-981.246 1252.77,-1104.62 1250.91,-1159.75"></path>
+            <polygon fill="black" stroke="black" points="1247.41,-1159.72 1250.58,-1169.83 1254.41,-1159.95 1247.41,-1159.72"></polygon>
+            <text text-anchor="middle" x="1270.17" y="-1048.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a35&#45;&gt;0a21 -->
+        <g id="edge260" class="edge">
+            <title>0a35-&gt;0a21</title>
+            <path fill="none" stroke="black" d="M1261.18,-899.833C1263.23,-882.119 1266,-853.675 1266,-829 1266,-829 1266,-829 1266,-557 1266,-536.583 1264.37,-513.563 1262.81,-496.19"></path>
+            <polygon fill="black" stroke="black" points="1266.29,-495.802 1261.87,-486.176 1259.32,-496.461 1266.29,-495.802"></polygon>
+            <text text-anchor="middle" x="1280.78" y="-688.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a3a -->
+        <g id="node192" class="node">
+            <title>0a3a</title>
+            <ellipse fill="none" stroke="black" cx="1354" cy="-1008" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1354" y="-1003.8" font-family="Times,serif" font-size="14.00">Vault Lock 18</text>
+        </g>
+        <!-- 0a35&#45;&gt;0a3a -->
+        <g id="edge262" class="edge">
+            <title>0a35-&gt;0a3a</title>
+            <path fill="none" stroke="black" d="M1285.56,-933.724C1294.74,-939.441 1304.78,-946.436 1313,-954 1321.91,-962.201 1330.36,-972.499 1337.24,-981.831"></path>
+            <polygon fill="black" stroke="black" points="1334.44,-983.929 1343.09,-990.042 1340.14,-979.867 1334.44,-983.929"></polygon>
+            <text text-anchor="middle" x="1339.88" y="-958.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a4e&#45;&gt;0a49 -->
+        <g id="edge270" class="edge">
+            <title>0a4e-&gt;0a49</title>
+            <path fill="none" stroke="black" d="M1331.24,-1116.34C1327.47,-1127.54 1321.27,-1141.87 1312,-1152 1306.18,-1158.36 1298.94,-1163.85 1291.47,-1168.47"></path>
+            <polygon fill="black" stroke="black" points="1289.62,-1165.5 1282.67,-1173.5 1293.09,-1171.58 1289.62,-1165.5"></polygon>
+            <text text-anchor="middle" x="1336.83" y="-1138.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a4e&#45;&gt;0a3a -->
+        <g id="edge268" class="edge">
+            <title>0a4e-&gt;0a3a</title>
+            <path fill="none" stroke="black" d="M1326.38,-1079.98C1321.7,-1069.43 1317.95,-1055.7 1322.45,-1044 1323.92,-1040.16 1326.04,-1036.47 1328.48,-1033.03"></path>
+            <polygon fill="black" stroke="black" points="1331.41,-1034.98 1335.07,-1025.04 1326.01,-1030.53 1331.41,-1034.98"></polygon>
+            <text text-anchor="middle" x="1337.78" y="-1048.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a08&#45;&gt;0a03 -->
+        <g id="edge276" class="edge">
+            <title>0a08-&gt;0a03</title>
+            <path fill="none" stroke="black" d="M1104.74,-92.8897C1095.58,-87.4281 1086.16,-80.4338 1079.34,-72 1073.26,-64.4722 1068.99,-54.8594 1066.04,-45.8927"></path>
+            <polygon fill="black" stroke="black" points="1069.38,-44.8297 1063.25,-36.1892 1062.65,-46.7673 1069.38,-44.8297"></polygon>
+            <text text-anchor="middle" x="1092.83" y="-58.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a08&#45;&gt;0a1c -->
+        <g id="edge274" class="edge">
+            <title>0a08-&gt;0a1c</title>
+            <path fill="none" stroke="black" d="M1138.73,-126.105C1142.25,-143.769 1147,-172.175 1147,-197 1147,-469 1147,-469 1147,-469 1147,-489.434 1148.9,-512.453 1150.72,-529.822"></path>
+            <polygon fill="black" stroke="black" points="1147.25,-530.277 1151.82,-539.833 1154.21,-529.509 1147.25,-530.277"></polygon>
+            <text text-anchor="middle" x="1162.17" y="-328.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a0d -->
+        <g id="node198" class="node">
+            <title>0a0d</title>
+            <ellipse fill="none" stroke="black" cx="1241" cy="-198" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1241" y="-193.8" font-family="Times,serif" font-size="14.00">Vault Lock -</text>
+        </g>
+        <!-- 0a08&#45;&gt;0a0d -->
+        <g id="edge272" class="edge">
+            <title>0a08-&gt;0a0d</title>
+            <path fill="none" stroke="black" d="M1175.3,-120.311C1189.15,-125.731 1203.94,-133.412 1215,-144 1222.58,-151.259 1228.26,-161.193 1232.34,-170.5"></path>
+            <polygon fill="black" stroke="black" points="1229.1,-171.82 1236.03,-179.833 1235.61,-169.247 1229.1,-171.82"></polygon>
+            <text text-anchor="middle" x="1238.88" y="-148.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a21&#45;&gt;0a1c -->
+        <g id="edge284" class="edge">
+            <title>0a21-&gt;0a1c</title>
+            <path fill="none" stroke="black" d="M1243.55,-485.358C1232.43,-496.147 1217.24,-510.378 1203,-522 1197.45,-526.531 1191.36,-531.144 1185.42,-535.471"></path>
+            <polygon fill="black" stroke="black" points="1182.99,-532.9 1176.89,-541.562 1187.07,-538.595 1182.99,-532.9"></polygon>
+            <text text-anchor="middle" x="1235.83" y="-508.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a21&#45;&gt;0a35 -->
+        <g id="edge282" class="edge">
+            <title>0a21-&gt;0a35</title>
+            <path fill="none" stroke="black" d="M1279.32,-485.038C1296.53,-501.228 1319,-527.938 1319,-557 1319,-829 1319,-829 1319,-829 1319,-854.336 1301.81,-877.759 1285.84,-894.06"></path>
+            <polygon fill="black" stroke="black" points="1283.39,-891.556 1278.65,-901.03 1288.26,-896.582 1283.39,-891.556"></polygon>
+            <text text-anchor="middle" x="1334.17" y="-688.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a21&#45;&gt;0a0d -->
+        <g id="edge278" class="edge">
+            <title>0a21-&gt;0a0d</title>
+            <path fill="none" stroke="black" d="M1248.85,-450.124C1234.3,-426.929 1209.73,-383.356 1201.45,-342 1193.13,-300.474 1211.81,-253.303 1226.24,-224.867"></path>
+            <polygon fill="black" stroke="black" points="1229.36,-226.456 1230.93,-215.977 1223.17,-223.192 1229.36,-226.456"></polygon>
+            <text text-anchor="middle" x="1216.78" y="-328.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a26 -->
+        <g id="node203" class="node">
+            <title>0a26</title>
+            <ellipse fill="none" stroke="black" cx="1354" cy="-378" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1354" y="-373.8" font-family="Times,serif" font-size="14.00">Vault Lock *</text>
+        </g>
+        <!-- 0a21&#45;&gt;0a26 -->
+        <g id="edge280" class="edge">
+            <title>0a21-&gt;0a26</title>
+            <path fill="none" stroke="black" d="M1265.62,-450.06C1270.05,-438.745 1277.18,-424.136 1287.24,-414 1293.87,-407.313 1302.05,-401.619 1310.38,-396.89"></path>
+            <polygon fill="black" stroke="black" points="1312.2,-399.888 1319.42,-392.134 1308.94,-393.694 1312.2,-399.888"></polygon>
+            <text text-anchor="middle" x="1298.88" y="-418.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a3a&#45;&gt;0a35 -->
+        <g id="edge290" class="edge">
+            <title>0a3a-&gt;0a35</title>
+            <path fill="none" stroke="black" d="M1317.52,-994.625C1305.49,-989.16 1292.78,-981.723 1283.34,-972 1276.19,-964.638 1270.89,-954.799 1267.09,-945.598"></path>
+            <polygon fill="black" stroke="black" points="1270.3,-944.175 1263.54,-936.011 1263.73,-946.604 1270.3,-944.175"></polygon>
+            <text text-anchor="middle" x="1296.83" y="-958.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a3a&#45;&gt;0a4e -->
+        <g id="edge288" class="edge">
+            <title>0a3a-&gt;0a4e</title>
+            <path fill="none" stroke="black" d="M1355.03,-1026.42C1355.24,-1036.87 1354.77,-1050.35 1352,-1062 1351.32,-1064.86 1350.4,-1067.78 1349.34,-1070.64"></path>
+            <polygon fill="black" stroke="black" points="1346.04,-1069.46 1345.37,-1080.03 1352.49,-1072.19 1346.04,-1069.46"></polygon>
+            <text text-anchor="middle" x="1369.17" y="-1048.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a3a&#45;&gt;0a26 -->
+        <g id="edge286" class="edge">
+            <title>0a3a-&gt;0a26</title>
+            <path fill="none" stroke="black" d="M1359.6,-990.011C1364.88,-972.44 1372,-944.107 1372,-919 1372,-919 1372,-919 1372,-467 1372,-446.209 1367.12,-423.204 1362.44,-405.932"></path>
+            <polygon fill="black" stroke="black" points="1365.71,-404.642 1359.6,-395.989 1358.98,-406.566 1365.71,-404.642"></polygon>
+            <text text-anchor="middle" x="1386.78" y="-688.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a0d&#45;&gt;0a08 -->
+        <g id="edge296" class="edge">
+            <title>0a0d-&gt;0a08</title>
+            <path fill="none" stroke="black" d="M1214.59,-182.25C1205.02,-176.432 1194.35,-169.377 1185.34,-162 1174.91,-153.456 1164.47,-142.875 1155.82,-133.419"></path>
+            <polygon fill="black" stroke="black" points="1158.29,-130.931 1149.01,-125.81 1153.07,-135.597 1158.29,-130.931"></polygon>
+            <text text-anchor="middle" x="1198.83" y="-148.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a0d&#45;&gt;0a21 -->
+        <g id="edge294" class="edge">
+            <title>0a0d-&gt;0a21</title>
+            <path fill="none" stroke="black" d="M1242.21,-216.029C1245.41,-261.246 1254.16,-384.624 1258.07,-439.755"></path>
+            <polygon fill="black" stroke="black" points="1254.58,-440.1 1258.78,-449.828 1261.57,-439.605 1254.58,-440.1"></polygon>
+            <text text-anchor="middle" x="1266.17" y="-328.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a12 -->
+        <g id="node210" class="node">
+            <title>0a12</title>
+            <ellipse fill="none" stroke="black" cx="1361" cy="-288" rx="54.621" ry="18"></ellipse>
+            <text text-anchor="middle" x="1361" y="-283.8" font-family="Times,serif" font-size="14.00">Door(30) - 1</text>
+        </g>
+        <!-- 0a0d&#45;&gt;0a12 -->
+        <g id="edge292" class="edge">
+            <title>0a0d-&gt;0a12</title>
+            <path fill="none" stroke="black" d="M1274.78,-212.19C1287.39,-217.922 1301.44,-225.325 1313,-234 1323.71,-242.032 1333.91,-252.699 1342.13,-262.357"></path>
+            <polygon fill="black" stroke="black" points="1339.49,-264.651 1348.54,-270.152 1344.89,-260.205 1339.49,-264.651"></polygon>
+            <text text-anchor="middle" x="1341.88" y="-238.8" font-family="Times,serif" font-size="14.00">east</text>
+        </g>
+        <!-- 0a26&#45;&gt;0a21 -->
+        <g id="edge302" class="edge">
+            <title>0a26-&gt;0a21</title>
+            <path fill="none" stroke="black" d="M1341.57,-395.694C1333.03,-406.624 1321.08,-420.888 1309,-432 1303.83,-436.755 1298,-441.424 1292.21,-445.726"></path>
+            <polygon fill="black" stroke="black" points="1289.92,-443.059 1283.84,-451.733 1294,-448.746 1289.92,-443.059"></polygon>
+            <text text-anchor="middle" x="1339.83" y="-418.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a26&#45;&gt;0a3a -->
+        <g id="edge300" class="edge">
+            <title>0a26-&gt;0a3a</title>
+            <path fill="none" stroke="black" d="M1377.64,-394.475C1398.3,-410.065 1425,-436.18 1425,-467 1425,-919 1425,-919 1425,-919 1425,-945.967 1404.55,-969.333 1385.61,-985.197"></path>
+            <polygon fill="black" stroke="black" points="1383.29,-982.564 1377.64,-991.525 1387.65,-988.044 1383.29,-982.564"></polygon>
+            <text text-anchor="middle" x="1440.17" y="-688.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a26&#45;&gt;0a12 -->
+        <g id="edge298" class="edge">
+            <title>0a26-&gt;0a12</title>
+            <path fill="none" stroke="black" d="M1346.21,-359.755C1342.52,-349.363 1339.49,-335.881 1342.45,-324 1343.2,-320.961 1344.28,-317.896 1345.53,-314.911"></path>
+            <polygon fill="black" stroke="black" points="1348.75,-316.294 1349.99,-305.772 1342.46,-313.226 1348.75,-316.294"></polygon>
+            <text text-anchor="middle" x="1356.78" y="-328.8" font-family="Times,serif" font-size="14.00">north</text>
+        </g>
+        <!-- 0a12&#45;&gt;0a0d -->
+        <g id="edge306" class="edge">
+            <title>0a12-&gt;0a0d</title>
+            <path fill="none" stroke="black" d="M1324.23,-274.61C1310.59,-268.975 1295.49,-261.43 1283.34,-252 1273.51,-244.37 1264.59,-234.01 1257.49,-224.474"></path>
+            <polygon fill="black" stroke="black" points="1260.15,-222.18 1251.51,-216.049 1254.44,-226.23 1260.15,-222.18"></polygon>
+            <text text-anchor="middle" x="1296.83" y="-238.8" font-family="Times,serif" font-size="14.00">west</text>
+        </g>
+        <!-- 0a12&#45;&gt;0a26 -->
+        <g id="edge304" class="edge">
+            <title>0a12-&gt;0a26</title>
+            <path fill="none" stroke="black" d="M1368.46,-306.25C1371.99,-316.644 1374.87,-330.126 1372,-342 1371.27,-345.024 1370.23,-348.079 1369.01,-351.059"></path>
+            <polygon fill="black" stroke="black" points="1365.8,-349.655 1364.69,-360.191 1372.13,-352.651 1365.8,-349.655"></polygon>
+            <text text-anchor="middle" x="1388.17" y="-328.8" font-family="Times,serif" font-size="14.00">south</text>
+        </g>
+        <!-- 0a53 -->
+        <g id="node219" class="node">
+            <title>0a53</title>
+            <ellipse fill="none" stroke="black" cx="1405" cy="-198" rx="32.2356" ry="18"></ellipse>
+            <text text-anchor="middle" x="1405" y="-193.8" font-family="Times,serif" font-size="14.00">Vault</text>
+        </g>
+        <!-- 0a12&#45;&gt;0a53 -->
+        <g id="edge308" class="edge">
+            <title>0a12-&gt;0a53</title>
+            <path fill="none" stroke="black" d="M1366.31,-269.843C1369.87,-259.241 1375,-245.509 1381,-234 1382.87,-230.428 1385.03,-226.785 1387.28,-223.264"></path>
+            <polygon fill="black" stroke="black" points="1390.25,-225.125 1392.92,-214.874 1384.44,-221.217 1390.25,-225.125"></polygon>
+            <text text-anchor="middle" x="1395" y="-238.8" font-family="Times,serif" font-size="14.00">vault</text>
+        </g>
+        <!-- 0a53&#45;&gt;0a12 -->
+        <g id="edge310" class="edge">
+            <title>0a53-&gt;0a12</title>
+            <path fill="none" stroke="black" d="M1410.68,-216.128C1413.25,-226.973 1414.6,-240.978 1409,-252 1406.28,-257.359 1402.3,-262.093 1397.79,-266.208"></path>
+            <polygon fill="black" stroke="black" points="1395.46,-263.586 1389.82,-272.55 1399.82,-269.065 1395.46,-263.586"></polygon>
+            <text text-anchor="middle" x="1426.77" y="-238.8" font-family="Times,serif" font-size="14.00">leave</text>
+        </g>
+    </g>
+</svg>

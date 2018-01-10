@@ -1,7 +1,5 @@
 module.exports = function(input, output)
 {    
-    const console = require('simple-console-color');
-
     function getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -113,7 +111,7 @@ module.exports = function(input, output)
 
     function trace(message) 
     {
-        console.logRed('## ' + message);
+        console.log('## ' + message);
     }
 
     process.exit = function(code) 
