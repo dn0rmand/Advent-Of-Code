@@ -60,6 +60,7 @@
     "look business card", 
     "look strange book", 
     "use teleporter", 
+
     "north", 
     "north", 
     "north", 
@@ -67,20 +68,23 @@
     "north", 
     "north", 
     "north", 
-    "north", 
-    "south", 
     "east", 
     "take journal", 
+    "use journal",
     "west", 
     "north", 
     "north",
     "take orb",
 
-    "north",
-    "north",
-    "east",
-    "east",
-    "east",
-    "north"
+    "north", "east", 
+    "east", "north", 
+    "west", "south", 
+    "east", "east",  
+    "west", "north", 
+    "north", "east", 
+
+    "vault",
+    "take mirror",
+    "use mirror"
 ]
 }

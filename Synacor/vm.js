@@ -28,6 +28,7 @@ module.exports = function () {
     }
 
     let vm = {
+        $hCount: 0,
         $registers: {},
         $opcodes: [],
         $stack: [],
@@ -41,9 +42,9 @@ module.exports = function () {
             while (this.$current >= 0) {
                 let PTR = this.$current;
 
-                // disassembler.$current = this.$current;
-                // disassembler.$memory  = this.$memory;
-                // let display = disassembler.execute();
+                disassembler.$current = this.$current;
+                disassembler.$memory  = this.$memory;
+                let display = disassembler.execute();
 
                 // To know what to disassemble
                 if (this.$current > this.$maxAddress)
@@ -80,6 +81,9 @@ module.exports = function () {
             this.resume();
         },
         readMemory: function (addr) {
+//            if (addr === 3952)
+//                return 30;
+
             addr <<= 1; // 2 bytes per address
             let lo = this.$memory[addr];
             let hi = this.$memory[addr + 1];
@@ -89,12 +93,11 @@ module.exports = function () {
             return value; 
         },
         writeMemory: function (addr, value) {
-            if (addr === 3952)
-            {                
-                console.log("Orb's weight set to " + value);
-                value = 30;
-                this.$registers.A = 30;
-            }
+            // if (addr === 3952)
+            // {                
+            //     value = 30;
+            //     this.$registers.A = 30;
+            // }
 
             addr <<= 1; // 2 bytes per address
             let lo = value & 0xFF;
@@ -123,13 +126,8 @@ module.exports = function () {
 
             if (reg === 'H')
             {
-                let v = this.$registers[reg];
-                if (v === undefined)
-                    this.$registers[reg] = 0;
-                else
-                    this.$registers[reg] = 25734; // 0x6486
-
-                return v || 0;
+                if (this.$hCount++ >= 2)
+                    return 25734;
             }
             
             return this.$registers[reg] || 0;
