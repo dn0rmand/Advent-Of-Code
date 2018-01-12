@@ -1,18 +1,22 @@
+-----------
 
-jhXcqYlPhyAC
-HFAkatVnuKQr
-FUIOVFjGqMTP
-QfrJMkGJtTSG
+_ + _ * _^2 + _^3 - _ = 399
 
-TvxUwWUuvqAu -> uAqvuUWwUxvT ( mirror but no luck )
+blue coin: 9
+red: 2
+corroded coin: triangle -> 3
+shiny coin: pentagon -> 5
+concave coin: 7
 
-11c6
-11c9 -> A=1
-6026
+9 + 2 * 5^2 + 7^3 - 3 = 399
 
-5445 (0x1545) < Use Teleporter method ?
+blue coin
+red coin
+shiny coin
+concave coin
+corroded coin
 
------ 9 + 2 * 5^2 + 7^3 - 3 = 399
+------------------
 
 The cover of this book subtly swirls with colors.  
 It is titled "A Brief Introduction to Interdimensional Physics".  
@@ -112,11 +116,3 @@ Day 89: Every once in a great while, one of the crewmembers has the same story: 
 
 Day 144: We are abandoning the mission.  None of us can work out the solution to the puzzle.  I will leave this journal 
          here to help future adventurers, though I am not sure what help it will give.  Good luck!
-
-"north","east",
-"west", "east",
-"west", "east",
-"west", "east",
-"west", "east",
-"east", "north",
-"north", "east"
