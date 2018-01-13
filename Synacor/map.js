@@ -1,4 +1,4 @@
-module.exports = function(input, output)
+module.exports = function(input, output, vm)
 {    
     function getRandomInt(min, max) {
         min = Math.ceil(min);
@@ -27,7 +27,7 @@ module.exports = function(input, output)
     let previousRoom = undefined;
     let lastDirection= null;
 
-    const MAP_FILE_PATH = 'data/map-v1.json';
+    const MAP_FILE_PATH = 'data/map-v3.json';
 
     function cleanUpMap()
     {
@@ -111,7 +111,7 @@ module.exports = function(input, output)
 
     function trace(message) 
     {
-        console.log('## ' + message);
+        // console.log('## ' + message);
     }
 
     process.exit = function(code) 
@@ -128,13 +128,14 @@ module.exports = function(input, output)
 
     function makeId(room)
     {
-        key = room.name + "|" + room.description;
-        let id = ids[key]; 
-        if (id === undefined)
-        {
-            id = ids[key] = nextId++;
-        }
-        return id;
+        return '_' + vm.readMemory(2732);
+        // key = room.name + "|" + room.description;
+        // let id = ids[key]; 
+        // if (id === undefined)
+        // {
+        //     id = ids[key] = nextId++;
+        // }
+        // return id;
     }
 
     function getNextDirection()
@@ -158,9 +159,13 @@ module.exports = function(input, output)
 
         if (notVisited.length > 0)
         {
-            exits = notVisited;
-        }
-        else
+            if (notVisited.length === 1 && notVisited[0] === current.lastTried)
+                notVisited = null;
+            else
+                exits = notVisited;
+        }        
+
+        if (notVisited == null)
         {
             // get visited and not dead-end rooms    
             let visited = exits.filter(exit => {
@@ -172,9 +177,16 @@ module.exports = function(input, output)
             exits = visited;
         }
 
-        // pick randomly
-        let x = getRandomInt(0, exits.length);
-        exit = exits[x];        
+        // pick randomly but try to use a different from the last time
+        
+        do
+        {
+            let x = getRandomInt(0, exits.length);
+            exit = exits[x];  
+        }
+        while (exits.length > 1 && exit === current.lastTried);
+
+        current.lastTried = exit;      
         return exit;
     }
 
@@ -221,6 +233,14 @@ module.exports = function(input, output)
     {
         $didRead(command);
 
+        if (command === "go inside")
+        {
+            input.addCommand("use teleporter");
+            return;
+            // lastRoom = undefined; // prevent setting deadEnd
+            // process.exit(0);
+        }        
+
         if (command.startsWith('go '))
         {
             let direction = command.substring(3).trim();
@@ -247,12 +267,8 @@ module.exports = function(input, output)
         
         if (output === '')
         {
-            status = NONE;
-        }
-        else if (output === "That door is locked.")
-        {
-            let coins = [ "red coin", "shiny coin", "corroded coin", "concave coin", "blue coin" ];
-            coins.forEach(c => { input.addCommand('use ' + c)});
+            if (status !== ROOM) // There might be multiple rows in the description
+                status = NONE;
         }
         else if (output === "I don't understand; try 'help' for instructions.")
         {
@@ -264,7 +280,7 @@ module.exports = function(input, output)
             status = ROOM;
             currentRoom = {
                 name: name,
-                description: '',                
+                description: [],                
                 exits: {}
             };
         }
@@ -293,9 +309,12 @@ module.exports = function(input, output)
                     let object = output.substring(2).trim();
                     currentRoom.objects.push(object);
                     input.addCommand("take " + object);
-                    input.addCommand("use " + object);
-                    if (object === "can")
-                        input.addCommand("use lantern");
+                    if (object.indexOf("coin") < 0)
+                    {
+                        input.addCommand("use " + object);
+                        if (object === "can")
+                            input.addCommand("use lantern");
+                    }
                     break;
                 case EXITS:
                     if (currentRoom == null)
@@ -307,7 +326,7 @@ module.exports = function(input, output)
         }
         else if (status === ROOM)
         {
-            currentRoom.description = output;
+            currentRoom.description.push(output);
         }
     }
 

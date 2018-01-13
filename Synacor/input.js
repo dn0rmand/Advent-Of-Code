@@ -22,7 +22,7 @@ module.exports = function () {
         },
 
         didRead: function(input) {
-            console.log('> ' + input);
+            // console.log('> ' + input);
         },
 
         read: function (callback) {

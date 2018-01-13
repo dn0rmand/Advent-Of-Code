@@ -5,7 +5,7 @@ module.exports = function () {
 
     let self = {
         didPrint: function (output) {
-            console.log(output);
+            //console.log(output);
         },
         print: function (v) {
 

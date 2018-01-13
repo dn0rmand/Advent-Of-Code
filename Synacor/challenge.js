@@ -6,9 +6,10 @@ const synacor = module.exports = function()
 
     const input = require('./input.js')();
     const output = require('./output.js')();
-    
-    //require('./map.js')(input, output);
-    require('./history.js')(input, output);
+
+    require('./map.js')(input, output, vm);
+    require('./coins.js')(input, output);
+    //require('./history.js')(input, output);
 
     vm.read  = input.read;
     vm.print = output.print;

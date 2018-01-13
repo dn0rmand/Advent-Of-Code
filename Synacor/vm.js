@@ -81,8 +81,10 @@ module.exports = function () {
             this.resume();
         },
         readMemory: function (addr) {
-           if (addr === 3952)
-               return 30;
+            // No need to force the Orb's weight to be 30
+
+            //    if (addr === 3952)
+            //        return 30;
 
             addr <<= 1; // 2 bytes per address
             let lo = this.$memory[addr];
@@ -93,11 +95,13 @@ module.exports = function () {
             return value; 
         },
         writeMemory: function (addr, value) {
-            if (addr === 3952)
-            {                
-                value = 30;
-                this.$registers.A = 30;
-            }
+            // No need to force the Orb's weight to be 30
+
+            // if (addr === 3952)
+            // {                
+            //     value = 30;
+            //     this.$registers.A = 30;
+            // }
 
             addr <<= 1; // 2 bytes per address
             let lo = value & 0xFF;
