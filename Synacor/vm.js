@@ -1,8 +1,11 @@
-module.exports = function () {
+const globals = require('./globals.js');
 
-    const disassembler = require('./disassembler.js')();
+module.exports = globals.declare('vm', function () 
+{
+    const ui = require("./ui.js");
 
-    function getRegisterName(register) {
+    function getRegisterName(register) 
+    {
         if (typeof (register) !== "number")
             throw "Invalid Argument";
 
@@ -17,7 +20,8 @@ module.exports = function () {
         throw "Invalid Argument";
     }
 
-    function getRegisterOrValue(arg1) {
+    function getRegisterOrValue(arg1) 
+    {
         if (typeof (arg1) !== "number")
             throw "Invalid Argument";
 
@@ -33,23 +37,14 @@ module.exports = function () {
         $opcodes: [],
         $stack: [],
         $memory: [],
+        $executing: 0,
         $current: 0,
-        $maxAddress:0,
-
+        $debugging: false,
         read: function (callback) {},
         print: function (value) {},
         resume: function () {
             while (this.$current >= 0) {
-                let PTR = this.$current;
-
-                disassembler.$current = this.$current;
-                disassembler.$memory  = this.$memory;
-                let display = disassembler.execute();
-
-                // To know what to disassemble
-                if (this.$current > this.$maxAddress)
-                    this.$maxAddress = this.$current;
-                //
+                this.$executing = this.$current;
 
                 let code = this.readMemory(this.$current++);
                 if (code >= this.$opcodes.length)
@@ -61,7 +56,7 @@ module.exports = function () {
                     args.push(this.readMemory(this.$current++));
                 }
 
-                if (PTR === 0x1571)
+                if (this.$executing === 0x1571)
                 {
                     // Fake validation
                     this.$registers.A = 6;
@@ -72,7 +67,13 @@ module.exports = function () {
                 {
                     let willCallback = instruction.fn(...args);
                     if (willCallback === true)
-                        break;
+                        return;
+                }
+
+                if (this.$debugging)
+                {
+                    ui.updateAll();
+                    break;
                 }
             }
         },
@@ -117,6 +118,7 @@ module.exports = function () {
                 throw "Invalid Argument";
 
             value = value & 0x7FFF;
+            let old = this.$registers[reg] || 0;
             this.$registers[reg] = value;
         },
         getValue: function (arg1) {
@@ -137,6 +139,25 @@ module.exports = function () {
             return this.$registers[reg] || 0;
         }
     };
+
+    ui.updateRegisters = function() {
+        let value = null;
+        let first = 'A'.charCodeAt(0);
+        for(let i = 0; i < 8; i++)
+        {
+            let k = String.fromCharCode(first+i);
+
+            if (value != null)
+                value += '  ';
+            else
+                value = '';
+            let v = vm.$registers[k] || 0;
+            value += '{bold}' + k + '{/bold}: ' + globals.asHexa(v, 4);
+        }
+
+        ui.registers.setContent(value);
+        ui.render(true);
+    }
 
     function addOpcode(argCount, fcnt) {
         vm.$opcodes.push({
@@ -262,6 +283,7 @@ module.exports = function () {
     });
     // in
     addOpcode(1, (a) => {
+        ui.updateAll();
         vm.read((v) => {
             vm.setRegister(a, v);
             vm.resume();
@@ -272,4 +294,4 @@ module.exports = function () {
     addOpcode(0, () => {});
 
     return vm;
-}
+});

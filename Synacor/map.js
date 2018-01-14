@@ -1,5 +1,9 @@
-module.exports = function(input, output, vm)
+module.exports = (function()
 {    
+    const vm     = require("./vm.js");
+    const input  = require('./input.js');
+    const output = require('./output.js');
+
     function getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -111,7 +115,7 @@ module.exports = function(input, output, vm)
 
     function trace(message) 
     {
-        // console.log('## ' + message);
+        console.log('## ' + message);
     }
 
     process.exit = function(code) 
@@ -129,13 +133,6 @@ module.exports = function(input, output, vm)
     function makeId(room)
     {
         return '_' + vm.readMemory(2732);
-        // key = room.name + "|" + room.description;
-        // let id = ids[key]; 
-        // if (id === undefined)
-        // {
-        //     id = ids[key] = nextId++;
-        // }
-        // return id;
     }
 
     function getNextDirection()
@@ -331,4 +328,6 @@ module.exports = function(input, output, vm)
     }
 
     loadMap();
-}
+
+    return 'map-engine-loaded';
+})();

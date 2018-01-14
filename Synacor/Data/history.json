@@ -91,6 +91,7 @@
     
     "vault",
     "take mirror",
-    "use mirror"
+    "use mirror",
+    "halt"
 ]
 }

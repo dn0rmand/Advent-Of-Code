@@ -1,6 +1,7 @@
-module.exports = function () {
-    //process.stdout.resume();
+const globals = require('./globals.js');
 
+module.exports = globals.declare('output', () => 
+{
     let output = '';
 
     let self = {
@@ -17,6 +18,7 @@ module.exports = function () {
             } else
                 output += s;
         }
-    }
+    }   
+    
     return self;
-}
+});

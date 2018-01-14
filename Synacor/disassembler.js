@@ -1,18 +1,14 @@
-module.exports = function () {
-    function asHexa(value, length)
-    {
-        let str = value.toString(16);
-        if (typeof(length) === "number")
-        {
-            while (str.length < length)
-                str = '0' + str;
-        }
-        return '0x' + str;
-    }
+const globals = require('./globals.js');
 
-    function isRegister(register) {
+module.exports = globals.declare('disassembler', () =>
+{
+    const ui = require('./ui.js');
+    const vm = require('./vm.js');
+
+    function isRegister(register) 
+    {
         if (typeof (register) !== "number")
-            throw "Invalid Argument";
+            return false;
 
         if (register >= 32768 && register <= 32775)
             return true;
@@ -20,8 +16,10 @@ module.exports = function () {
         return false;
     }
 
-    function getRegister(register) {
-        if (isRegister(register)) {
+    function getRegister(register) 
+    {
+        if (isRegister(register)) 
+        {
             const reg0 = 'A'.charCodeAt(0);
 
             let reg = String.fromCharCode(reg0 + (register - 32768));
@@ -29,81 +27,65 @@ module.exports = function () {
             return reg;
         }
 
-        throw "Invalid Argument";
+        return "?";
     }
 
-    function getValue(arg1, length) {
+    function getValue(arg1, length) 
+    {
         if (! isRegister(arg1))
-            return asHexa(arg1, length);
+        {
+            if (length === undefined && arg1 >= 0 && arg1 < 10)
+                return arg1;
+            return globals.asHexa(arg1, length);
+        }
         else
             return getRegister(arg1);
     }
 
-    let outInstruction;
-
-    let vm = {
+    let disassembler = {
         $opcodes: [],
-        $memory: [],
+        $memory: vm.$memory,
         $current: 0,
 
-        execute: function () {
-            let address = this.$current;
-            let code = this.readMemory(this.$current++);
-            if (code >= this.$opcodes.length)
-                throw "Invalid opcode " + asHexa(code);
-
-            let instruction = this.$opcodes[code];
-            let result;
-
-            if (instruction === outInstruction)
+        findPrevious: function(address, count)
+        {
+            while (count-- > 0)
             {
-                let str = null;
-                let needQuote = true;
-                let nextCode;
-
-                this.$current--;
+                let lastGood = address;
+                let code;
                 do
                 {
-                    this.$current++;
-                    var c = this.readMemory(this.$current++);
-                    if (isRegister(c))
+                    if (address == 0)
+                        break;
+                    code = this.readMemory(--address);
+                    if (code < this.$opcodes.length)
                     {
-                        if (str != null)
-                            str += "' + " + getRegister(c);
-                        else
-                            str = "print " + getRegister(c);
-
-                        needQuote = true;
+                        let ins = this.$opcodes[code];
+                        let args = ins.argCount;
+                        if (address+args+1 > lastGood)
+                        {
+                            code = 0x1111;//invalid
+                        }
                     }
-                    else 
-                    {
-                        if (str == null)
-                            str = "print '";
-                        else if (needQuote)
-                            str += " + '";
-                        needQuote = false;
-
-                        if (c === 10)
-                            str += '\\n';
-                        else if (c === 13)
-                            str += '\\r';
-                        else if (c === 9)
-                            str += '\\t';
-                        else if (c < 32)  
-                            str += '\\x0' + asHexa(c);
-                        else
-                            str += String.fromCharCode(c);
-                    }
-                    nextCode = this.readMemory(this.$current);
                 }
-                while(code === nextCode);
+                while (code >= this.$opcodes.length);
+            }
+            return address;
+        },
+        get: function () 
+        {
+            let address = this.$current;
+            let result = '  ' + globals.asHexa(address, 4) + ': ';
 
-                if (! needQuote)
-                    str += "'";
-                result = str;
+            let code = this.readMemory(this.$current++);
+            if (code >= this.$opcodes.length)
+            {
+                return ''; // Empty so no display
+                // result += "DATA [" + globals.asHexa(code, 4) + "]";
             }
             else
             {
+                let instruction = this.$opcodes[code];
                 let args = [];
 
                 for (let i = 0; i < instruction.argCount; i++) {
@@ -111,12 +93,9 @@ module.exports = function () {
                     args.push(c);
                 }          
 
-                result = instruction.fn(...args);
+                result += instruction.fn(...args);
             }
-
-            if (result === '')
-                return '';
-            return asHexa(address, 4) + ':  ' + result;
+            return result;
         },
         readMemory: function (address) {
             address <<= 1; // 2 bytes per address
@@ -127,13 +106,99 @@ module.exports = function () {
         }
     };
 
-    function addOpcode(argCount, fcnt) {
+    ui.updateCode2 = function() 
+    {
+        if (address === undefined)
+            address = vm.$executing;
+
+        address = disassembler.findPrevious(address, 3);
+
+        if (disassembler.lastAddress !== address)
+        {
+            let codeBox = ui.code;
+            codeBox.clearItems();
+
+            disassembler.lastAddress = address;
+            disassembler.$current = address;
+            for(let i = 0; i < codeBox.height-2;)
+            {
+                let value = disassembler.get();
+                if (value != '') {
+                    codeBox.add(value);
+                    i++;
+                }
+            }
+            ui.render(true);
+        }
+    }
+
+    let codeMap = new Map();
+    let lastSelected = -1;
+
+    function scrollToPosition() 
+    {
+        function setSelection(index, select)
+        {
+            lastSelected = select ? index : -1;
+            if (index >= 0)
+            {
+                let el = codeBox.getItem(index);
+                el.style.bg = select ? 'green' : 'black';
+            }
+        }
+
+        let codeBox = ui.code;
+
+        setSelection(lastSelected, false);
+
+        let address = vm.$executing;
+        let index = codeMap.get(address);
+        if (index === undefined)
+            return;
+
+        setSelection(index, true);
+
+        codeBox.select(index);
+        index += 14; // To show current execution line in the center
+
+        if (index >= codeMap.size)
+            index = codeMap.size-1;
+
+        codeBox.scrollTo(index);
+    }
+
+    ui.updateCode = function() 
+    {
+        ui.updateCode = scrollToPosition;
+
+        let codeBox = ui.code;
+
+        codeBox.clearItems();
+
+        let count = disassembler.$memory.length / 2;
+
+        disassembler.$current = 0;
+        let index = 0;
+        while (disassembler.$current < count)
+        {
+            let addr = disassembler.$current;
+            let value = disassembler.get();
+            if (value != '') {
+                codeBox.add(value);
+                codeMap.set(addr, index++);
+            }
+        }
+        ui.render(true);
+    }
+
+    function addOpcode(argCount, fcnt) 
+    {
         let inst = {
             argCount: argCount,
             fn: fcnt
         };
 
-        vm.$opcodes.push(inst);
+        disassembler.$opcodes.push(inst);
         return inst;
     }
 
@@ -216,9 +281,6 @@ module.exports = function () {
         return 'return';
     });
     // out
-
-    //outInstruction = 
-    
     addOpcode(1, (a) => {
         if (isRegister(a) || a < 32)
             return 'print ' + getValue(a);                
@@ -231,8 +293,8 @@ module.exports = function () {
     });
     // noop
     addOpcode(0, () => {
-        return '';
+        return 'noop';
     });
 
-    return vm;
-}
+    return disassembler;
+});

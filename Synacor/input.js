@@ -1,8 +1,7 @@
-module.exports = function () {
-    // process.stdin.setRawMode(true);
-    // process.stdin.resume();
-    // process.stdout.resume();
+const globals = require('./globals.js');
 
+module.exports = globals.declare('input', () => 
+{
     let input = [];
     let command = '';
 
@@ -22,13 +21,19 @@ module.exports = function () {
         },
 
         didRead: function(input) {
-            // console.log('> ' + input);
+            console.log('> ' + input);
         },
 
+        getData: function(callback) {
+            process.stdin.once('data', (data) => {
+                callback(data);
+            });
+        },
+        
         read: function (callback) {
             self.willRead();
             if (input.length === 0) {
-                process.stdin.once('data', (data) => {
+                self.getData((data) => {
                     input.push(...data);
                     process.nextTick(() => {
                         self.read(callback);
@@ -58,4 +63,4 @@ module.exports = function () {
     };
 
     return self;
-}
+});

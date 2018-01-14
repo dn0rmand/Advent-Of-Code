@@ -1,5 +1,9 @@
-module.exports = function(input, output)
+module.exports = (function()
 {    
+    const fs     = require('fs');    
+    const input  = require('./input.js');
+    const output = require('./output.js');
+
     input.addCommand("go south");
     input.addCommand("go north"); 
     input.addCommand("take tablet"); 
@@ -27,8 +31,6 @@ module.exports = function(input, output)
     input.addCommand("go darkness");
     input.addCommand("go continue");
     input.addCommand("go west");
-
-    const fs = require('fs');    
 
     const $didPrint = output.didPrint;
     const $didRead  = input.didRead;
@@ -119,4 +121,6 @@ module.exports = function(input, output)
             input.addCommand('take coins');
         }
     }
-}
+
+    return 'coin-manager-loaded';
+})();

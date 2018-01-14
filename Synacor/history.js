@@ -1,6 +1,7 @@
-module.exports = function(input, output)
+module.exports = (function()
 {    
-    const fs = require('fs');    
+    const input = require('./input.js');
+    const fs    = require('fs');    
 
     const $didRead  = input.didRead;
 
@@ -33,6 +34,9 @@ module.exports = function(input, output)
             case 'save history':
                 saveHistory();
                 break;
+            case "halt":
+                process.exit();
+                break;
             default:
                 history.push(command);
                 break;
@@ -40,4 +44,6 @@ module.exports = function(input, output)
     }
 
     loadHistory();
-}
+
+    return history;
+});
