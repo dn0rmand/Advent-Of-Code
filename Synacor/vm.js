@@ -119,6 +119,8 @@ module.exports = globals.declare('vm', function ()
 
             value = value & 0x7FFF;
             let old = this.$registers[reg] || 0;
+            if (old !== value)
+                ui.updateRegister(reg, value);
             this.$registers[reg] = value;
         },
         getValue: function (arg1) {
@@ -141,22 +143,22 @@ module.exports = globals.declare('vm', function ()
     };
 
     ui.updateRegisters = function() {
-        let value = null;
-        let first = 'A'.charCodeAt(0);
-        for(let i = 0; i < 8; i++)
-        {
-            let k = String.fromCharCode(first+i);
+        // let value = null;
+        // let first = 'A'.charCodeAt(0);
+        // for(let i = 0; i < 8; i++)
+        // {
+        //     let k = String.fromCharCode(first+i);
 
-            if (value != null)
-                value += '  ';
-            else
-                value = '';
-            let v = vm.$registers[k] || 0;
-            value += '{bold}' + k + '{/bold}: ' + globals.asHexa(v, 4);
-        }
+        //     if (value != null)
+        //         value += '  ';
+        //     else
+        //         value = '';
+        //     let v = vm.$registers[k] || 0;
+        //     value += '{bold}' + k + '{/bold}: ' + globals.asHexa(v, 4);
+        // }
 
-        ui.registers.setContent(value);
-        ui.render(true);
+        // ui.registers.setContent(value);
+        // ui.render(true);
     }
 
     function addOpcode(argCount, fcnt) {
