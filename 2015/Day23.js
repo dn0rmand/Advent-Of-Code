@@ -91,7 +91,6 @@ module.exports = function()
         while ($current < $instructions.length)
         {
             process.stdout.write('\ra=' + $registers.a + ' , b=' + $registers.b + '          ');
-            global.gc();
             var i = $instructions[$current];            
             var offset = i.fn(i.arg1, i.arg2);
             if (offset === undefined)

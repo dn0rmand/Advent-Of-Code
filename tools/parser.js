@@ -10,13 +10,16 @@ module.exports = function(input) {
             index++;        
     }
 
-    let getToken = function()
+    let getToken = function(length)
     {
         let token = "";
 
         skipSpaces();
 
-        while (index < line.length)
+        if (length === undefined)
+            length = line.length+1;
+
+        while (index < line.length && token.length < length)
         {
             let c = line[index];
             
@@ -28,7 +31,7 @@ module.exports = function(input) {
             else if (token.length > 0 && c >= '0' &&  c <= '9')
             {
                 index++;
-                token + c;
+                token += c;
             }
             else
             {
@@ -127,7 +130,7 @@ module.exports = function(input) {
 
     let expectToken = function(expected)
     {
-        expect(getToken(), expected);
+        expect(getToken(expected.length), expected);
     }
 
     let expectNumber = function(expected)

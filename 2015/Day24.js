@@ -69,7 +69,6 @@ module.exports = function()
             {
                 percent = p;
                 process.stdout.write('\r'+p+"%");
-                global.gc();
             }
 
             if (i > (m^i)) 

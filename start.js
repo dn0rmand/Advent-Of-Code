@@ -17,7 +17,7 @@ var properties = [
         minimum:1,
         maximum:3,
         warning: 'Enter either 1,2 or 3',
-        default: '3',
+        default: '2',
         before: function(value) { return value+2014; }
     },
     {
@@ -28,7 +28,7 @@ var properties = [
         minimum:1,
         maximum:25,
         warning: 'Enter a day number between 1 and 25',
-        default: '22'
+        default: '1'
     }
 ];
 
