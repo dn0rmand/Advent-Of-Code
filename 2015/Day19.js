@@ -18,8 +18,7 @@ module.exports = function()
         parseInput(line);
     })
     .on('close', () => {
-        var molecules = calibrate(conversions, input);
-        var result = molecules.length;
+        var result = calibrate(conversions, input);
         console.log("PART1: " + result + " different molecules in 1 step");
 
         var steps = findShortestPath(input)
@@ -29,16 +28,17 @@ module.exports = function()
 
     function calibrate(converter, input)
     {
-        var molecules = {}
+        var molecules = new Set();
 
-        search(converter, input, function(molecule) {
-            molecules[molecule] = 1;
-        });
+        for (let molecule of search(converter, input))
+        {
+            molecules.add(molecule);
+        }
 
-        return Object.keys(molecules);
+        return molecules.size;
     }
 
-    function search(converter, input, callback)
+    function *search(converter, input, callback)
     {
         if (converter.$keys === undefined) 
             converter.$keys = Object.keys(converter);
@@ -55,8 +55,7 @@ module.exports = function()
                 for (var r = 0; r < convert.length ; r++)
                 {
                     var molecule = input.substring(0, index) + convert[r] + input.substring(index+slen);
-
-                    callback(molecule);
+                    yield molecule;
                 }
                 index = input.indexOf(search, index+1);
             }
@@ -65,41 +64,39 @@ module.exports = function()
 
     function findShortestPath(input)
     {
-        var minStep = 205;
+        var minStep = undefined;
         var visited = {};
-        var count   = 0;
-        var maxDepth;
 
         function deepSearch(molecule, step)
         {
-            if (minStep !== undefined && step >= minStep)
-                return false; 
+            if (minStep !== undefined)
+                return; 
             
             if (molecule === 'e')
             {
                 minStep = step;
-                console.log('');
-                console.log('So far ' + step + ' is the minimum.')
-                console.log('');
-                return true;
+                return;
             }
 
             var v = visited[molecule];
             if (v !== undefined && v <= step)
-                return false;
+                return;
             visited[molecule] = step;
             
            if (typeof(global.gc) == "function")
                 global.gc();
 
-            search(decrypt, molecule, function(molecule) {                
-                deepSearch(molecule, step+1);
-            });
-
-            return false;
+            for (let m of search(decrypt, molecule)) 
+            {   
+                deepSearch(m, step+1);
+                if (minStep !== undefined)
+                    break;
+            }
         }
 
         deepSearch(input, 0);
+
+        return minStep;
     }
 
     function setValue(obj, key, value)
