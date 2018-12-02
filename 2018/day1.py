@@ -1,36 +1,34 @@
 def loadData():
     frequencies = []
-    data = open('2018/data/day1.data', 'rt') #, os.O_RDONLY)
+    data = open('2018/data/day1.data', 'rt')
 
-    line = data.readline().strip()
+    line = data.readline()
     while line:
         delta = int(line)
         frequencies.append(delta)
-        line = data.readline().strip()
+        line = data.readline()
 
     data.close()
     return frequencies
 
 def part1(frequencies):
-    frequency = 0
-    for delta in frequencies:
-        frequency = frequency+delta
+    frequency = sum(frequencies)
     print("Answer part 1 is", frequency)
 
 def part2(frequencies):
-    duplicates = {0}
-    frequency = 0
-    found  = False
+    processed = {0}
+    frequency  = 0
+    found      = False
 
-    while found == False:
+    while not found:
         for delta in frequencies:
             frequency = frequency+delta
-            if frequency in duplicates:
+            if frequency in processed:
                 found  = True
                 answer = frequency
                 break
             else:
-                duplicates.add(frequency)
+                processed.add(frequency)
 
     print("Answer part 2 is", frequency)
 
