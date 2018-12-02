@@ -32,7 +32,14 @@ def part2(frequencies):
 
     print("Answer part 2 is", frequency)
 
-frequencies = loadData()
+print("")
+print("*******************************")
+print("* Advent of Code 2018 - Day 1 *")
+print("*******************************")
+print("")
 
+frequencies = loadData()
 part1(frequencies)
 part2(frequencies)
+
+print("")
