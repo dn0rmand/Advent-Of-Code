@@ -53,14 +53,15 @@ def loadTest():
 def loadWorld():
     world = World(1010)
 
-    data = open('2018/data/day3.data', 'rt')
+    # data = open('2018/data/day3.data', 'rt')
 
-    input = data.readline().strip()
-    while input:
-        world.importLine(input)
+    with open('2018/data/day3.data', 'rt') as data:
         input = data.readline().strip()
+        while input:
+            world.importLine(input)
+            input = data.readline().strip()
 
-    data.close()
+    # data.close()
     return world
 
 def part1(world):

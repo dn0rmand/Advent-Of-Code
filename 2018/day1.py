@@ -25,7 +25,6 @@ def part2(frequencies):
             frequency = frequency+delta
             if frequency in processed:
                 found  = True
-                answer = frequency
                 break
             else:
                 processed.add(frequency)

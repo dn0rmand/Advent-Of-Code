@@ -1,13 +1,15 @@
+from collections import Counter
+from itertools import combinations
+
+try:
+    from itertools import izip as zip
+except:
+    pass
+
 def loadData():
     words = []
-    data = open('2018/data/day2.data', 'rt')
-
-    word = data.readline().strip()
-    while word:
-        words.append(word)
-        word = data.readline().strip()
-
-    data.close()
+    for line in open('2018/data/day2.data', 'rt'):
+        words.append(line.strip())        
     return words
 
 def part1(words):
@@ -15,51 +17,30 @@ def part1(words):
     twos = 0
 
     for word in words:
-        counts = {}
-        for c in word:
-            if c in counts:
-                counts[c] += 1
-            else:
-                counts[c] = 1
-        hasThree = False
-        hasTwo   = False
-        for k in counts:
-            if counts[k] == 2:
-                hasTwo = True
-            if counts[k] == 3:
-                hasThree = True
-
-        if hasThree: threes += 1
-        if hasTwo: twos += 1
+        cc = Counter(word)
+        if 2 in cc.values(): twos+=1
+        if 3 in cc.values(): threes+=1
 
     print("Answer part 1 is", (twos*threes))
 
 def part2(words):    
-    answer = ""
+    for w1, w2 in combinations(words, 2):
+        diffCount = 0
+        answer = ""
 
-    for i in range(len(words)):
-        word1 = words[i]
+        for a, b in zip(w1, w2):
+            if a == b:
+                answer += a
+            else:
+                diffCount += 1
+                if diffCount > 1:
+                    break
 
-        for j in range(i+1, len(words)):
-            word2 = words[j]
-            diffCount = 0
-            diffIndex = -1
+        if diffCount < 2:
+            print("Answer part 2 is", answer)
+            return
 
-            for x in range(len(word1)):
-                if word1[x] != word2[x]:
-                    diffCount += 1
-                    if diffCount > 1:
-                        break
-                    diffIndex = x
-
-            if diffCount < 2:
-                answer = word1[0:diffIndex] + word1[diffIndex+1:len(word1)]
-                break
-
-        if len(answer) > 0:
-            break
-
-    print("Answer part 2 is", answer)
+    print("Answer part 2 is not found")
 
 print("")
 print("*******************************")
