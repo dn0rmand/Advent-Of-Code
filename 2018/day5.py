@@ -11,52 +11,46 @@ def shouldRemove(a, b):
     return a != b and (a == b.upper() or a == b.lower())
 
 def reducePolymer(polymer):
-    modified = True
-
-    while modified:
-        result = []
-        modified = False
-        a = None
-        for b in polymer:            
-            if a is None:
-                a = b
-            elif shouldRemove(a, b):            
-                a = None
-                modified = True
+    result = []
+    a = None
+    for b in polymer:            
+        if a is None:
+            a = b
+        elif shouldRemove(a, b):            
+            a = None
+            modified = True
+        else:
+            if len(result) > 0:
+                last = result[-1]  
             else:
-                if len(result) > 0:
-                    last = result[-1]  
-                else:
-                    last = None
+                last = None
 
-                if shouldRemove(last, a):
-                    result.pop()
-                else:
-                    result.append(a)
-                a = b
+            if shouldRemove(last, a):
+                result.pop()
+            else:
+                result.append(a)
+            a = b
 
-        if not a is None:
-            result.append(a)
+    answer = len(result)
+    if not a is None:
+        answer += 1
 
-        if modified:
-            polymer = result
-
-    return len(polymer)
+    return answer
 
 def part1(polymer):
     answer = reducePolymer(polymer)     
     print("Answer part 1 is", answer)
 
 def part2(polymer):
-    letters = Counter(polymer.upper()).most_common()
-    min = -1
-    for letter, _ in letters:
-        newPolymer = filter(lambda c: c.upper() != letter, polymer)
+    letters = set([c.upper() for c in polymer])
+    counts  = []  
+    for letter in letters:
+        newPolymer = [c for c in polymer if c.upper() != letter]
         count = reducePolymer(newPolymer)
-        if min == -1 or min > count:
-            min = count
+        counts.append(count)
 
-    print("Answer part 2 is", min)
+    answer = min(counts)
+    print("Answer part 2 is", answer)
 
 print("")
 print("*******************************")
