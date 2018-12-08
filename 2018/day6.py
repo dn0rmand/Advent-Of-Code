@@ -1,6 +1,7 @@
 from parse import parse
 from collections import defaultdict
 from itertools import product
+from time import perf_counter
 
 def loadPoints():
     points = [parse("{:d}, {:d}", line.strip()) for line in open('2018/data/day6.data', 'rt') if line]
@@ -52,5 +53,15 @@ print("")
 
 point, SIZE = loadPoints()
 
+start = perf_counter()
+
 part1(point, SIZE)
+end1 = perf_counter()
+start2 = perf_counter()
 part2(point, SIZE)
+
+end = perf_counter()
+
+print('Part 1 executed in', (end1-start), 'seconds')
+print('Part 1 executed in', (end-start2), 'seconds')
+print('Total =', (end-start), 'seconds')
