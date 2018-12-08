@@ -1,52 +1,48 @@
 def loadData(input):
-    data = [int(v) for v in input.strip().split(' ')]
-    data.reverse()
+    data = [int(v) for v in input.strip().split()]
     return data
 
 def readNode1(input):
-    nodes = input.pop()
-    metadatas = input.pop()
+    nodes, metadatas = input[:2]
+    input = input[2:]
 
     total = 0
     for _ in range(0, nodes):
-        total += readNode1(input)
+        value, input = readNode1(input)
+        total += value
 
-    for _ in range(0, metadatas):
-        total += input.pop()
+    total += sum(input[:metadatas])
 
-    return total
+    return total, input[metadatas:]
 
 def part1(input):
-    input = input.copy()
-    total = 0
-    while input:
-        total += readNode1(input)
-
+    total, _ = readNode1(input)
     print("Answer part 1 is", total)
 
 def readNode2(input):
-    nodes = input.pop()
-    metadatas = input.pop()
+    nodes, metadatas = input[:2]
+    input = input[2:]
 
     total = 0
     if nodes > 0:
-        nodes = [readNode2(input) for _ in range(0, nodes)]        
+        values = []
+        for _ in range(0, nodes):
+            value, input = readNode2(input)
+            values.append(value)
 
-        for _ in range(0, metadatas):
-            m = input.pop()
-            if m > 0 and m <= len(nodes):
-                total += nodes[m-1]
+        total += sum(( values[m-1] for m in input[:metadatas] if m > 0 and m <= nodes ))
+        input = input[metadatas:]
     else:
-        for _ in range(0, metadatas):
-            total += input.pop()
+        total += sum(input[:metadatas])
+        input = input[metadatas:]
 
-    return total
+    return total, input
 
 def part2(input):
-    input = input.copy()
     total = 0
     while input:
-        total += readNode2(input)
+        value, input = readNode2(input)
+        total += value
     print("Answer part 2 is", total)
 
 print("")
