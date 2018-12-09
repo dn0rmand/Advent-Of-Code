@@ -1,6 +1,7 @@
 const fs = require('fs')
 const pretty = require('pretty-hrtime');
 const https = require('https');
+const colors = require('colors');
 
 function convertDate(ts)
 {
@@ -56,7 +57,7 @@ async function getBoard()
     }
     else
     {
-        // Read last saved file
+        // use last saved file
         json = fs.readFileSync("board.json");
     }
 
@@ -95,32 +96,33 @@ async function printBoard()
     let board = await readBoard();
 
     let names = Object.keys(board);
-    names.sort();
+    names.sort((a, b) => board[b].local_score - board[a].local_score);
+
+    let position = 0;
 
     for (let name of names)
     {
+        ++position;
         let user = board[name];
         if (user.stars === 0)
             continue;
 
-        console.group(name);
-            console.log("Stars       :", user.stars);
-            console.log("Last Star   :", user.last_star_ts.toLocaleString());
-            console.log("Local Score :", user.local_score);
-            console.log("Global Score:", user.local_score);
+        console.group(('#' + position).yellow.bold , '-', name.bold.white, ("(" + user.local_score +")").green);
+            console.log("Stars     :", user.stars);
+            console.log("Last Star :", user.last_star_ts.toLocaleString());
             for (let co of Object.keys(user.completion_day_level))
             {
                 cdl = user.completion_day_level[co];
-
-                console.log("Day " + co, 
-                                "- Part 1:", cdl[1].toLocaleString(), 
-                                "- Part 2:", cdl[2].toLocaleString(),
-                                "- differnce:", pretty([cdl.diff, 0], {verbose:true}));
+                if (+co < 10)
+                    co = "0" + co;
+                console.log("Day " + co.bold, 
+                                "   :", cdl[1].toLocaleString(), 
+                                "-", cdl[2].toLocaleString(),
+                                "-", pretty([cdl.diff, 0], {verbose:true}).bold.green);
             }
         console.groupEnd();
         console.log();
     }
-    process.exit(0);
 }
 
 printBoard();

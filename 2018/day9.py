@@ -1,6 +1,10 @@
 from collections import defaultdict
 from collections import deque
 
+def loadData():
+    data = open('2018/data/day9.data', 'rt').readline().strip().split()
+    return int(data[0]), int(data[6])
+
 def solve(players, maxMarble):
     scores  = defaultdict(int)
     marbles = deque([0])
@@ -41,5 +45,6 @@ assert solve(17, 1104) == 2764
 assert solve(21, 6111) == 54718
 assert solve(30, 5807) == 37305
 
-part1(465, 71940)
-part2(465, 71940)
+player, maxMarble = loadData()
+part1(player, maxMarble)
+part2(player, maxMarble)
