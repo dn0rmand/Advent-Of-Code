@@ -82,9 +82,14 @@ async function readBoard()
         for (let co of Object.keys(user.completion_day_level))
         {
             cdl = user.completion_day_level[co];
-            cdl['diff'] = (+(cdl[2].get_star_ts)) - (+(cdl[1].get_star_ts));
-            cdl[1] = convertDate(cdl[1].get_star_ts);
-            cdl[2] = convertDate(cdl[2].get_star_ts);
+            if (cdl[2] !== undefined)
+            {             
+                cdl['diff'] = (+(cdl[2].get_star_ts)) - (+(cdl[1].get_star_ts));
+                cdl[1] = convertDate(cdl[1].get_star_ts);
+                cdl[2] = convertDate(cdl[2].get_star_ts);
+            }
+            else
+                cdl[1] = convertDate(cdl[1].get_star_ts);
         }
     }
     
@@ -115,7 +120,11 @@ async function printBoard()
                 cdl = user.completion_day_level[co];
                 if (+co < 10)
                     co = "0" + co;
-                console.log("Day " + co.bold, 
+                if (cdl[2] === undefined)
+                    console.log("Day " + co.bold, 
+                                    "   :", cdl[1].toLocaleString());
+                else
+                    console.log("Day " + co.bold, 
                                 "   :", cdl[1].toLocaleString(), 
                                 "-", cdl[2].toLocaleString(),
                                 "-", pretty([cdl.diff, 0], {verbose:true}).bold.green);
