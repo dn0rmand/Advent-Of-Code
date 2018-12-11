@@ -35,7 +35,7 @@ def part2(players, max):
 
 print("")
 print("*******************************")
-print("* Advent of Code 2018 - Day 8 *")
+print("* Advent of Code 2018 - Day 9 *")
 print("*******************************")
 print("")
 

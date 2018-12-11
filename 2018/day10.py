@@ -60,9 +60,9 @@ def solve(points):
     print("Answer to part 2 is", time)
 
 print("")
-print("*******************************")
-print("* Advent of Code 2018 - Day 10*")
-print("*******************************")
+print("********************************")
+print("* Advent of Code 2018 - Day 10 *")
+print("********************************")
 print("")
 
 points = loadData()
