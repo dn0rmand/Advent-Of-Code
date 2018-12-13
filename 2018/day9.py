@@ -1,5 +1,6 @@
 from collections import defaultdict
 from collections import deque
+from time import time
 
 def loadData():
     data = open('2018/data/day9.data', 'rt').readline().strip().split()
@@ -10,19 +11,25 @@ def solve(players, maxMarble):
     marbles = deque([0])
 
     player  = 0
+    count   = 0
+    hiscore = 0
 
     for marble in range(1, maxMarble+1):
-        if marble % 23 == 0:
+        count += 1
+        if count == 23:
+            count = 0
+            player += 23
+            while player >= players: 
+                player -= players
             marbles.rotate(-7)
             scores[player] += marble + marbles.popleft()
+            if scores[player] > hiscore:
+                hiscore = scores[player]
             marbles.rotate(1)
         else:
             marbles.rotate(1)
             marbles.appendleft(marble)
 
-        player = (player + 1) % players
-
-    hiscore = max(scores.values())
     return hiscore
 
 def part1(players, max):
@@ -47,4 +54,7 @@ assert solve(30, 5807) == 37305
 
 player, maxMarble = loadData()
 part1(player, maxMarble)
+start = time()
 part2(player, maxMarble)
+end = time()
+print(end-start)
