@@ -92,7 +92,7 @@ def part2(data, transforms):
 
 print("")
 print("********************************")
-print("* Advent of Code 2018 - Day 11 *")
+print("* Advent of Code 2018 - Day 12 *")
 print("********************************")
 print("")
 
