@@ -10,74 +10,94 @@ def getDigits(value, minLength):
     digits.reverse()
     return digits
 
-def doStep(elves, recipes):
-    v = sum((recipes[i] for i in elves))
-    digits = getDigits(v, 1)
-    recipes += digits        
-    for i in range(0, len(elves)):
-        elves[i] = (elves[i] + recipes[elves[i]] + 1) % len(recipes) 
+def doStep(e1, e2, recipes, length):
+    v = recipes[e1] + recipes[e2]
+    if v >= 10:
+        recipes[length]   = v // 10
+        recipes[length+1] = v - 10
+        length += 2
+    else:
+        recipes[length] = v
+        length += 1
 
-def dump(elves, recipes):
+    e1 = (e1 + recipes[e1] + 1) % length
+    e2 = (e2 + recipes[e2] + 1) % length
+
+    return e1, e2, length
+
+def dump(e1, e2, recipes):
     s = ""
     for i in range(0, len(recipes)):
-        if i == elves[0]:
+        if i == e1:
             s += '(' + str(recipes[i]) + ')'
-        elif i == elves[1]:
+        elif i == e2:
             s += '[' + str(recipes[i]) + ']'
         else:
             s += ' ' + str(recipes[i]) + ' '
     print(s)
 
-def part1(length):
-    elves   = [0, 1]
-    recipes = [3, 7]
+def initialize(size):
+    recipes    = [0] * size
+    recipes[0] = 3
+    recipes[1] = 7
 
-    while len(recipes) <= length+10:
-        doStep(elves, recipes)
+    return 0, 1, 2, recipes
 
-    answer = ''.join([str(d) for d in recipes[length:length+10]])
+def part1(target):
+    target     = int(target)
+
+    e1, e2, length, recipes = initialize(target + 20)
+
+    while length <= target+10:
+        e1, e2, length = doStep(e1, e2, recipes, length)
+
+    answer = ''.join([str(d) for d in recipes[target:target+10]])
     print("Answer to part 1 is", answer)
 
-def matches(recipes, code, offset):
-    x = recipes[-6:]
-    l = len(recipes)-1-offset
-    if l < len(code):
-        return False
-    for i in range(0, len(code)):
-        if code[-(1+i)] != recipes[l-i]:
+def matches(recipes, start, code):
+    for c in code:
+        if recipes[start] != c:
             return False
+        start += 1
 
     return True
 
-def part2(code):
-    code = getDigits(code, 5)
+def solvePart2(code):
+    code = [int(c) for c in code]
+    codeLength = len(code)
 
-    elves   = [0, 1]
-    recipes = [3, 7]
+    e1, e2, length, recipes = initialize(30000000)
+
     while True:
-        doStep(elves, recipes)
-        # dump(elves, recipes)        
-        if matches(recipes, code, 0):
-            answer = len(recipes) - len(code)
+        e1, e2, length = doStep(e1, e2, recipes, length)
+        # dump(e1, e2, recipes)    
+        if matches(recipes, length-codeLength, code):
+            answer = length - codeLength
             break
-        elif matches(recipes, code, 1):
-            answer = len(recipes) - len(code) - 1
+        elif matches(recipes, length-codeLength-1, code):
+            answer = length - codeLength - 1
             break
 
+    return answer
+
+def part2(code):
+    answer = solvePart2(code)        
     print("Answer to part 2 is", answer)
 
-part2(51589) #9
-part2( 1245) #5
-part2(92510) #18
-part2(59414) #2018
+assert solvePart2("51589") == 9
+assert solvePart2("01245") == 5
+assert solvePart2("92510") == 18
+assert solvePart2("59414") == 2018
+
+INPUT = "909441"
 
 start = time()
-part1(909441)
+part1(INPUT)
 end = time()
 print("Part 1 executed in ", round((end-start)*1000), "ms")
 
 start2 = time()
-part2(909441)
+part2(INPUT)
 end = time()
 print("Part 2 executed in ", round((end-start2)*1000), "ms")
 print("Total time is", round((end-start)*1000), "ms")
