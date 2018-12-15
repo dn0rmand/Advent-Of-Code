@@ -84,6 +84,13 @@ def part2(code):
     answer = solvePart2(code)        
     print("Answer to part 2 is", answer)
 
+print("")
+print("********************************")
+print("* Advent of Code 2018 - Day 14 *")
+print("********************************")
+print("")
+
+
 assert solvePart2("51589") == 9
 assert solvePart2("01245") == 5
 assert solvePart2("92510") == 18
