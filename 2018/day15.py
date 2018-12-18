@@ -1,7 +1,7 @@
 from time import time
 from itertools import chain
 
-def solve(elvePower):
+def solve(elvePower : int) -> int:
 
     def loadData(lines):
         elves   = {}
