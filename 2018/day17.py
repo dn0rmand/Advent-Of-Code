@@ -188,11 +188,11 @@ def part2(grid: Grid) -> None:
 
     print("Part 2 answer is", total)
 
-# print("")
-# print("********************************")
-# print("* Advent of Code 2018 - Day 17 *")
-# print("********************************")
-# print("")
+print("")
+print("********************************")
+print("* Advent of Code 2018 - Day 17 *")
+print("********************************")
+print("")
 
 start = time()
 
