@@ -152,7 +152,7 @@ def part2(grid: Grid) -> None:
 
 print("")
 print("********************************")
-print("* Advent of Code 2018 - Day 17 *")
+print("* Advent of Code 2018 - Day 18 *")
 print("********************************")
 print("")
 
