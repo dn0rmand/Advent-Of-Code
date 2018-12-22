@@ -49,7 +49,7 @@ print("********************************")
 print("")
 
 start = time()
-program = Interpreter()
+program = Interpreter('2018/data/day21.data')
 program.dump()
 end = time()
 

@@ -10,7 +10,7 @@ class Instruction:
         self.c = c
 
 class Interpreter:
-    def __init__(self) -> None:
+    def __init__(self, filename:str) -> None:
         ip = 0
 
         self.registers = [0] * 6
@@ -79,7 +79,7 @@ class Interpreter:
             "eqrr": lambda a, b, c : 1 if self.registers[a] == self.registers[b] else 0,
         }
 
-        with open('2018/data/day21.data', 'rt') as data:
+        with open(filename, 'rt') as data:
             line = data.readline()
             ip = int(line[4])
             self.ip = ip
@@ -94,17 +94,17 @@ class Interpreter:
         for i in range(0, len(self.registers)):
             self.registers[i] = 0
 
-    def execute(self) -> None:
+    def execute(self, preProcessor = None) -> None:
         current = 0
         while current < len(self.instructions):
+            if preProcessor != None:
+                newCurrent = preProcessor(self, current)
+                if newCurrent != None and newCurrent != current:
+                    current = newCurrent
+                    continue
+
             self.registers[self.ip] = current
             i = self.instructions[current]
-            if i.name == 'eqrr' and (i.a == 0 or i.b == 0):
-                if i.a == 0:
-                    print(self.registers[i.b])
-                else:
-                    print(self.registers[i.a])
-
             code = self.opcodes[i.name]
             v = code(i.a, i.b, i.c)
             self.registers[i.c] = v
