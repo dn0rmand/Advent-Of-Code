@@ -34,13 +34,48 @@ def doit(part2: bool):
         visited[B] = 1
         lastB = B
 
-def part1(program: Interpreter) -> None:
+def part1() -> None:
     answer = doit(False)
     print("Answer part 1 is", answer)
 
-def part2(program: Interpreter) -> None:
+def part2() -> None:
     answer = doit(True)
     print("Answer part 2 is", answer)
+
+def slowPart1(program: Interpreter) -> None:
+
+    def filter(program: Interpreter, ip:int) -> int:
+        i = program.instructions[ip]
+        if i.name == "eqrr":
+            return 10000 # halt
+        else:
+            return None
+
+    program.execute(filter)
+    answer = program.registers[1]
+    print("Answer part 1 is", answer)
+
+def slowPart2(program: Interpreter) -> None:
+    answer  = [0] # otherwise cannot be set from method filter
+    visited = set()
+
+    def filter(program: Interpreter, ip:int) -> int:
+        i = program.instructions[ip]
+        if i.name == "eqrr":
+            v = program.registers[1]
+            if v in visited:
+                return 10000 # halt
+            visited.add(v)
+            answer[0] = v
+            return None
+        elif ip == 17:
+            program.registers[3] //= 256
+            return 8
+        else:
+            return None
+
+    program.execute(filter)
+    print("Answer part 2 is", answer[0])
 
 print("")
 print("********************************")
@@ -56,11 +91,13 @@ end = time()
 print("Loaded in", round((end-start)*1000), "ms")
 
 start = time()
-part1(program)
+# part1()
+slowPart1(program)
 end = time()
 print("Part 1 executed in", round((end-start)*1000), "ms")
 
 start = time()
-part2(program)
+# part2()
+slowPart2(program)
 end = time()
 print("Part 2 executed in ", round((end-start)*1000), "ms")
