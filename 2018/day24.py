@@ -2,6 +2,7 @@ from typing import NamedTuple, List, DefaultDict
 from collections import defaultdict
 from parse import parse
 from enum import Enum
+from time import time
 
 class Attack(Enum):
     Bludgeoning=1
@@ -24,6 +25,15 @@ class Units:
         self.power      = power
         self.weaknesses = []
         self.immunities = []
+        self._count     = count
+        self._power     = power
+    
+    def reset(self, boost: int) -> None:
+        self.count = self._count
+        if self.type == UnitType.Immune:
+            self.power = self._power+boost
+        else:
+            self.power = self._power
 
     def powerLevel(self) -> int:
         return self.power * self.count
@@ -32,18 +42,22 @@ class Units:
         return self.initiative
 
     def getDamage(self, attacker) -> int:
-        power = attacker.power * attacker.count
+        power = attacker.powerLevel()
         if attacker.attack in self.immunities:
             return 0
         if attacker.attack in self.weaknesses:
             power *= 2
         return power
 
-    def applyDamage(self, attacker) -> None:
+    def applyDamage(self, attacker) -> int:
+        if self.count == 0:
+            return 0
+
         killed = self.getDamage(attacker) // self.hitPoints
         self.count -= killed
         if self.count < 0:
             self.count = 0
+        return killed
 
 def loadData() -> List[Units]:
 
@@ -63,7 +77,7 @@ def loadData() -> List[Units]:
 
     units = []
 
-    type: UnitType = None
+    type = None
 
     for line in open('2018/data/day24.data').readlines():
         line = line.strip()
@@ -106,7 +120,7 @@ def loadData() -> List[Units]:
             u.immunities = immunities
             units.append(u)
 
-    return units
+    return sorted(units, key=lambda u: u.initiative, reverse=True)
 
 def selectTargets(units: List[Units]) -> DefaultDict[Units, Units]:
     targets = defaultdict(Units)
@@ -115,90 +129,88 @@ def selectTargets(units: List[Units]) -> DefaultDict[Units, Units]:
     order = sorted(units, key=lambda u: (u.powerLevel(), u.initiative), reverse=True)
 
     for unit in order:
-        enemies = [u for u in units if u.type != unit.type and not u in selected]
-        best   = None
-        damage = 0
+        enemies = sorted([(u.getDamage(unit), u.powerLevel(), u.initiative, u) for u in units if u.type != unit.type and not u in selected])
 
-        for e in enemies:
-            d = e.getDamage(unit)
-            if d > damage:
-                best = e
-                damage = d
-            elif d > 0 and d == damage:
-                if e.powerLevel() > best.powerLevel():
-                    best = e
-                elif e.powerLevel() == best.powerLevel() and e.initiative > best.initiative:
-                    best = e
-
-        if damage > 0:
+        if enemies and enemies[-1][0] > 0:
+            best = enemies[-1][3]
             selected.append(best)
             targets[unit] = best
 
-    # print(*[u.initiative for u in selected])
     return targets
 
 def performAttack(units: List[Units], selection: DefaultDict[Units, Units]) -> None:
+    killed = sum((selection[u].applyDamage(u) for u in units if u.count > 0 and u in selection))
+    return killed
 
-    order = sorted(units, key=lambda u: u.initiative, reverse=True)
-    wasAttacked = set()
-
-    for attacker in order:
-        if attacker.count > 0 and attacker in selection:
-            attackee = selection[attacker]
-            if attackee in wasAttacked:
-                raise Exception("Cannot be attacked twice")
-
-            o = attackee.count
-            attackee.applyDamage(attacker)
-            # print(attacker.initiative,':',attacker.type, '->' , attackee.initiative,':',attackee.type, ' => ', (o-attackee.count), 'killed')
-            wasAttacked.add(attackee)
-
-def doWar(boost: int) -> List[Units]:
-    units = loadData()
-
+def doWar(units: List[Units], boost: int) -> List[Units]:
     for u in units:
-        if u.type == UnitType.Immune:
-            u.power += boost
+        u.reset(boost)
 
-    total = sum((u.count for u in units))
     while True:
-        infections = sum((1 for u in units if u.type == UnitType.Infection and u.count > 0))
-        immunes    = sum((1 for u in units if u.type == UnitType.Immune and u.count > 0))
-        if infections == 0 or immunes == 0:
+        immunes = sum((1 for u in units if u.type == UnitType.Immune))
+        if immunes == 0:
+            break
+        infections = sum((1 for u in units if u.type == UnitType.Infection))
+        if infections == 0:
             break
 
-        targets = selectTargets(units)        
-        if len(targets) == 0:
+        targets = selectTargets(units)
+        if not targets:
             return []
 
-        performAttack(units, targets)
-        units = [u for u in units if u.count > 0]
-        newTotal = sum((u.count for u in units))
-        if total == newTotal:
+        if performAttack(units, targets) == 0:
             return []
-        total = newTotal
+
+        units = [u for u in units if u.count > 0]
 
     return units
 
-def part1() -> None:
-    units = doWar(0)
+def logTime(func):
+    def wrapper(units: List[Units] = None) -> None:
+        start = time()
+        if units == None:
+            func()
+        else:
+            func(units)
+        end = time()
+        print(func.__name__, "executed in ", end-start)
+        print('')
+    return wrapper
+
+@logTime
+def part1(units: List[Units]) -> None:
+    units = doWar(units, 0)
     if not units:
         raise Exception("Stuck")
     answer = sum((u.count for u in units))
     print("Answer to part 1 is", answer)
 
-def part2() -> None:
+@logTime
+def part2(units: List[Units]) -> None:
 
     boost = 0
+
+    # go up fast
+
     while True:
-        boost += 1
-        units = doWar(boost)
-        print(boost)
-        answer = sum((u.count for u in units if u.type == UnitType.Immune))
+        boost += 10
+        us = doWar(units, boost)
+        answer = sum((u.count for u in us if u.type == UnitType.Immune))
         if answer > 0:
             break
 
-    print("Answer to part 2 is", answer, 'Boost of', boost)
+    # go down slowly
+
+    while True:
+        us = doWar(units, boost-1)
+        value = sum((u.count for u in us if u.type == UnitType.Immune))
+        if value <= 0:
+            break
+        else:
+            answer = value
+            boost -= 1
+
+    print("Answer to part 2 is", answer, 'with a boost of', boost)
 
 print("")
 print("********************************")
@@ -206,5 +218,11 @@ print("* Advent of Code 2018 - Day 24 *")
 print("********************************")
 print("")
 
-part1()
-part2()
+
+@logTime
+def solve() -> None :
+    units = loadData()
+    part1(units)
+    part2(units)
+
+solve()
