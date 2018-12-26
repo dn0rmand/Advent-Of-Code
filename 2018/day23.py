@@ -34,21 +34,21 @@ def part1(bots):
 
 def calculate(bots, x0, y0, z0, size, steps):
     count = 0
-    done  = set()
 
-    for x in range(x0, x0+size+1, steps):
-        for y in range(y0, y0+size+1, steps):
-            for z in range(z0, z0+size+1, steps):
-                for b in bots:
-                    if b in done:
-                        continue
-
+    for b in bots:
+        good = False
+        for x in range(x0, x0+size+1, steps):
+            if good:
+                break
+            for y in range(y0, y0+size+1, steps):
+                if good:
+                    break
+                for z in range(z0, z0+size+1, steps):
                     if inRange(b, x, y, z):
-                        count += 1
-                        done.add(b)
-
-                if len(bots) == count:
-                    return count
+                        good = True
+                        break
+        if good:
+            count += 1
 
     return count
 
@@ -63,27 +63,26 @@ def getBestBoxes(bots, minPt, maxPt, size, steps):
                 if c > best:
                     best = c
                     bestPt = [(x, y, z)]
-                    # print(c)
                 elif c == best:
                     bestPt.append((x, y, z))
 
     return best, bestPt
 
 def part2(bots):
-    SIZE_SPEED = 10
+    SIZE_SPEED = 2
     STEP_SPEED = 5
     size = min(((MAXX-MINX) // SIZE_SPEED) , ((MAXY-MINY) // SIZE_SPEED) , ((MAXZ-MINZ) // SIZE_SPEED) )+1
     steps= size // STEP_SPEED
     score, bestBoxes = getBestBoxes(bots, (MINX, MINY, MINZ), (MAXX, MAXY, MAXZ), size, steps)
 
     while len(bestBoxes) > 0 and size > 1:
-        print("Score =", score, "found", len(bestBoxes), "boxes of size", size)
-
         boxes     = bestBoxes
         bestBoxes = []
         
         oldSize = size
         size = (size // SIZE_SPEED)+1
+        if size == oldSize:
+            size = oldSize // 2
         steps= (size // STEP_SPEED)+1
         score = 0
         for box in boxes:
@@ -94,8 +93,6 @@ def part2(bots):
                 score = v
             elif v == score:
                 bestBoxes += bs
-
-    print("Score =", score, "found", len(bestBoxes), "boxes of size", size)
 
     score = 0
     distance = -1
@@ -110,7 +107,7 @@ def part2(bots):
             if distance >= 0 and d1 < distance:
                 distance = d1
 
-    print("Answer to part 2 is", distance)
+    print("Answer to part 2 is", distance, "(121493971)")
 
 print("")
 print("********************************")
