@@ -39,7 +39,7 @@ def part1(points):
     print("Answer to part 1 is", answer)
 
 def part2(points):
-    print("Answer to part 2 is", 0)
+    print("No part 2 for day 25")
 
 print("")
 print("********************************")
