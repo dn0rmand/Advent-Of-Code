@@ -1,6 +1,6 @@
 # from collections import Counter
 # from collections import deque
-# from collections import defaultdict
+from collections import defaultdict
 from time import time
 
 KEY = 2568
@@ -11,20 +11,42 @@ def getLevel(x, y):
     level = (level - (level % 100)) / 100
     return int(level - 5)
 
+def getValue(world, x, y):
+    if x < 1 or y < 1:
+        return 0
+    return world[y][x]
+
+
 def buildMap(size):
     world = [[]]    
+
     for y in range(1, size+1):
         row = [0]
         world.append(row)
+
         for x in range(1, size+1):
-            row.append(getLevel(x, y))
+
+            v = getLevel(x, y)
+            a = getValue(world, x-1, y)
+            b = getValue(world, x, y-1)
+            c = getValue(world, x-1, y-1)
+            s = v + a + b - c
+            row.append(s)
 
     return world        
 
+times = defaultdict(float)
+
 def getSquare(world, size, x, y):
-    value = 0
-    for row in world[y:y+size]:
-        value += sum(row[x:x+size])
+    x += size-1
+    y += size-1
+
+    v = getValue(world, x, y)
+    a = getValue(world, x-size, y)
+    b = getValue(world, x, y-size)
+    c = getValue(world, x-size, y-size)
+
+    value = v - a - b + c
     return value
 
 def solve(world, size):
@@ -38,14 +60,13 @@ def solve(world, size):
 
     return maxLevel, minX, minY
 
-def part1():
-    world = buildMap(300)
+def part1(world):
 
     level, x, y = solve(world, 3)
     print("Answer part 1 is",  str(x) + ',' +  str(y), "- Power level of", level)
 
-def part2():    
-    world = buildMap(300)
+def part2(world):    
+
     size = 1
     level, x, y = solve(world, 1)
 
@@ -61,14 +82,15 @@ print("* Advent of Code 2018 - Day 11 *")
 print("********************************")
 print("")
 
-start = time()
-part1()
-end = time()
-print(end-start)
+world = buildMap(300)
 
 start = time()
-part2()
+part1(world)
 end = time()
-print(end-start)
+print(int((end-start)*1000), 'ms')
 
+start = time()
+part2(world)
+end = time()
+print(int((end-start)*1000), 'ms')
 print("")
