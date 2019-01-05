@@ -1,9 +1,96 @@
 from time import time
+import numpy as np
 
 X = 0
 Y = 1
 Z = 2
 RADIUS = 3
+
+formulaProcessed = set()
+resolveTime = [0]
+
+class Formula:
+    def create(a, b, c, r):
+        # |a-x| + |b-y| + |c-z| = r
+
+        # 1: (a-x) + (b-y) + (c-z) = r 
+        yield Formula(-1, -1, -1, a+b+c-r)
+        # 2: (a-x) + (b-y) - (c-z) = r 
+        yield Formula(-1, -1, 1, a+b-c-r)
+        # 3: (a-x) - (b-y) + (c-z) = r
+        yield Formula(-1, 1, -1, a-b+c-r)
+        # 3: (a-x) - (b-y) - (c-z) = r 
+        yield Formula(-1, 1, 1, a-b-c-r)
+        # 1: -(a-x) + (b-y) + (c-z) = r 
+        yield Formula(1, -1, -1, -a+b+c-r)
+        # 2: -(a-x) + (b-y) - (c-z) = r 
+        yield Formula(1, -1, 1, -a+b-c-r)
+        # 3: -(a-x) - (b-y) + (c-z) = r 
+        yield Formula(1, 1, -1, -a-b+c-r)
+        # 3: -(a-x) - (b-y) - (c-z) = r 
+        yield Formula(1, 1, 1, -a-b-c-r)
+
+    # ax + by + cz + d = 0
+    def __init__(self, a, b, c, d):
+        self.a = a
+        self.b = b
+        self.c = c
+        self.d = -d
+
+    def resolve(f1, f2, f3):
+        if f1.d > f2.d:
+            f  = f1
+            f1 = f2
+            f2 = f
+        if f1.d > f3.d:
+            f  = f1
+            f1 = f3
+            f3 = f
+        if f2.d > f3.d:
+            f  = f2
+            f2 = f3
+            f3 = f
+
+        k = (f1.a, f1.b, f1.c, f1.d, f2.a, f2.b, f2.c, f2.d, f3.a, f3.b, f3.c)
+        if k in formulaProcessed:
+            return None
+
+        formulaProcessed.add(k)
+
+        start = time()
+        try:
+            a = np.array([ [f1.a, f1.b, f1.c], [f2.a, f2.b, f2.c], [f3.a, f3.b, f3.c] ])
+            b = np.array([ f1.d, f2.d, f3.d ])
+
+            x, y, z = np.linalg.solve(a, b)
+            if int(x) == x and int(y) == y and int(z) == z:
+                return (int(x), int(y), int(z))
+            else:
+                return None
+        except:
+            return None
+        finally:
+            end = time()
+            resolveTime[0] += (end-start)
+
+    def solve(b1, b2, b3):
+        for f1 in Formula.create(b1[X], b1[Y], b1[Z], b1[RADIUS]):
+            for f2 in Formula.create(b2[X], b2[Y], b2[Z], b2[RADIUS]):
+                if f1.a == f2.a and f1.b == f2.b and f1.c == f2.c:
+                    if f1.d != f2.d:
+                        continue # no solution
+
+                for f3 in Formula.create(b3[X], b3[Y], b3[Z], b3[RADIUS]):
+                    if f1.a == f3.a and f1.b == f3.b and f1.c == f3.c:
+                        if f1.d != f3.d:
+                            continue # no solution
+                    if f3.a == f2.a and f3.b == f2.b and f3.c == f2.c:
+                        if f3.d != f2.d:
+                            continue # no solution
+
+                    solution = Formula.resolve(f1, f2, f3)
+                    if solution != None:
+                        yield solution
 
 def loadData():
     bots = []
@@ -95,19 +182,96 @@ def part2(bots):
                 bestBoxes += bs
 
     score = 0
-    distance = -1
+    dist = -1
+    pt = None
 
     for point in bestBoxes:
         value = sum((1 for bot in bots if inRange(bot, *point) ))
         if value > score:
             score    = value
-            distance = abs(point[X]) + abs(point[Y]) + abs(point[Z])
+            dist     = abs(point[X]) + abs(point[Y]) + abs(point[Z])
+            pt       = point
         elif value == score:
             d1 = abs(point[X]) + abs(point[Y]) + abs(point[Z])
-            if distance >= 0 and d1 < distance:
-                distance = d1
+            if dist >= 0 and d1 < dist:
+                dist = d1
+                pt = point
 
-    print("Answer to part 2 is", distance, "(121493971)")
+    print("Answer to part 2 is", dist)
+
+    # specialBotsIndexes = [i for i, bot in enumerate(bots) if distance(bot, *pt) == bot[RADIUS]]
+    # for i in specialBotsIndexes:
+    #     print(i)
+
+def part3(bots):
+
+    def isValid(bots, x, y, z):
+        for b in bots:
+            if not inRange(b, x, y, z):
+                return False
+        return True
+
+    maxGroup = []
+
+    for b1 in bots:
+        if b1 in maxGroup:
+            continue
+
+        group = [b1]
+        for b2 in bots:
+            if b1 == b2:
+                continue
+            good = True
+            for b3 in group:
+                d = distance(b3, b2[X], b2[Y], b2[Z])
+                if d > b3[RADIUS]+b2[RADIUS]:
+                    good = False
+                    break
+            if good:
+                group.append(b2)
+        if len(group) > len(maxGroup):
+            maxGroup = group
+
+    specialBots = set()
+    done = False
+
+    for i in range(0, len(maxGroup)):
+        b1 = maxGroup[i]
+        for j in range(i+1, len(maxGroup)):
+            b2 = maxGroup[j]
+            d = distance(b1, b2[X], b2[Y], b2[Z])
+            if d == b1[RADIUS]+b2[RADIUS]:
+                specialBots.add(b1)
+                specialBots.add(b2)
+
+    processed = set()
+    dist      = None
+
+    for i1, b1 in enumerate(specialBots):
+        print(i1,'of',len(specialBots))
+        for i2, b2 in enumerate(specialBots):
+            if i2 <= i1: 
+                continue
+            for i3, b3 in enumerate(specialBots):
+                if i3 <= i2:
+                    continue
+
+                for point in Formula.solve(b1, b2, b3):
+                    if point in processed:
+                        continue
+                    
+                    processed.add(point)
+                    x, y, z = point
+
+                    if dist != None:
+                        d = abs(x) + abs(y) + abs(z)
+                        if d >= dist:
+                            continue # won't be better so ignore
+
+                    if isValid(maxGroup, x, y, z):
+                        dist = abs(x) + abs(y) + abs(z)
+
+    print("Answer to part 2 is", dist)
 
 print("")
 print("********************************")
@@ -129,4 +293,10 @@ part1(bots)
 start = time()
 part2(bots)
 end = time()
-print('part 2 executed in ', (end-start), 'seconds')
+print('part 2a executed in ', (end-start), 'seconds')
+
+start = time()
+part3(bots)
+end = time()
+print('part 2b executed in ', (end-start), 'seconds')
+print("Numpy time:", resolveTime[0])
