@@ -20,6 +20,8 @@ class Cave:
         self.target  = (targetX, targetY)
         self.width   = targetX+1
         self.height  = targetY+1
+        self.maxX    = targetX + 1 + 50
+        self.maxY    = targetY + 1 + 50
         self.depth   = depth
         self.erosions= {}
         self.erosions[(0, 0)] = depth % 20183
@@ -29,7 +31,7 @@ class Cave:
         if x < 0 or y < 0:
             raise Exception('Invalid position')
 
-        pos = (x, y)
+        pos = (x << 10) | y
 
         if pos in self.erosions:
             return self.erosions[pos]
@@ -55,115 +57,126 @@ class Cave:
                 risk += self.getType(x, y)
         return risk
 
+    def decodeKey(self, k: int):
+        tool = k & 0x3
+        y    = (k >> 2) & 0x3FF
+        x    = k >> 12
+        return x, y, tool
+
+    def makeKey(self, x:int, y:int, tool:int) -> int:
+        k = (x << 12) | (y << 2) | tool
+        return k
+
     def findShortestPath(self) -> int:
-        shortest = None
-        states = [(0, 0, TORCH, 0)]
-        visited = {}
+        shortest  = None
+        states    = {}
+        visited   = {}
         newStates = {}
 
-        def makeKey(state):
-            return (state[X], state[Y], state[TOOL])
+        states[self.makeKey(0, 0, TORCH)] = 0
 
-        def isToolAllowed(state, tool):
-            type = self.getType(state[X], state[Y])
+        def isToolAllowed(type, tool):
+            return tool != type
+            # if type == ROCKY:
+            #     return tool == TORCH or tool == CLIMBING
+            # elif type == WET:
+            #     return tool == CLIMBING or tool == NOTHING
+            # else:
+            #     return tool == NOTHING or tool == TORCH
 
-            if (state[X] == self.target[X] and state[Y] == self.target[Y]) or (state[X] == 0 and state[Y] == 0):
-                return tool == TORCH
+        def addPossibility(xx, yy, tool, time):
+            if shortest != None and time >= shortest:
+                return
 
-            if type == ROCKY:
-                return tool == TORCH or tool == CLIMBING
-            elif type == WET:
-                return tool == CLIMBING or tool == NOTHING
-            else:
-                return tool == NOTHING or tool == TORCH
+            k = self.makeKey(xx, yy, tool)
+            if k in visited and visited[k] <= time:
+                return
+            if k in newStates and newStates[k] <= time:
+                return
 
-        def checkMove(state, xx: int, yy: int) -> None:
-            xx = state[X] + xx
-            yy = state[Y] + yy
+            newStates[k] = time
+
+        def checkMove(xx:int, yy:int, tool:int, time:int , type1: int) -> None:
             if xx < 0 or yy < 0:
                 return
             if xx == 0 and yy == 0:
                 return
 
-            if xx >= self.width+50 or yy >= self.height+50:  # don't wander too much 
+            if shortest != None and time+1 >= shortest:
+                return # no need to check
+
+            if xx >= self.maxX or yy >= self.maxY:  # don't wander too much 
                 return
 
-            possibilities = set()
-
-            if (xx, yy) == self.target:
-                if state[TOOL] == TORCH:
-                    possibilities.add((xx, yy, TORCH, state[TIME]+1))
-                elif isToolAllowed(state, TORCH):
-                    possibilities.add((xx, yy, TORCH, state[TIME]+8))
+            if xx == self.target[X] and yy == self.target[Y]:
+                if tool == TORCH:
+                    addPossibility(xx, yy, TORCH, time+1)
+                elif isToolAllowed(type1, TORCH):
+                    addPossibility(xx, yy, TORCH, time+8)
             else:
-                type = self.getType(xx, yy)
+                type  = self.getType(xx, yy)
 
                 if type == ROCKY: # climbing or torch
-                    if state[TOOL] != NOTHING: # don't have to change
-                        possibilities.add((xx, yy, state[TOOL], state[TIME]+1))
+                    if tool != NOTHING: # don't have to change
+                        addPossibility(xx, yy, tool, time+1)
 
-                    if state[TOOL] == NOTHING or state[TOOL] == CLIMBING:
-                        if isToolAllowed(state, TORCH):
-                            possibilities.add((xx, yy, TORCH, state[TIME]+8))
-                    if state[TOOL] == NOTHING or state[TOOL] == TORCH:
-                        if isToolAllowed(state, CLIMBING):
-                            possibilities.add((xx, yy, CLIMBING, state[TIME]+8))
+                    if tool == NOTHING or tool == CLIMBING:
+                        if isToolAllowed(type1, TORCH):
+                            addPossibility(xx, yy, TORCH, time+8)
+                    if tool == NOTHING or tool == TORCH:
+                        if isToolAllowed(type1, CLIMBING):
+                            addPossibility(xx, yy, CLIMBING, time+8)
                 elif type == WET: # climbing or nothing
-                    if state[TOOL] != TORCH: # don't have to change
-                        possibilities.add((xx, yy, state[TOOL], state[TIME]+1))
+                    if tool != TORCH: # don't have to change
+                        addPossibility(xx, yy, tool, time+1)
 
-                    if state[TOOL] == NOTHING or state[TOOL] == TORCH:
-                        if isToolAllowed(state, CLIMBING):
-                            possibilities.add((xx, yy, CLIMBING, state[TIME]+8))
-                    if state[TOOL] == CLIMBING or state[TOOL] == TORCH:
-                        if isToolAllowed(state, NOTHING):
-                            possibilities.add((xx, yy, NOTHING, state[TIME]+8))
+                    if tool == NOTHING or tool == TORCH:
+                        if isToolAllowed(type1, CLIMBING):
+                            addPossibility(xx, yy, CLIMBING, time+8)
+                    if tool == CLIMBING or tool == TORCH:
+                        if isToolAllowed(type1, NOTHING):
+                            addPossibility(xx, yy, NOTHING, time+8)
                 else: # NARROW    # torch or nothing 
-                    if state[TOOL] != CLIMBING: # don't have to change
-                        possibilities.add((xx, yy, state[TOOL], state[TIME]+1))
+                    if tool != CLIMBING: # don't have to change
+                        addPossibility(xx, yy, tool, time+1)
 
-                    if state[TOOL] == NOTHING or state[TOOL] == CLIMBING:
-                        if isToolAllowed(state, TORCH):
-                            possibilities.add((xx, yy, TORCH, state[TIME]+8))
-                    if state[TOOL] == CLIMBING or state[TOOL] == TORCH:
-                        if isToolAllowed(state, NOTHING):
-                            possibilities.add((xx, yy, NOTHING, state[TIME]+8))
+                    if tool == NOTHING or tool == CLIMBING:
+                        if isToolAllowed(type1, TORCH):
+                            addPossibility(xx, yy, TORCH, time+8)
+                    if tool == CLIMBING or tool == TORCH:
+                        if isToolAllowed(type1, NOTHING):
+                            addPossibility(xx, yy, NOTHING, time+8)
 
-            for s in possibilities:
-                if shortest != None and s[TIME] >= shortest:
-                    continue
-
-                k = makeKey(s)
-                if k in visited and visited[k] <= s[TIME]:
-                    continue
-                if k in newStates and newStates[k] <= s[TIME]:
-                    continue
-
-                newStates[k] = s[TIME]
+        target = self.makeKey(self.target[X], self.target[Y], 0) // 10
 
         while len(states) > 0:
             newStates.clear()
 
-            for state in states:
-                k = makeKey(state)
-                if not k in visited or visited[k] > state[TIME]:
-                    visited[k] = state[TIME]
+            for k in states:
+                visited[k] = states[k]
 
-            for state in states:
-                if (state[X], state[Y]) == self.target: # target reached
-                    if state[TOOL] != TORCH:
-                        raise Exception("Should have the Torch")
+            for k in states:
+                x, y, tool = self.decodeKey(k)
+                time       = states[k]
 
-                    if shortest == None or state[TIME] < shortest:
-                        shortest = state[TIME]
+                if x == self.target[X] and y == self.target[Y]: # target reached
+                    t = time
+                    if tool != TORCH:
+                        t += 7
+
+                    if shortest == None or t < shortest:
+                        shortest = t
                     continue
 
-                checkMove(state,  0, -1)
-                checkMove(state, -1,  0)
-                checkMove(state,  1,  0)
-                checkMove(state,  0,  1)
+                type = self.getType(x, y)
+                checkMove(x, y-1, tool, time, type)
+                checkMove(x-1, y, tool, time, type)
+                checkMove(x+1, y, tool, time, type)
+                checkMove(x, y+1, tool, time, type)
 
-            states = [(s[X], s[Y], s[TOOL], newStates[s]) for s in newStates]
+            old = states
+            states = newStates
+            newStates = old
 
         return shortest
 
