@@ -1,3 +1,5 @@
+from IntCode import IntCode
+
 def loadData():
     opcodes = []
     file = open('2019/data/day2.data', 'rt')
@@ -11,29 +13,13 @@ def loadData():
     return opcodes
 
 def run(program, noun, verb):
+    program.initialize(None, None)
+    program.poke(1, noun)
+    program.poke(2, verb)
 
-    memory = [opcode for opcode in program]
-    memory[1] = noun
-    memory[2] = verb
+    program.execute()
 
-    position = 0
-    opcode = memory[position]
-    while opcode != 99:
-        if opcode != 1 and opcode != 2:
-            raise Exception("Invalid opcode")
-
-        p1 = memory[position+1]
-        p2 = memory[position+2]
-        p3 = memory[position+3]
-        if opcode == 1:
-            memory[p3] = memory[p1] + memory[p2]
-        else:
-            memory[p3] = memory[p1] * memory[p2]
-
-        position += 4
-        opcode = memory[position]
-
-    return memory[0]
+    return program.peek(0)
 
 def part1(program):
     answer = run(program, 12, 2)
@@ -57,7 +43,7 @@ print("* Advent of Code 2019 - Day 2 *")
 print("*******************************")
 print("")
 
-program = loadData()
+program = IntCode('2019/data/day2.data')
 
 print("Answer part 1 is", part1( program ))
 print("Answer part 2 is", part2( program ))

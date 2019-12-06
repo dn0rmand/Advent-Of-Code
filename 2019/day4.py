@@ -76,7 +76,7 @@ def part2():
 
 print("")
 print("*******************************")
-print("* Advent of Code 2019 - Day 3 *")
+print("* Advent of Code 2019 - Day 4 *")
 print("*******************************")
 print("")
 
