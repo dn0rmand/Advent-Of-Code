@@ -17,7 +17,7 @@ def run(program, noun, verb):
     program.poke(1, noun)
     program.poke(2, verb)
 
-    program.execute(False)
+    program.execute(True)
 
     return program.peek(0)
 
