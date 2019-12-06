@@ -1,31 +1,40 @@
 from IntCode import IntCode
 
-def part1(program):
+def part1(program: IntCode) -> int:
     def input():
         while True:
             yield 1
 
-    output = []
+    lastValue = 0
+
+    def output(value):
+        nonlocal lastValue
+        if not lastValue == 0:
+            raise Exception("Tests failed")
+        lastValue = value
 
     program.initialize(input(), output)
-    program.execute()
+    program.execute(False)
 
-    for v in output[:-2]:
-        if not v == 0:
-            raise Exception("Tests failed")
-    return output[-1]
+    return lastValue
 
-def part2(program):
+def part2(program: IntCode) -> int:
     def input():
         while True:
             yield 5
 
-    output = []
+    lastValue = None
+
+    def output(value):
+        nonlocal lastValue
+        if not lastValue == None:
+            raise Exception("Tests failed")
+        lastValue = value
 
     program.initialize(input(), output)
-    program.execute()
+    program.execute(False)
 
-    return output[0]
+    return lastValue
 
 print("")
 print("*******************************")
