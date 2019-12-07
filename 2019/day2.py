@@ -1,17 +1,5 @@
 from IntCode import IntCode
 
-def loadData():
-    opcodes = []
-    file = open('2019/data/day2.data', 'rt')
-
-    data = file.readline().split(',')
-
-    for opcode in data:
-        opcodes.append(int(opcode))
-
-    file.close()
-    return opcodes
-
 def run(program, noun, verb):
     program.initialize(None, None)
     program.poke(1, noun)
