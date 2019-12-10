@@ -89,7 +89,7 @@ def part2(map : [], centerX: int, centerY: int) -> int:
                 key += 9000
 
         elif q == 3:
-            key += 5000 - (ox / oy)
+            key += oy/ox
 
         return key
 
@@ -101,7 +101,8 @@ def part2(map : [], centerX: int, centerY: int) -> int:
         for a in ast:
             count += 1
             x,y,ox,oy,q = a
-            # print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
+            #print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
+            #print(f"{count}: {x*100+y}")
             if count == 200:
                 answer = x*100 + y
                 break
