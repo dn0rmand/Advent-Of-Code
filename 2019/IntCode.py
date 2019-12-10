@@ -1,4 +1,6 @@
 from typing import Iterator, Callable
+from collections import deque
+import curses
 
 class IntCode:
     def __init__(self, filename: str = None) -> None:
@@ -136,18 +138,70 @@ class IntCode:
         self.output = output
         self.input  = input
 
-    def execute(self, debug: bool, trace: Callable[[None], None] = None) -> None:
+    def writeText(self, txt: str, scroll: bool) -> None:
+        y,_ = self.stdscr.getmaxyx()
+        if not scroll:
+            if len(self.lines) > 0:
+                self.lines.pop() # remove last one to replace it
+        self.lines.append(txt)
+        if len(self.lines) >= y:
+            self.lines.popleft()
+
+        y = 1
+        for l in self.lines:
+            self.stdscr.addstr(y, 1, l)
+            self.stdscr.clrtoeol()
+            y += 1
+        self.stdscr.refresh()
+
+    def Debug(self) -> None:
+
+        def runLoop(stdscr) -> None:
+            curses.curs_set(0)
+
+            h,w = stdscr.getmaxyx()
+            stdscr.addstr(1, 2, "INTCODE DEBUGGER - Enter to step, ESC to terminate")
+            stdscr.hline(2,1, "-", w)
+            stdscr.refresh()
+            self.stdscr = stdscr.subwin(h-4, w-2, 3, 1)
+            self.lines = deque()
+            self.yline  = 0
+            self.ip = 0
+            self.base = 0
+            while self.ip >= 0:
+                op, txt = self.dump()
+                self.writeText(txt, True)
+
+                while True:
+                    key = stdscr.getch()
+                    if key == curses.KEY_ENTER or key in [10, 13]:
+                        self.step()
+                        if op == 3:
+                            self.writeText(txt + " <- {0}".format(self.lastInput), False)
+                        break
+
+                    elif key == 27:
+                        exit()
+
+            while True:
+                key = stdscr.getch()
+                if key == 27:
+                    break
+
+            self.stdscr = None
+
+        curses.wrapper(runLoop)
+
+    def execute(self, debug: bool) -> None:
+        if debug:
+            self.Debug()
+            return
+
         self.ip   = 0
         self.base = 0
         while self.ip >= 0:
             op = None
-            if debug:
-                op = self.dump()
             self.step()
-            if debug:
-                self.postDump(op)
-            if not trace == None:
-                trace()
 
     def parameter(self, mode: int) -> (str, int):
         value = self.readNext()
@@ -161,20 +215,15 @@ class IntCode:
         else:
             return (str(value), value)
 
-    def postDump(self, opcode: int) -> None:
-        if opcode == 3:
-            print(" <- {0}".format(self.lastInput))
-        else:
-            print("")
-
     def dump(self) -> int:
         oldip = self.ip
 
         opcode, mode1, mode2, mode3 = self.getNextInstruction()
-        print("{0:#06x}: {1} - ".format(oldip, opcode), end="")
+
+        txtLine = "{0:#06x}: {1} - ".format(oldip, opcode)
 
         if opcode == 99:
-            print("HALT", end="")
+            txtLine += "HALT"
 
         elif opcode == 1:
             v1,v11 = self.parameter(mode1)
@@ -191,11 +240,11 @@ class IntCode:
                 sign = '-'
 
             if v3 == v2:
-                print("{1} {4}= {2} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22), end="")
+                txtLine += "{1} {4}= {2} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
             elif v3 == v1:
-                print("{1} {4}= {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22), end="")
+                txtLine += "{1} {4}= {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
             else:
-                print("{1}  = {2} {4} {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22), end="")
+                txtLine += "{1}  = {2} {4} {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
 
         elif opcode == 2:
             v1,v11 = self.parameter(mode1)
@@ -203,61 +252,61 @@ class IntCode:
             v3,_ = self.parameter(mode3)
 
             if v3 == v1:
-                print("{1} *= {3} -> {4}".format(oldip, v3, v1, v2, v11*v22), end="")
+                txtLine += "{1} *= {3} -> {4}".format(oldip, v3, v1, v2, v11*v22)
             elif v3 == v2:
-                print("{1} *= {2} -> {4}".format(oldip, v3, v1, v2, v11*v22), end="")
+                txtLine += "{1} *= {2} -> {4}".format(oldip, v3, v1, v2, v11*v22)
             else:
-                print("{1}  = {2} * {3} -> {4}".format(oldip, v3, v1, v2, v11*v22), end="")
+                txtLine += "{1}  = {2} * {3} -> {4}".format(oldip, v3, v1, v2, v11*v22)
 
         elif opcode == 3:
             v1, _ = self.parameter(mode1)
 
-            print("{1}  = INPUT".format(oldip, v1), end="")
+            txtLine += "{1}  = INPUT".format(oldip, v1)
 
         elif opcode == 4:
             v1, v11 = self.parameter(mode1)
 
-            print("OUTPUT    = {1} -> {2}".format(oldip, v1, v11), end="")
+            txtLine += "OUTPUT    = {1} -> {2}".format(oldip, v1, v11)
 
         elif opcode == 5: # jump if true
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             if mode2 == 1:
                 v2=int(v2)
-                print("GOTO {2:#06x} IF {1} != 0 -> {3}".format(oldip, v1, v2, "NO" if v11==0 else "GOTO {0:#06x}".format(v22)), end="")
+                txtLine += "GOTO {2:#06x} IF {1} != 0 {3}".format(oldip, v1, v2, "" if v11==0 else ">> {0:#06x}".format(v22))
             else:
-                print("GOTO {2} IF {1} != 0 -> {3}".format(oldip, v1, v2, "NO" if v11==0 else "GOTO {0:#06x}".format(v22)), end="")
+                txtLine += "GOTO {2} IF {1} != 0 {3}".format(oldip, v1, v2, "" if v11==0 else ">> {0:#06x}".format(v22))
 
         elif opcode == 6: # jump if false
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             if mode2 == 1:
                 v2=int(v2)
-                print("GOTO {2:#06x} IF {1} == 0 -> {3}".format(oldip, v1, v2, "GOTO {0:#06x}".format(v22) if v11==0 else "NO"), end="")
+                txtLine += "GOTO {2:#06x} IF {1} == 0 {3}".format(oldip, v1, v2, ">> {0:#06x}".format(v22) if v11==0 else "")
             else:
-                print("GOTO {2} IF {1} == 0 -> {3}".format(oldip, v1, v2, "GOTO {0:#06x}".format(v22)  if v11==0 else "NO"), end="")
+                txtLine += "GOTO {2} IF {1} == 0 {3}".format(oldip, v1, v2, ">> {0:#06x}".format(v22)  if v11==0 else "")
 
         elif opcode == 7: # less than
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             v3, _   = self.parameter(mode3)
-            print("{3}  = 1 IF {1} < {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11<v22 else 0), end="")
+            txtLine += "{3}  = 1 IF {1} < {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11<v22 else 0)
 
         elif opcode == 8: # equals
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             v3, _   = self.parameter(mode3)
-            print("{3}  = 1 IF {1} == {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11==v22 else 0), end="")
+            txtLine += "{3}  = 1 IF {1} == {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11==v22 else 0)
 
         elif opcode == 9: # adjusts the relative base
             v1, v11 = self.parameter(mode1)
             if mode1 == 1 and v11 < 0:
-                print("base -= {2} -> {2}".format(oldip, v1, v11), end="")
+                txtLine += "base -= {2} -> {2}".format(oldip, v1, "{0:#06x}".format(self.base+v11))
             else:
-                print("base += {1} -> {2}".format(oldip, v1, v11), end="")
+                txtLine += "base += {1} -> {2}".format(oldip, v1, "{0:#06x}".format(self.base+v11))
 
         else:
-            print("unsupported opcode {1}".format(oldip, opcode), end="")
+            txtLine += "unsupported opcode {1}".format(oldip, opcode)
 
         self.ip = oldip
-        return opcode
+        return opcode, txtLine
