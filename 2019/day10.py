@@ -97,12 +97,14 @@ def part2(map : [], centerX: int, centerY: int) -> int:
     asnwer = 0
     while count < 200:
         asteroids = [a for a in getAsteroidsInSight(map, centerX, centerY)]
+        if len(asteroids) == 0:
+            raise Exception("No more asteroids but didn't reach 200 yet")
+
         ast = sorted(asteroids, key=makeKey)
         for a in ast:
             count += 1
             x,y,ox,oy,q = a
-            #print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
-            #print(f"{count}: {x*100+y}")
+            # print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
             if count == 200:
                 answer = x*100 + y
                 break
