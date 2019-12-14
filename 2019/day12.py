@@ -178,7 +178,7 @@ def part2(moons: [Moon], trace: bool = False) -> int:
 
 print("")
 print("********************************")
-print("* Advent of Code 2019 - Day 11 *")
+print("* Advent of Code 2019 - Day 12 *")
 print("********************************")
 print("")
 
