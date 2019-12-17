@@ -194,7 +194,7 @@ print("")
 
 program = IntCode('2019/data/day13.data')
 
-# play(program)
+play(program)
 
 t = time.perf_counter()
 print("Answer part 1 is", part1(program))
