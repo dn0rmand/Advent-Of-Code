@@ -126,11 +126,12 @@ class State1:
 
 class State2:
 
-    def __init__(self, robots: [(int, int)], keys: int = 0, keyCount: int = 0):
+    def __init__(self, robots: [(int, int)], activeRobot: int = -1, keys: int = 0, keyCount: int = 0):
         self.robots = robots
         self.keys = keys
         self.keyCount = keyCount
-        self.hash = (robots, keys).__hash__()
+        self.activeRobot = activeRobot
+        self.hash = (robots, keys, activeRobot).__hash__()
 
     def start(x: int, y: int):
         return State2(((x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)))
@@ -155,19 +156,29 @@ class State2:
             if c == '#':
                 return
 
+            active = robot
+            oldCount = self.keyCount
             keys, keyCount = State.addKey(self.keys, self.keyCount, c)
+            if oldCount != keyCount:
+                active = -1
 
             robots = list(self.robots)
             robots[robot] = (x, y)
 
-            s = State2(tuple(robots), keys, keyCount)
+            s = State2(tuple(robots), active, keys, keyCount)
             yield s
 
-        for i in range(0, len(self.robots)):
-            yield from __move__(map, 0,-1, i)
-            yield from __move__(map, 0, 1, i)
-            yield from __move__(map,-1, 0, i)
-            yield from __move__(map, 1, 0, i)
+        if self.activeRobot == -1:
+            for i in range(0, len(self.robots)):
+                yield from __move__(map, 0,-1, i)
+                yield from __move__(map, 0, 1, i)
+                yield from __move__(map,-1, 0, i)
+                yield from __move__(map, 1, 0, i)
+        else:
+                yield from __move__(map, 0,-1, self.activeRobot)
+                yield from __move__(map, 0, 1, self.activeRobot)
+                yield from __move__(map,-1, 0, self.activeRobot)
+                yield from __move__(map, 1, 0, self.activeRobot)
 
 def loadData(prefix: str) -> Map:
     map  = [[]]
@@ -188,7 +199,7 @@ def loadData(prefix: str) -> Map:
             raise Exception(F"map for {prefix} not found")
     return Map(map)
 
-def solve(map: Map, start, trace: bool = False, part2: bool = False) -> int:
+def solve(map: Map, start, trace: bool = False) -> int:
     steps     = 0
     count     = 1
     visited   = set()
@@ -199,9 +210,8 @@ def solve(map: Map, start, trace: bool = False, part2: bool = False) -> int:
 
     while len(states) > 0:
         if trace:
-            print(f"\r{steps} - {len(states)} - {keysFound}    ", end="")
+            print(f"\r{steps} - {keysFound} - {len(states)} ", end="")
 
-        changed = False
         for state in states:
             visited.add(state)
             if state.keys == map.allKeys:
@@ -211,18 +221,10 @@ def solve(map: Map, start, trace: bool = False, part2: bool = False) -> int:
 
             for s in state.move(map):
                 if not s in newStates and not s in visited:
-                    if part2 and s.keyCount < keysFound:
-                        continue
                     if s.keyCount > keysFound:
                         keysFound = s.keyCount
-                        if part2:
-                            newStates.clear()
-                            changed = True
-
                     newStates.add(s)
 
-        if changed:
-            visited.clear()
         steps += 1
         states.clear()
         states, newStates = newStates, states
@@ -243,11 +245,7 @@ def part2(map: Map, trace: bool = False) -> int:
     start = State2.start(x, y)
 
     map.closeDeadEnds(start.robots)
-    # map.data[y][x]   = '@'
-    # map.dump()
-    # map.data[y][x]   = '#'
-
-    answer = solve(map, start, trace, True)
+    answer = solve(map, start, trace)
     return answer
 
 def runTest(name: str, expected1: int, expected2: int = None) -> None:
@@ -256,7 +254,6 @@ def runTest(name: str, expected1: int, expected2: int = None) -> None:
         assert part1(map) == expected1
     if expected2 != None:
         assert part2(map) == expected2
-    print(name, "passed")
 
 print("")
 print("********************************")
@@ -264,11 +261,12 @@ print("* Advent of Code 2019 - Day 16 *")
 print("********************************")
 print("")
 
-runTest("TEST4", None, 32)
-
 runTest("TEST1", 132)
 runTest("TEST2", 136)
 runTest("TEST3", 81)
+runTest("TEST4", None, 32)
+
+print("All tests passed")
 
 map = loadData('PUZZLE')
 
@@ -282,4 +280,4 @@ map = loadData('PUZZLE')
 t = time.perf_counter()
 print("Answer part 2 is", part2(map, True))
 t = int((time.perf_counter()-t) * 100)/100
-print(f"Part 2 executed in {t}ms")
+print(f"Part 2 executed in {t} seconds")
