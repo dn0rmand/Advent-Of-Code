@@ -82,32 +82,31 @@ class Map:
                             break
                 if reset:
                     break
-class State:
-    def __init__(self, keys: int = 0, keyCount: int = 0) -> None:
-        self.keys = keys
-        self.keyCount = keyCount
 
-    def addKey(self, key: chr) -> None:
+class State:
+    def addKey(keys: int, keyCount: int, key: chr) -> (int, int):
         if key >= 'a' and key <= 'z':
             m = KEY_MASK[key]
-            if (self.keys & m) == 0:
-                self.keys |= m
-                self.keyCount += 1
+            if (keys & m) == 0:
+                keys |= m
+                keyCount += 1
+        return keys, keyCount
 
-    def hash(self):
-        return self.keys
+class State1:
+    def __init__(self, x: int, y: int, keys: int = 0, keyCount: int = 0):
+        self.x = x
+        self.y = y
+        self.keys = keys
+        self.keyCount = keyCount
+        self.hash = (x, y, keys).__hash__()
 
-    def move(self, map: Map):
-        return None
+    def __eq__(self, other):
+        if self.hash != other.hash:
+            return False
+        return self.x == other.x and self.y == other.y and self.keys == other.keys
 
-class State1(State):
-    def __init__(self, x: int, y: int, keys: int = 0, keyCount: int = 0) -> None:
-        super().__init__(keys, keyCount)
-        self.x    = x
-        self.y    = y
-
-    def hash(self):
-        return self.x*100 + self.y + (super().hash()*100000)
+    def __hash__(self):
+        return self.hash
 
     def move(self, map: Map):
         yield from self.__move__(0, -1, map)
@@ -121,29 +120,29 @@ class State1(State):
 
         c = map.get(x, y, self.keys)
         if c != '#':
-            s = State1(x, y, self.keys, self.keyCount)
-            s.addKey(c)
-            yield s, s.hash()
+            keys, keyCount = State.addKey(self.keys, self.keyCount, c)
+            s = State1(x, y, keys, keyCount)
+            yield s
 
-class State2(State):
-    def __init__(self, keys: int = 0, keyCount: int = 0) -> None:
-        super().__init__(keys, keyCount)
+class State2:
+
+    def __init__(self, robots: [(int, int)], keys: int = 0, keyCount: int = 0):
+        self.robots = robots
+        self.keys = keys
+        self.keyCount = keyCount
+        self.hash = (robots, keys).__hash__()
 
     def start(x: int, y: int):
-        s = State2()
-        s.robots = (
-            (x-1, y-1),
-            (x+1, y-1),
-            (x-1, y+1),
-            (x+1, y+1)
-        )
-        return s
+        return State2(((x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)))
 
-    def hash(self):
-        def makeKey(x: int, y: int) ->int:
-            return x*100 + y
+    def __hash__(self):
+        return self.hash
 
-        return (makeKey(*self.robots[0]), makeKey(*self.robots[1]), makeKey(*self.robots[2]), makeKey(*self.robots[3]), super().hash())
+    def __eq__(self, other):
+        if self.hash != other.hash:
+            return False
+
+        return self.robots == other.robots and self.keys == other.keys
 
     def move(self, map: Map):
 
@@ -156,12 +155,13 @@ class State2(State):
             if c == '#':
                 return
 
-            s = State2(self.keys, self.keyCount)
-            s.addKey(c)
+            keys, keyCount = State.addKey(self.keys, self.keyCount, c)
+
             robots = list(self.robots)
             robots[robot] = (x, y)
-            s.robots = tuple(robots)
-            yield s, s.hash()
+
+            s = State2(tuple(robots), keys, keyCount)
+            yield s
 
         for i in range(0, len(self.robots)):
             yield from __move__(map, 0,-1, i)
@@ -188,12 +188,12 @@ def loadData(prefix: str) -> Map:
             raise Exception(F"map for {prefix} not found")
     return Map(map)
 
-def solve(map: Map, start: State, trace: bool = False, part2: bool = False) -> int:
-    states  = [start]
-
-    steps   = 0
-    count   = 1
-    visited = {}
+def solve(map: Map, start, trace: bool = False, part2: bool = False) -> int:
+    steps     = 0
+    count     = 1
+    visited   = set()
+    states    = set([start])
+    newStates = set()
 
     keysFound = 0
 
@@ -201,28 +201,31 @@ def solve(map: Map, start: State, trace: bool = False, part2: bool = False) -> i
         if trace:
             print(f"\r{steps} - {len(states)} - {keysFound}    ", end="")
 
-        newStates = {}
         changed = False
         for state in states:
-            visited[state.hash()] = 1
+            visited.add(state)
             if state.keys == map.allKeys:
+                if trace:
+                    print("\r                                          \r", end="")
                 return steps
 
-            for s, k in state.move(map):
-                if not k in newStates and not k in visited:
+            for s in state.move(map):
+                if not s in newStates and not s in visited:
                     if part2 and s.keyCount < keysFound:
                         continue
-                    if part2 and s.keyCount > keysFound:
+                    if s.keyCount > keysFound:
                         keysFound = s.keyCount
-                        newStates = {}
-                        changed = True
+                        if part2:
+                            newStates.clear()
+                            changed = True
 
-                    newStates[k] = s
+                    newStates.add(s)
 
         if changed:
-            visited = {}
+            visited.clear()
         steps += 1
-        states = [s for s in newStates.values()]
+        states.clear()
+        states, newStates = newStates, states
 
     raise Exception("No solution found")
 
