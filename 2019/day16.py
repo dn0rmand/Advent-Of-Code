@@ -57,12 +57,8 @@ def processPhase(data, size, repeat, phase, offset) -> [int]:
         return total
 
     destin = buffer1 if data == buffer2 else buffer2
-    realSize = size / repeat
 
-    for i in range(0, size):
-        if i < offset:
-            continue
-
+    for i in range(offset, size):
         digit = 0
         steps = (i+1)*4
         j1 = i
@@ -70,14 +66,8 @@ def processPhase(data, size, repeat, phase, offset) -> [int]:
         start = j1
 
         while j1 < size:
-            if j1 > start and (j1 % realSize) == start:
-                count = (size-j1) // steps
-                j1 += (count*steps)
-                j2 += (count*steps)
-                digit *= count
-
-            j11 = min(size, j1+i+1)
-            j22 = min(size, j2+i+1)
+            j11 = j1+i+1
+            j22 = j2+i+1
             digit += getSum(j1, j11) - getSum(j2, j22)
             j1 += steps
             j2 += steps
