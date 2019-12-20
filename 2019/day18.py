@@ -257,7 +257,7 @@ def runTest(name: str, expected1: int, expected2: int = None) -> None:
 
 print("")
 print("********************************")
-print("* Advent of Code 2019 - Day 16 *")
+print("* Advent of Code 2019 - Day 18 *")
 print("********************************")
 print("")
 

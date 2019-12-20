@@ -67,7 +67,7 @@ def part1(map: []) -> int:
     return best
 
 def part2(map : [], centerX: int, centerY: int) -> int:
-    def makeKey(asteroid):
+    def sortKey(asteroid):
         _,_,ox, oy, q = asteroid
         key = q * 10000
         if q == 0:
@@ -97,7 +97,7 @@ def part2(map : [], centerX: int, centerY: int) -> int:
         if len(asteroids) == 0:
             raise Exception("No more asteroids but didn't reach 200 yet")
 
-        ast = sorted(asteroids, key=makeKey)
+        ast = sorted(asteroids, key=sortKey)
         for a in ast:
             count += 1
             x,y,ox,oy,q = a
