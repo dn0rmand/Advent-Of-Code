@@ -44,7 +44,7 @@ def buildSums(data, offset) -> [int]:
         total += data[i]
         sumCache[i-offset] = total
 
-def processPhase(data, size, repeat, phase, offset) -> [int]:
+def processPhase(data, size, offset) -> [int]:
 
     buildSums(data, offset)
 
@@ -61,16 +61,10 @@ def processPhase(data, size, repeat, phase, offset) -> [int]:
     for i in range(offset, size):
         digit = 0
         steps = (i+1)*4
-        j1 = i
-        j2 = i + steps//2
-        start = j1
+        halfSteps = steps // 2
 
-        while j1 < size:
-            j11 = j1+i+1
-            j22 = j2+i+1
-            digit += getSum(j1, j11) - getSum(j2, j22)
-            j1 += steps
-            j2 += steps
+        for j in range(i, size, steps):
+            digit += getSum(j, j+i+1) - getSum(j+halfSteps, j+halfSteps+i+1)
 
         destin[i] = abs(digit) % 10
 
@@ -81,7 +75,7 @@ def execute(data, offset, repeat) -> int:
     data, size = initBuffers(getData(data, repeat))
 
     for phase in range(0, 100):
-        data = processPhase(data, size, repeat, phase, offset)
+        data = processPhase(data, size, offset)
 
     answer = 0
 
