@@ -3,10 +3,9 @@ import math
 def loadMap() -> []:
     map = []
     with open('2019/data/day10.data', 'rt') as file:
-        line = [c for c in file.readline().rstrip('\n')]
-        while line:
+        for data in file:
+            line = [c for c in data.rstrip('\n')]
             map.append(line)
-            line = [c for c in file.readline().rstrip('\n')]
 
     return map
 
@@ -30,28 +29,26 @@ def getAsteroidsInSight(map: [], x: int, y: int):
     WIDTH  = len(map[0])
 
     for ox in range(0, WIDTH):
-        for oy in range(0, HEIGHT):
-            if ox == 0 and oy == 0:
-                continue
-            if math.gcd(ox, oy) == 1:
-                r = getAsteroidInSight(map, x, y, ox, oy)
+        oxx = (oy for oy in range(0, HEIGHT) if ox+oy != 0 and math.gcd(ox, oy) == 1)
+        for oy in oxx:
+            r = getAsteroidInSight(map, x, y, ox, oy)
+            if not r == None:
+                yield (r[0], r[1], ox, oy, 1)
+
+            if ox > 0:
+                r = getAsteroidInSight(map, x, y, -ox, oy)
                 if not r == None:
-                    yield (r[0], r[1], ox, oy, 1)
+                    yield (r[0], r[1], ox, oy, 2)
 
-                if ox > 0:
-                    r = getAsteroidInSight(map, x, y, -ox, oy)
-                    if not r == None:
-                        yield (r[0], r[1], ox, oy, 2)
+            if oy > 0:
+                r = getAsteroidInSight(map, x, y, ox, -oy)
+                if not r == None:
+                    yield (r[0], r[1], ox, oy, 0)
 
-                if oy > 0:
-                    r = getAsteroidInSight(map, x, y, ox, -oy)
-                    if not r == None:
-                        yield (r[0], r[1], ox, oy, 0)
-
-                if oy > 0 and ox > 0:
-                    r = getAsteroidInSight(map, x, y, -ox, -oy)
-                    if not r == None:
-                        yield (r[0], r[1], ox, oy, 3)
+            if oy > 0 and ox > 0:
+                r = getAsteroidInSight(map, x, y, -ox, -oy)
+                if not r == None:
+                    yield (r[0], r[1], ox, oy, 3)
 
 def part1(map: []) -> int:
     HEIGHT = len(map)

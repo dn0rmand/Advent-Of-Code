@@ -5,17 +5,6 @@ HEIGHT= 6
 SIZE  = WIDTH*HEIGHT
 
 def loadData() -> [[int]]:
-    # layers = []
-    # layer  = []
-
-    # with open("2019/Data/day8.data", 'rt') as data:
-    #     for digit in data:
-    #         digit = int(digit)
-    #         layer.append(digit)
-    #         if len(layer) == SIZE:
-    #             layers.append(layer)
-    #             layer = []
-
     with open("2019/Data/day8.data", 'rt') as file:
         data = [int(c) for c in file.readline()]
         layers = [data[i:i + SIZE] for i in range(0, len(data), SIZE)]
@@ -26,7 +15,7 @@ def part1(layers: [[int]]) -> int:
     counts = [Counter(l) for l in layers]
 
     def get(counter: Counter, index: int) -> int:
-        return 0 if counter.get(index) == None else counter.get(index)
+        return 0 if index not in counter else counter[index]
 
     counts = sorted(counts, key=lambda c: get(c, 0))
     result = get(counts[0], 1) * get(counts[0], 2)

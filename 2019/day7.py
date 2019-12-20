@@ -36,8 +36,8 @@ def execute(programs: [IntCode], offset: int) -> int:
     bestValue = 0
     bestPhases= None
 
-    used = [0, 0, 0, 0, 0]
-    phases= []
+    used    = [0, 0, 0, 0, 0]
+    phases  = []
 
     def inner():
         nonlocal bestValue
@@ -51,13 +51,12 @@ def execute(programs: [IntCode], offset: int) -> int:
                 bestValue = out
                 bestPhases = [c for c in phases]
         else:
-            for i in range(0, 5):
-                if used[i] == 0:
-                    used[i] = 1
-                    phases.append(i+offset)
-                    inner()
-                    phases.pop()
-                    used[i] = 0
+            for i in (j for j in range(0, 5) if used[j] == 0):
+                used[i] = 1
+                phases.append(i+offset)
+                inner()
+                phases.pop()
+                used[i] = 0
 
     inner()
 

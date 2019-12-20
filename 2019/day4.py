@@ -28,45 +28,16 @@ def isValid(password, part):
         return count >= 2
 
 def calculate(current, len, part):
-    count = 0
-
     if len == 6:
         if isValid(current, part):
             return 1
         else:
             return 0
 
-    first = current % 10
-    last  = 9
+    first = 1 if current == 0 else 3 if current == 1 else 4 if current == 13 else 5 if current == 134 else 6 if current == 1345 else current % 10
+    last = 8 if current == 5 else 5 if current == 0 or current == 58 or current == 5851 else 1 if current == 585 else 9
 
-    if current == 0:
-        first = 1
-        last  = 5
-
-    # 134564
-    if current == 1:
-        first = 3
-    elif current == 13:
-        first = 4
-    elif current == 134:
-        first = 5
-    elif current == 1345:
-        first = 6
-
-    # 585159
-    if current == 5:
-        last = 8
-    elif current == 58:
-        last = 5
-    elif current == 585:
-        last = 1
-    elif current == 5851:
-        last = 5
-
-    for c in range(first, last+1):
-        count += calculate(current * 10 + c, len+1, part)
-
-    return count
+    return sum( ( calculate(current * 10 + c, len+1, part) for c in range(first, last+1) )  )
 
 def part1():
     return calculate(0, 0, 1)
