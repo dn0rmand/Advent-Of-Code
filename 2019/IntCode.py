@@ -200,7 +200,6 @@ class IntCode:
         self.ip   = 0
         self.base = 0
         while self.ip >= 0:
-            op = None
             self.step()
 
     def parameter(self, mode: int) -> (str, int):

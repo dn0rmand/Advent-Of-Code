@@ -1,15 +1,9 @@
 from IntCode import IntCode
 
-def part1(program: IntCode) -> int:
-    damage = 0
+def getDamage(program, solution, speed) -> int:
 
-    solution = [
-        "NOT C J",  # hole at C
-        "AND D J",  # and ground at D
-        # always jump if no ground right in front
-        "NOT A T",
-        "OR T J"
-    ]
+    damage  = 0
+    message = []
 
     def input():
         for l in solution:
@@ -18,7 +12,7 @@ def part1(program: IntCode) -> int:
             for c in l:
                 yield ord(c)
             yield 10
-        for c in "WALK":
+        for c in speed:
             yield ord(c)
         yield 10
 
@@ -27,118 +21,47 @@ def part1(program: IntCode) -> int:
 
         if code > 255:
             damage = code
-        # elif code == 10:
-        #     print("")
-        # else:
-        #     print(chr(code), end="")
+        elif code == 10:
+            msg = "".join(message)
+            if msg != "Input instructions:" and msg != "Walking..." and msg != "Running..." and len(msg) > 0:
+                print(msg)
+            message.clear()
+        else:
+            message.append(chr(code))
 
     program.initialize(input(), output)
     program.execute(False)
 
     return damage
 
-def solve(prgram: IntCode, length: int) -> int:
+def part1(program: IntCode) -> int:
+    solution = [
+        "NOT C J",
 
-    solution: [str] = []
-    traceCount = 0
+        "AND D J", # need somewhere to land
+        "NOT A T", # last resort ... Jump or fall in hole
+        "OR T J"
+    ]
 
-    def test() -> int:
-
-        # solution = [
-        #     "NOT A J",
-        #     "NOT C T",
-        #     "AND H T",
-        #     "OR T J",
-        #     "NOT B T",
-        #     "AND A T",
-        #     "AND C T",
-        #     "OR T J",
-        #     "AND D J"
-        # ]
-
-        damage  = 0
-
-        nonlocal traceCount
-
-        def input():
-            nonlocal started
-
-            for l in solution:
-                if len(l) == 0:
-                    continue
-                for c in l:
-                    yield ord(c)
-                yield 10
-            for c in "RUN":
-                yield ord(c)
-            yield 10
-
-        started = 0
-        def output(code: int) -> None:
-            nonlocal damage, started
-
-            if code > 255:
-                damage = code
-                program.ip = -1
-            elif started > 3:
-                program.ip = -1
-            elif code == 10:
-                started += 1
-
-        if (traceCount % 1000) == 0:
-            print(f"\r{traceCount}", end=" - ")
-            for s in solution:
-                print(f"{s}", end=", ")
-            print("   ", end="")
-        traceCount += 1
-
-        program.initialize(input(), output)
-        program.execute(False)
-        # if damage != 0:
-        #     for s in solution:
-        #         print(s)
-
-        return damage
-
-    visited = set()
-
-    def inner() -> int:
-
-        if len(solution) == length:
-            return test()
-
-        ops1 = ['NOT', 'AND', 'OR']
-        ops2 = ['NOT']
-
-        for op in ['NOT', 'AND', 'OR']:
-            for destin in ['J', 'T']:
-                for source in ['A','B','C','D','E','F','G','H','I','J','T']:
-                    if op != 'NOT' and source == destin:
-                        continue
-
-                    s = f"{op} {source} {destin}"
-
-                    if len(solution) > 0 and solution[-1] == s:
-                        continue
-
-                    if source not in ['J', 'T'] and s in solution:
-                        continue
-
-                    solution.append(s)
-                    damage = inner()
-                    if damage != 0:
-                        return damage
-                    solution.pop()
-
-        return 0
-
-    return inner()
+    return getDamage(program, solution, "WALK")
 
 def part2(program: IntCode) -> int:
+    solution = [
+        "NOT C J",
+        "AND H J", # NOT(C) AND H
 
-    damage = solve(program, 9)
-    print("")
-    return damage
+        "NOT B T",
+        "AND C T",
+        "AND A T", # NOT(B) AND C AND A
+
+        "OR T J", # (NOT(C) AND H) OR (NOT(B) AND C AND A)
+
+        "AND D J", # need somewhere to land
+        "NOT A T", # last resort ... Jump or fall in hole
+        "OR T J",
+    ]
+
+    return getDamage(program, solution, "RUN")
 
 print("")
 print("********************************")
