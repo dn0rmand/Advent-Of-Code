@@ -83,7 +83,7 @@ class IntCode:
             address += self.base
         self.poke(address, value)
 
-    def step(self) -> None:
+    def step(self) -> int:
         opcode, mode1, mode2, mode3 = self.getNextInstruction()
 
         if opcode == 99: # halt
@@ -132,6 +132,8 @@ class IntCode:
         elif opcode == 9: # adjusts the relative base
             v1 = self.readParameter(mode1)
             self.base += v1
+
+        return opcode
 
     def initialize(self, input: Iterator[int], output: Callable[[int], None]) -> None:
         self.load()

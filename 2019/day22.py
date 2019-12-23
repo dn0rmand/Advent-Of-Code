@@ -22,38 +22,39 @@ def load():
 
     return operations
 
-def performReverse(deck: deque, size: int = None) -> deque:
-    deck.reverse()
-    return deck
+def matPro(m1 : [ [] ], m2 : [ [] ], modulo: int) -> [ [] ]:
+    m = [[0, 0], [0, 0]]
 
-def performCut(deck: deque, size: int) -> deque:
-    deck.rotate(-size)
-    return deck
+    for i in range(0, 2):
+        for j in range(0, 2):
+            v = 0
+            for k in range(0, 2):
+                v = (v + (m1[i][k] * m2[k][j])) % modulo
+            m[i][j] = v
 
-def performIncrement(deck: deque, size: int) -> deque:
-    deck2 = deque(deck)
-    idx = 0
-    for x in deck:
-        deck2[idx] = x
-        idx = (idx + size) % len(deck)
-    return deck2
+    return m
 
-def reShuffle(operations: [], deck: deque) -> deque:
-    OPS = [0, 1, 2, 4]
-    OPS[REVERSE]  = performReverse
-    OPS[CUT]      = performCut
-    OPS[INCREMENT]= performIncrement
+def matPow(m : [ [] ], power: int, modulo: int) -> [ [] ]:
+    if power == 1:
+        return m
+    r = None
+    while power > 1:
+        if power % 2 == 0:
+            m = matPro(m, m, modulo)
+            power //= 2
+        else:
+            if r != None:
+                r = matPro(r, m, modulo)
+            else:
+                r = m
+            power -= 1
 
-    for operation in operations:
-        deck = OPS[operation[0]](deck, operation[1])
+    if r != None:
+        m = matPro(r, m, modulo)
 
-    return deck
+    return m
 
-def shuffle(operations: [], deckSize: int = 10) -> deque:
-    deck = deque([i for i in range(0, deckSize)])
-    return reShuffle(operations, deck)
-
-def speedShuffle(operations: [], index: int, deckSize: int = 10) -> int:
+def shuffle(operations: [], index: int, deckSize: int = 10) -> int:
     for op, size in operations:
         if op == REVERSE:
             index = deckSize-1-index
@@ -71,20 +72,64 @@ def speedShuffle(operations: [], index: int, deckSize: int = 10) -> int:
 
     return index
 
+def reverseShuffle(operations: [], index: int, deckSize: int = 10) -> int:
+    for op, size in (operations[i-1] for i in range(len(operations), 0, -1)):
+        if op == REVERSE:
+            # same effect
+            index = deckSize-1-index
+        elif op == CUT and size != 0:
+            # reverse = size*-1
+            size = -size
+            if size < 0:
+                size = abs(size)
+                index = (index + size) % deckSize
+            else:
+                if index < size:
+                    index = index+deckSize-size
+                else:
+                    index -= size
+        elif size != 0:
+            while (index % size) != 0:
+                index += deckSize
+            index = index//size
+
+    return index
+
 def part1(operations: []) -> int:
-    return speedShuffle(operations, 2019, 10007)
+    answer = shuffle(operations, 2019, 10007)
+    return answer
 
 def part2(operations: []) -> int:
-    return 0
+    deckSize     = 119315717514047
+    shuffleCount = 101741582076661
 
-def test(operations: [], deckSize: int):
-    deck = deque([i for i in range(0, deckSize)])
+    v1 = reverseShuffle(operations, 0, deckSize)
+    v2 = reverseShuffle(operations, 1, deckSize)
 
-    for _ in range(0, 10):
-        print(", ".join((deck[c] for c in range(0, 4))))
-        deck = reShuffle(operations, deck)
+    increment = v2-v1
+    while increment < 0:
+        increment += deckSize
 
-    print(", ".join((deck[c] for c in range(0, 4))))
+    m = [[increment, 0],
+         [v1, 1]]
+
+    m = matPow(m, shuffleCount, deckSize)
+
+    increment = m[0][0]
+    start     = m[1][0]
+    for idx in range(0, 2020):
+        start = (start+increment) % deckSize
+    return start
+
+def test():
+    m = [ [4730, 0],
+          [9122, 1] ]
+    r = matPow1(m, 124, 10007)
+    print(f"{r[0][0]} {r[0][1]}") # 1408
+    print(f"{r[1][0]} {r[1][1]}") # 435
+    r = matPow(m, 124, 10007)
+    print(f"{r[0][0]} {r[0][1]}") # 1408
+    print(f"{r[1][0]} {r[1][1]}") # 435
 
 print("")
 print("********************************")
@@ -92,10 +137,12 @@ print("* Advent of Code 2019 - Day 22 *")
 print("********************************")
 print("")
 
+# test()
+
 operations = load()
 
 print("Answer part 1 is", part1(operations))
 print("Answer part 2 is", part2(operations))
 
-test(operation, 10007)
+# test(operations, 10007)
 
