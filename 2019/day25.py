@@ -1,6 +1,8 @@
 from IntCode import IntCode
 import sys
 
+DEBUG = len(sys.argv) > 1 and sys.argv[1].lower() == "debug"
+
 killers = [
     "photons",
     "infinite loop",
@@ -181,6 +183,8 @@ class State:
 
         def inner(index: int):
             self.track = [self.maze.room]
+            if DEBUG:
+                yield from sendCommand("inv")
             yield from sendCommand(direction)
 
             if self.lighter:
@@ -195,8 +199,6 @@ class State:
         yield from inner(0)
 
 def part1(program: IntCode) -> str:
-
-    DEBUG = len(sys.argv) > 1 and sys.argv[1].lower() == "debug"
 
     maze  = Maze()
     state = State(maze)
