@@ -1,5 +1,6 @@
 from typing import Iterator, Callable
 from collections import deque
+from array import array
 import curses
 
 class IntCode:
@@ -14,6 +15,21 @@ class IntCode:
             with open(filename, 'rt') as data:
                 for opcode in data.readline().split(','):
                     self.program.append(int(opcode))
+
+    def save(self, filename: str) -> None:
+        def pack(f):
+            for c in self.memory:
+                if c >= 0 and c < 256:
+                    array('B', [c]).tofile(f)
+                elif c < 0 and c > -128:
+                    array('b', [c]).tofile(f)
+                elif c > -32768 and c <= 32768:
+                    array('i', [c]).tofile(f)
+                else:
+                    array('l', [c]).tofile(f)
+
+        with open(filename, "wb") as data:
+            pack(data)
 
     def clone(self):
         copy = IntCode()
@@ -110,12 +126,14 @@ class IntCode:
         elif opcode == 5: # jump if true
             v1 = self.readParameter(mode1)
             v2 = self.readParameter(mode2)
+            self.addLabel(v2)
             if not v1 == 0:
                 self.ip = v2
 
         elif opcode == 6: # jump if false
             v1 = self.readParameter(mode1)
             v2 = self.readParameter(mode2)
+            self.addLabel(v2)
             if v1 == 0:
                 self.ip = v2
 
@@ -135,10 +153,17 @@ class IntCode:
 
         return opcode
 
+    def addLabel(self, ip) -> None:
+        if not ip in self.labels:
+            self.labels[ip] = f"Label-{self.nextLabel}"
+            self.nextLabel += 1
+
     def initialize(self, input: Iterator[int], output: Callable[[int], None]) -> None:
         self.load()
         self.output = output
         self.input  = input
+        self.nextLabel = 1
+        self.labels = {}
 
     def writeText(self, txt: str, scroll: bool) -> None:
         y,_ = self.stdscr.getmaxyx()
@@ -207,7 +232,7 @@ class IntCode:
     def parameter(self, mode: int) -> (str, int):
         value = self.readNext()
         if mode == 0:
-            return ("[{0:#06x}]".format(value), self.peek(value))
+            return ("[{0}]".format(value), self.peek(value))
         elif mode == 2:
             if value < 0:
                 return ("[base-{0}]".format(-value), self.peek(self.base+value))
@@ -221,7 +246,7 @@ class IntCode:
 
         opcode, mode1, mode2, mode3 = self.getNextInstruction()
 
-        txtLine = "{0:#06x}: {1} - ".format(oldip, opcode)
+        txtLine = "      ".format(oldip, opcode)
 
         if opcode == 99:
             txtLine += "HALT"
@@ -240,74 +265,106 @@ class IntCode:
                 v2 = sign
                 sign = '-'
 
-            if v3 == v2:
-                txtLine += "{1} {4}= {2} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
+            if mode1 == 1 and v11 == 0:
+                txtLine += "{0}  = {1}".format(v3, v2)
+            elif mode2 == 1 and v22 == 0:
+                txtLine += "{0}  = {1}".format(v3, v1)
+            elif v3 == v2:
+                txtLine += "{0} {3}= {1}".format(v3, v1, v2, sign)
             elif v3 == v1:
-                txtLine += "{1} {4}= {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
+                txtLine += "{0} {3}= {2}".format(v3, v1, v2, sign)
             else:
-                txtLine += "{1}  = {2} {4} {3} -> {5}".format(oldip, v3, v1, v2, sign, v11+v22)
+                txtLine += "{0}  = {1} {3} {2}".format(v3, v1, v2, sign)
 
         elif opcode == 2:
             v1,v11 = self.parameter(mode1)
             v2,v22 = self.parameter(mode2)
             v3,_ = self.parameter(mode3)
 
-            if v3 == v1:
-                txtLine += "{1} *= {3} -> {4}".format(oldip, v3, v1, v2, v11*v22)
+            if (mode1 == 1 and v11 == 0) or (mode2 == 1 and v22 == 0):
+                txtLine += "{0}  = 0".format(v3)
+            elif mode1 == 1 and v11 == 1:
+                txtLine += "{0}  = {1}".format(v3, v2)
+            elif mode2 == 1 and v22 == 1:
+                txtLine += "{0}  = {1}".format(v3, v1)
+            elif v3 == v1:
+                txtLine += "{0} *= {1}".format(v3, v2)
             elif v3 == v2:
-                txtLine += "{1} *= {2} -> {4}".format(oldip, v3, v1, v2, v11*v22)
+                txtLine += "{0} *= {1}".format(v3, v1)
             else:
-                txtLine += "{1}  = {2} * {3} -> {4}".format(oldip, v3, v1, v2, v11*v22)
+                txtLine += "{0}  = {1} * {2}".format(v3, v1, v2)
 
         elif opcode == 3:
             v1, _ = self.parameter(mode1)
-
-            txtLine += "{1}  = INPUT".format(oldip, v1)
+            txtLine += "{0}  = INPUT()".format(v1)
 
         elif opcode == 4:
-            v1, v11 = self.parameter(mode1)
-
-            txtLine += "OUTPUT    = {1} -> {2}".format(oldip, v1, v11)
+            v1, _ = self.parameter(mode1)
+            txtLine += "OUTPUT({0})".format(v1)
 
         elif opcode == 5: # jump if true
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
-            if mode2 == 1:
+            if mode1 == 1:
+                if v11 != 0:
+                    v2, format = (v2, "GOTO {0}") if mode2 != 1 else (int(v2), "GOTO {0}")
+                    txtLine += format.format(v2)
+                else:
+                    txtLine += "NOP"
+            elif mode2 == 1:
                 v2=int(v2)
-                txtLine += "GOTO {2:#06x} IF {1} != 0 {3}".format(oldip, v1, v2, "" if v11==0 else ">> {0:#06x}".format(v22))
+                txtLine += "IF {0} != 0 THEN GOTO {1}".format(v1, v2)
             else:
-                txtLine += "GOTO {2} IF {1} != 0 {3}".format(oldip, v1, v2, "" if v11==0 else ">> {0:#06x}".format(v22))
+                txtLine += "IF {0} != 0 THEN GOTO {1} ".format(v1, v2)
 
         elif opcode == 6: # jump if false
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
-            if mode2 == 1:
+            if mode1 == 1:
+                if v11 == 0:
+                    v2, format = (v2, "GOTO {0}") if mode2 != 1 else (int(v2), "GOTO {0}")
+                    txtLine += format.format(v2)
+                else:
+                    txtLine += "NOP"
+            elif mode2 == 1:
                 v2=int(v2)
-                txtLine += "GOTO {2:#06x} IF {1} == 0 {3}".format(oldip, v1, v2, ">> {0:#06x}".format(v22) if v11==0 else "")
+                txtLine += "IF {0} == 0 THEN GOTO {1}".format(v1, v2)
             else:
-                txtLine += "GOTO {2} IF {1} == 0 {3}".format(oldip, v1, v2, ">> {0:#06x}".format(v22)  if v11==0 else "")
+                txtLine += "IF {0} == 0 THEN GOTO {1}".format(v1, v2)
 
         elif opcode == 7: # less than
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             v3, _   = self.parameter(mode3)
-            txtLine += "{3}  = 1 IF {1} < {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11<v22 else 0)
+            if mode1 == 1 and mode2 == 1:
+                if v11 < v22:
+                    txt += "{0}  = 1".format(v3)
+                else:
+                    txt += "{0}  = 0".format(v3)
+            else:
+                txtLine += "{2}  = 1 IF {0} < {1} ELSE 0".format(v1, v2, v3)
 
         elif opcode == 8: # equals
             v1, v11 = self.parameter(mode1)
             v2, v22 = self.parameter(mode2)
             v3, _   = self.parameter(mode3)
-            txtLine += "{3}  = 1 IF {1} == {2} ELSE 0 -> {4}".format(oldip, v1, v2, v3, 1 if v11==v22 else 0)
+            if mode1 == 1 and mode2 == 1:
+                if v11 == v22:
+                    txt += "{0}  = 1".format(v3)
+                else:
+                    txt += "{0}  = 0".format(v3)
+            else:
+                txtLine += "{2}  = 1 IF {0} == {1} ELSE 0".format(v1, v2, v3)
 
         elif opcode == 9: # adjusts the relative base
             v1, v11 = self.parameter(mode1)
             if mode1 == 1 and v11 < 0:
-                txtLine += "base -= {2} -> {2}".format(oldip, v1, "{0:#06x}".format(self.base+v11))
+                txtLine += "base -= {0}".format(-v11)
             else:
-                txtLine += "base += {1} -> {2}".format(oldip, v1, "{0:#06x}".format(self.base+v11))
+                txtLine += "base += {0}".format(v1)
 
         else:
-            txtLine += "unsupported opcode {1}".format(oldip, opcode)
+            txtLine += "unsupported opcode {0}".format(opcode)
 
         self.ip = oldip
         return opcode, txtLine
