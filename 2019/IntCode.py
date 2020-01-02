@@ -5,7 +5,6 @@ import curses
 
 class IntCode:
     def __init__(self, filename: str = None) -> None:
-        # self.registers  = [0] * 6
         self.program    = []
         self.ip         = 0
         self.base       = 0
@@ -108,6 +107,7 @@ class IntCode:
         elif opcode == 1: # add
             a = self.readParameter(mode1)
             b = self.readParameter(mode2)
+
             self.writeParameter(mode3, a + b)
 
         elif opcode == 2: # multiply
@@ -123,17 +123,15 @@ class IntCode:
             value = self.readParameter(mode1)
             self.output(value)
 
-        elif opcode == 5: # jump if true
+        elif opcode == 5: # jump if not 0
             v1 = self.readParameter(mode1)
             v2 = self.readParameter(mode2)
-            self.addLabel(v2)
             if not v1 == 0:
                 self.ip = v2
 
-        elif opcode == 6: # jump if false
+        elif opcode == 6: # jump if 0
             v1 = self.readParameter(mode1)
             v2 = self.readParameter(mode2)
-            self.addLabel(v2)
             if v1 == 0:
                 self.ip = v2
 
@@ -153,17 +151,10 @@ class IntCode:
 
         return opcode
 
-    def addLabel(self, ip) -> None:
-        if not ip in self.labels:
-            self.labels[ip] = f"Label-{self.nextLabel}"
-            self.nextLabel += 1
-
     def initialize(self, input: Iterator[int], output: Callable[[int], None]) -> None:
         self.load()
         self.output = output
         self.input  = input
-        self.nextLabel = 1
-        self.labels = {}
 
     def writeText(self, txt: str, scroll: bool) -> None:
         y,_ = self.stdscr.getmaxyx()
@@ -219,7 +210,7 @@ class IntCode:
 
         curses.wrapper(runLoop)
 
-    def execute(self, debug: bool) -> None:
+    def execute(self, debug: bool = False) -> None:
         if debug:
             self.Debug()
             return
