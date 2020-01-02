@@ -1,7 +1,10 @@
 from IntCode import IntCode
 from IntCodeDecoder import IntCodeDecoder
+import sys
 
-program = IntCode('2019/Data/day21.data')
+DAY = 21 if len(sys.argv) <= 1 else int(sys.argv[1])
+
+program = IntCode(f"2019/Data/day{DAY}.data")
 program = IntCodeDecoder(program)
 
 program.decode()

@@ -59,8 +59,8 @@ class IntCodeDecoder(IntCode):
         ip    = self.ip
         value = self.readNext()
         if mode == 0:
-            if passe == 3 and ip in self.variables:
-                return ("*_" + self.variables[ip], mode)
+            if passe == 3 and ip in self.variables and ip != 0:
+                return (f"[_{self.variables[ip]}]", mode)
             else:
                 return ("_" + self.variableName(value, True), mode)
         elif mode == 2:
@@ -70,9 +70,9 @@ class IntCodeDecoder(IntCode):
                 return (f"[sp+{ value }]", mode)
             else:
                 return (self.variableName(-value, False), mode) # local variables name
-        elif passe == 3 and ip in self.variables:
-            self.defaults[ip] = value
-            return ("_" + self.variables[ip], 0)
+        # elif passe == 3 and ip in self.variables:
+        #     self.defaults[ip] = value
+        #     return ("*_" + self.variables[ip], 0)
         else:
             return (value, mode)
 
@@ -85,7 +85,6 @@ class IntCodeDecoder(IntCode):
                 self.pass1(ip)
             ips = [i for i in self.instructions if self.instructions[i] == None]
 
-        # self.pass2()
         self.pass3()
 
         if len(self.defaults) > 0:
@@ -95,10 +94,22 @@ class IntCodeDecoder(IntCode):
             print("")
 
         print("main:")
+        skip = False
         for ip in sorted(self.instructions.keys()):
-            if ip != 0 and ip in self.labels:
-                print(f"\n{self.labels[ip]}:")
-            print(f"    {self.instructions[ip]}")
+            if not skip:
+                if ip != 0 and ip in self.labels:
+                    if self.labels[ip] == None:
+                        skip = True
+                        continue
+
+                    print(f"\n{self.labels[ip]}:")
+
+                print(f"    {self.instructions[ip]}")
+                
+            else:
+                if ip in self.labels and self.labels[ip] != None:
+                    skip = False
+                    print(f"\n{self.labels[ip]}:")
 
     def pass1(self, ip: int) -> int:
         self.ip    = ip
@@ -136,43 +147,6 @@ class IntCodeDecoder(IntCode):
             else: # invalid opcode
                 self.ip = -1
 
-    def pass2(self) -> None:
-        ip = 0
-        while ip < len(self.program):
-            if not ip in self.instructions:
-                self.data.add(ip)
-                ip += 1
-                continue
-
-            self.ip = ip
-            info = self.getNextInstruction()
-
-            for i in range(1, self.instructions[ip]):
-                self.getParameter(info[i], 2)
-
-            ip += self.instructions[ip]
-
-        for addr in self.variables:
-            if addr not in self.data:
-                ip = addr
-                while ip > 0 and ip not in self.instructions:
-                    ip -= 1
-
-                self.ip = ip
-                offset = addr - ip
-                info = self.getNextInstruction()
-                if offset <= 0 or offset >= self.instructions[ip]:
-                    assert offset > 0 and offset < self.instructions[ip]
-
-                if addr not in self.defaults:
-                    self.defaults[addr] = self.program[addr]
-                    # if self.program[addr] in self.variables:
-
-                self.program[addr]  = addr
-                info[offset] = 0
-                self.program[ip]    = info[0] + 100*info[1] + 1000*info[2] + 10000*info[3]
-                # if addr
-
     def pass3(self) -> None:
         previous    = None
         usedLabels  = {}
@@ -201,14 +175,27 @@ class IntCodeDecoder(IntCode):
                 if mode1 == 1 and mode2 == 1:
                     instructions[ip] = f"{p3} = {p1+p2}"
                 else:
-                    sign = '+'
-                    if mode2 == 1 and p2 < 0:
-                        sign = '-'
+                    sign = ' + '
+                    if mode2 == 1 and p2 == 0:
+                        sign = ''
+                        p2   = ''
+                    elif mode1 == 1 and p1 == 0:
+                        sign = ''
+                        p1   = ''
+                    elif mode2 == 1 and p2 < 0:
+                        sign = ' - '
                         p2 = -p2
                     elif mode1 == 1 and p1 < 0:
                         p1, p2 = p2, -p1
 
-                    instructions[ip] = f"{p3} = {p1} {sign} {p2}"
+                    if p1 == p3 and p2 != 0:
+                        sign = sign.strip()
+                        instructions[ip] = f"{p3} {sign}= {p2}"
+                    elif p2 == p3 and p1 != 0:
+                        sign = sign.strip()
+                        instructions[ip] = f"{p3} {sign}= {p1}"
+                    else:
+                        instructions[ip] = f"{p3} = {p1}{sign}{p2}"
 
             elif opcode == 2: # multiply
                 p1, mode1 = self.getParameter(mode1, 3)
@@ -248,6 +235,8 @@ class IntCodeDecoder(IntCode):
                     action = f"{action} {self.labels[p2]}"
                 elif mode2 == 2 and p2 == "[sp]":
                     action = "return"
+                    if self.ip not in self.labels:
+                        usedLabels[self.ip] = None
                 else:
                     action = f"{action} {p2}"
 
