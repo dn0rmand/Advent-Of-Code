@@ -1,4 +1,4 @@
-import time
+import sys
 
 def loadData(prefix: str):
     prefix = "--- " + prefix + " ---"
@@ -102,30 +102,28 @@ def runTest(name: str, expected1: int, expected2: int = None) -> None:
         assert part2(data) == expected2
     print(name, "passed")
 
-print("")
-print("********************************")
-print("* Advent of Code 2019 - Day 16 *")
-print("********************************")
-print("")
+def day16():
+    print("")
+    print("********************************")
+    print("* Advent of Code 2019 - Day 16 *")
+    print("********************************")
+    print("")
 
-runTest("TEST1", 24176176)
-runTest("TEST2", 73745418)
-runTest("TEST3", 52432133)
+    DEBUG = False
+    for arg in sys.argv:
+        if arg.lower() == "debug":
+            DEBUG = True
+            break
 
-t = time.perf_counter()
-runTest("TEST4", None, 84462026)
-t =  int((time.perf_counter()-t)*1000)
-print(f"TEST4 executed in {t}ms")
+    if DEBUG:
+        runTest("TEST1", 24176176)
+        runTest("TEST2", 73745418)
+        runTest("TEST3", 52432133)
+        runTest("TEST4", None, 84462026)
 
-puzzle = loadData("PUZZLE")
+    puzzle = loadData("PUZZLE")
 
-t = time.perf_counter()
-print("Answer part 1 is", part1(puzzle))
-t =  int((time.perf_counter()-t)*1000)
-print(f"Part 1 executed in {t}ms")
-t = time.perf_counter()
-print("Answer part 2 is", part2(puzzle))
-t =  int((time.perf_counter()-t)*1000)
-print(f"Part 2 executed in {t}ms")
+    print("Answer part 1 is", part1(puzzle))
+    print("Answer part 2 is", part2(puzzle))
 
-print("")
+    print("")

@@ -1,283 +1,285 @@
-import time
+import sys
 
-KEY_MASK = {}
+def day18():
 
-for i in range(0, 26):
-    k = chr(ord('a') + i)
-    KEY_MASK[k] = 2**i
+    DEBUG = False
+    for arg in sys.argv:
+        if arg.lower() == "debug":
+            DEBUG = True
+            break
 
-class Map:
-    def __init__(self, data: [[chr]]) -> None:
-        self.data = data
-        self.entry = None
-        self.allKeys = 0
+    KEY_MASK = {}
 
-        keys  = []
-        doors = []
+    for i in range(0, 26):
+        k = chr(ord('a') + i)
+        KEY_MASK[k] = 2**i
 
-        for y in range(0, len(data)):
-            for x in range(0, len(data[y])):
-                c = data[y][x]
-                if c == '@':
-                    if self.entry != None:
-                        raise Exception("Multiple entries found")
-                    self.entry = (x, y)
-                    data[y][x] = '.'
-                if c >= 'a' and c <= 'z':
-                    self.allKeys |= KEY_MASK[c]
-                    if c in keys:
-                        raise Exception(f"key {c} found multiple times")
-                    keys.append(c)
-                if c >= 'A' and c <= 'Z':
-                    if c in doors:
-                        raise Exception(f"door {c} found multiple times")
-                    doors.append(c)
+    class Map:
+        def __init__(self, data: [[chr]]) -> None:
+            self.data = data
+            self.entry = None
+            self.allKeys = 0
 
-        self.keyCount = len(keys)
+            keys  = []
+            doors = []
 
-        if self.entry == None:
-            raise Exception("No entries found")
-        if len(keys) < len(doors):
-            raise Exception("Less keys than doors")
-        for k in doors:
-            if not k.lower() in keys:
-                raise Exception(f"No key for door {k}")
+            for y in range(0, len(data)):
+                for x in range(0, len(data[y])):
+                    c = data[y][x]
+                    if c == '@':
+                        if self.entry != None:
+                            raise Exception("Multiple entries found")
+                        self.entry = (x, y)
+                        data[y][x] = '.'
+                    if c >= 'a' and c <= 'z':
+                        self.allKeys |= KEY_MASK[c]
+                        if c in keys:
+                            raise Exception(f"key {c} found multiple times")
+                        keys.append(c)
+                    if c >= 'A' and c <= 'Z':
+                        if c in doors:
+                            raise Exception(f"door {c} found multiple times")
+                        doors.append(c)
 
-    def get(self, x: int, y: int, keys: int) -> chr:
-        if y < 0 or x < 0 or y >= len(self.data) or x >= len(self.data[y]):
-            return '#'
+            self.keyCount = len(keys)
 
-        c = self.data[y][x]
-        if c in ['.', '#']:
+            if self.entry == None:
+                raise Exception("No entries found")
+            if len(keys) < len(doors):
+                raise Exception("Less keys than doors")
+            for k in doors:
+                if not k.lower() in keys:
+                    raise Exception(f"No key for door {k}")
+
+        def get(self, x: int, y: int, keys: int) -> chr:
+            if y < 0 or x < 0 or y >= len(self.data) or x >= len(self.data[y]):
+                return '#'
+
+            c = self.data[y][x]
+            if c in ['.', '#']:
+                return c
+            if c == c.upper(): # it's a door
+                if (KEY_MASK[c.lower()] & keys) != 0: # but I have the key
+                    return '.'
+                else:
+                    return '#' # door is locked
+
             return c
-        if c == c.upper(): # it's a door
-            if (KEY_MASK[c.lower()] & keys) != 0: # but I have the key
-                return '.'
-            else:
-                return '#' # door is locked
 
-        return c
+        def dump(self) -> None:
+            for row in self.data:
+                print("".join(row))
 
-    def dump(self) -> None:
-        for row in self.data:
-            print("".join(row))
+        def closeDeadEnds(self, entries) -> None:
+            reset = True
+            while reset:
+                reset = False
+                for y in range(1, len(self.data)-1):
+                    row = self.data[y]
+                    for x in range(1, len(self.data[y])-1):
+                        if (x, y) in entries:
+                            continue
+                        if self.data[y][x] == '.':
+                            c = 1 if self.data[y-1][x] == '#' else 0
+                            c+= 1 if self.data[y+1][x] == '#' else 0
+                            c+= 1 if self.data[y][x-1] == '#' else 0
+                            c+= 1 if self.data[y][x+1] == '#' else 0
+                            if c >= 3:
+                                self.data[y][x] = '#'
+                                reset = True
+                                break
+                    if reset:
+                        break
 
-    def closeDeadEnds(self, entries) -> None:
-        reset = True
-        while reset:
-            reset = False
-            for y in range(1, len(self.data)-1):
-                row = self.data[y]
-                for x in range(1, len(self.data[y])-1):
-                    if (x, y) in entries:
-                        continue
-                    if self.data[y][x] == '.':
-                        c = 1 if self.data[y-1][x] == '#' else 0
-                        c+= 1 if self.data[y+1][x] == '#' else 0
-                        c+= 1 if self.data[y][x-1] == '#' else 0
-                        c+= 1 if self.data[y][x+1] == '#' else 0
-                        if c >= 3:
-                            self.data[y][x] = '#'
-                            reset = True
-                            break
-                if reset:
-                    break
+    class State:
+        def addKey(keys: int, keyCount: int, key: chr) -> (int, int):
+            if key >= 'a' and key <= 'z':
+                m = KEY_MASK[key]
+                if (keys & m) == 0:
+                    keys |= m
+                    keyCount += 1
+            return keys, keyCount
 
-class State:
-    def addKey(keys: int, keyCount: int, key: chr) -> (int, int):
-        if key >= 'a' and key <= 'z':
-            m = KEY_MASK[key]
-            if (keys & m) == 0:
-                keys |= m
-                keyCount += 1
-        return keys, keyCount
+    class State1:
+        def __init__(self, x: int, y: int, keys: int = 0, keyCount: int = 0):
+            self.x = x
+            self.y = y
+            self.keys = keys
+            self.keyCount = keyCount
+            self.hash = (x, y, keys).__hash__()
 
-class State1:
-    def __init__(self, x: int, y: int, keys: int = 0, keyCount: int = 0):
-        self.x = x
-        self.y = y
-        self.keys = keys
-        self.keyCount = keyCount
-        self.hash = (x, y, keys).__hash__()
+        def __eq__(self, other):
+            if self.hash != other.hash:
+                return False
+            return self.x == other.x and self.y == other.y and self.keys == other.keys
 
-    def __eq__(self, other):
-        if self.hash != other.hash:
-            return False
-        return self.x == other.x and self.y == other.y and self.keys == other.keys
+        def __hash__(self):
+            return self.hash
 
-    def __hash__(self):
-        return self.hash
+        def move(self, map: Map):
+            yield from self.__move__(0, -1, map)
+            yield from self.__move__(0,  1, map)
+            yield from self.__move__(-1, 0, map)
+            yield from self.__move__( 1,  0, map)
 
-    def move(self, map: Map):
-        yield from self.__move__(0, -1, map)
-        yield from self.__move__(0,  1, map)
-        yield from self.__move__(-1, 0, map)
-        yield from self.__move__( 1,  0, map)
-
-    def __move__(self, dx: int, dy: int, map: Map):
-        x = self.x + dx
-        y = self.y + dy
-
-        c = map.get(x, y, self.keys)
-        if c != '#':
-            keys, keyCount = State.addKey(self.keys, self.keyCount, c)
-            s = State1(x, y, keys, keyCount)
-            yield s
-
-class State2:
-
-    def __init__(self, robots: [(int, int)], activeRobot: int = -1, keys: int = 0, keyCount: int = 0):
-        self.robots = robots
-        self.keys = keys
-        self.keyCount = keyCount
-        self.activeRobot = activeRobot
-        self.hash = (robots, keys, activeRobot).__hash__()
-
-    def start(x: int, y: int):
-        return State2(((x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)))
-
-    def __hash__(self):
-        return self.hash
-
-    def __eq__(self, other):
-        if self.hash != other.hash:
-            return False
-
-        return self.robots == other.robots and self.keys == other.keys
-
-    def move(self, map: Map):
-
-        def __move__(map: Map, dx: int, dy: int, robot):
-            x, y = self.robots[robot]
-            x += dx
-            y += dy
+        def __move__(self, dx: int, dy: int, map: Map):
+            x = self.x + dx
+            y = self.y + dy
 
             c = map.get(x, y, self.keys)
-            if c == '#':
-                return
+            if c != '#':
+                keys, keyCount = State.addKey(self.keys, self.keyCount, c)
+                s = State1(x, y, keys, keyCount)
+                yield s
 
-            active = robot
-            oldCount = self.keyCount
-            keys, keyCount = State.addKey(self.keys, self.keyCount, c)
-            if oldCount != keyCount:
-                active = -1
+    class State2:
 
-            robots = list(self.robots)
-            robots[robot] = (x, y)
+        def __init__(self, robots: [(int, int)], activeRobot: int = -1, keys: int = 0, keyCount: int = 0):
+            self.robots = robots
+            self.keys = keys
+            self.keyCount = keyCount
+            self.activeRobot = activeRobot
+            self.hash = (robots, keys, activeRobot).__hash__()
 
-            s = State2(tuple(robots), active, keys, keyCount)
-            yield s
+        def start(x: int, y: int):
+            return State2(((x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)))
 
-        if self.activeRobot == -1:
-            for i in range(0, len(self.robots)):
-                yield from __move__(map, 0,-1, i)
-                yield from __move__(map, 0, 1, i)
-                yield from __move__(map,-1, 0, i)
-                yield from __move__(map, 1, 0, i)
-        else:
-                yield from __move__(map, 0,-1, self.activeRobot)
-                yield from __move__(map, 0, 1, self.activeRobot)
-                yield from __move__(map,-1, 0, self.activeRobot)
-                yield from __move__(map, 1, 0, self.activeRobot)
+        def __hash__(self):
+            return self.hash
 
-def loadData(prefix: str) -> Map:
-    map  = [[]]
-    prefix = "--- " + prefix + " ---"
-    with open("2019/Data/day18.data", 'rt') as file:
-        foundPrefix = False
-        for line in file:
-            line = line.strip('\n')
-            if not foundPrefix:
-                if line == prefix:
-                    foundPrefix = True
-            elif line.startswith("--- "):
-                break
+        def __eq__(self, other):
+            if self.hash != other.hash:
+                return False
+
+            return self.robots == other.robots and self.keys == other.keys
+
+        def move(self, map: Map):
+
+            def __move__(map: Map, dx: int, dy: int, robot):
+                x, y = self.robots[robot]
+                x += dx
+                y += dy
+
+                c = map.get(x, y, self.keys)
+                if c == '#':
+                    return
+
+                active = robot
+                oldCount = self.keyCount
+                keys, keyCount = State.addKey(self.keys, self.keyCount, c)
+                if oldCount != keyCount:
+                    active = -1
+
+                robots = list(self.robots)
+                robots[robot] = (x, y)
+
+                s = State2(tuple(robots), active, keys, keyCount)
+                yield s
+
+            if self.activeRobot == -1:
+                for i in range(0, len(self.robots)):
+                    yield from __move__(map, 0,-1, i)
+                    yield from __move__(map, 0, 1, i)
+                    yield from __move__(map,-1, 0, i)
+                    yield from __move__(map, 1, 0, i)
             else:
-                map.append([c for c in line])
+                    yield from __move__(map, 0,-1, self.activeRobot)
+                    yield from __move__(map, 0, 1, self.activeRobot)
+                    yield from __move__(map,-1, 0, self.activeRobot)
+                    yield from __move__(map, 1, 0, self.activeRobot)
 
-        if not foundPrefix:
-            raise Exception(F"map for {prefix} not found")
-    return Map(map)
+    def loadData(prefix: str) -> Map:
+        map  = [[]]
+        prefix = "--- " + prefix + " ---"
+        with open("2019/Data/day18.data", 'rt') as file:
+            foundPrefix = False
+            for line in file:
+                line = line.strip('\n')
+                if not foundPrefix:
+                    if line == prefix:
+                        foundPrefix = True
+                elif line.startswith("--- "):
+                    break
+                else:
+                    map.append([c for c in line])
 
-def solve(map: Map, start, trace: bool = False) -> int:
-    steps     = 0
-    count     = 1
-    visited   = set()
-    states    = set([start])
-    newStates = set()
+            if not foundPrefix:
+                raise Exception(F"map for {prefix} not found")
+        return Map(map)
 
-    keysFound = 0
+    def solve(map: Map, start, trace: bool = False) -> int:
+        steps     = 0
+        count     = 1
+        visited   = set()
+        states    = set([start])
+        newStates = set()
 
-    while len(states) > 0:
-        if trace:
-            print(f"\r{steps} - {keysFound} - {len(states)} ", end="")
+        keysFound = 0
 
-        for state in states:
-            visited.add(state)
-            if state.keys == map.allKeys:
-                if trace:
-                    print("\r                                          \r", end="")
-                return steps
+        while len(states) > 0:
+            if trace:
+                print(f"\r{steps} - {keysFound} - {len(states)} ", end="")
 
-            for s in state.move(map):
-                if not s in newStates and not s in visited:
-                    if s.keyCount > keysFound:
-                        keysFound = s.keyCount
-                    newStates.add(s)
+            for state in states:
+                visited.add(state)
+                if state.keys == map.allKeys:
+                    if trace:
+                        print("\r                                          \r", end="")
+                    return steps
 
-        steps += 1
-        states.clear()
-        states, newStates = newStates, states
+                for s in state.move(map):
+                    if not s in newStates and not s in visited:
+                        if s.keyCount > keysFound:
+                            keysFound = s.keyCount
+                        newStates.add(s)
 
-    raise Exception("No solution found")
+            steps += 1
+            states.clear()
+            states, newStates = newStates, states
 
-def part1(map: Map, trace: bool = False) -> int:
-    map.closeDeadEnds([map.entry])
-    return solve(map, State1(*map.entry), trace)
+        raise Exception("No solution found")
 
-def part2(map: Map, trace: bool = False) -> int:
-    x, y = map.entry
-    map.data[y][x]   = '#'
-    map.data[y][x+1] = '#'
-    map.data[y][x-1] = '#'
-    map.data[y-1][x] = '#'
-    map.data[y+1][x] = '#'
-    start = State2.start(x, y)
+    def part1(map: Map, trace: bool = False) -> int:
+        map.closeDeadEnds([map.entry])
+        return solve(map, State1(*map.entry), trace)
 
-    map.closeDeadEnds(start.robots)
-    answer = solve(map, start, trace)
-    return answer
+    def part2(map: Map, trace: bool = False) -> int:
+        x, y = map.entry
+        map.data[y][x]   = '#'
+        map.data[y][x+1] = '#'
+        map.data[y][x-1] = '#'
+        map.data[y-1][x] = '#'
+        map.data[y+1][x] = '#'
+        start = State2.start(x, y)
 
-def runTest(name: str, expected1: int, expected2: int = None) -> None:
-    map = loadData(name)
-    if expected1 != None:
-        assert part1(map) == expected1
-    if expected2 != None:
-        assert part2(map) == expected2
+        map.closeDeadEnds(start.robots)
+        answer = solve(map, start, trace)
+        return answer
 
-print("")
-print("********************************")
-print("* Advent of Code 2019 - Day 18 *")
-print("********************************")
-print("")
+    def runTest(name: str, expected1: int, expected2: int = None) -> None:
+        if expected1 != None:
+            map = loadData(name)
+            assert part1(map) == expected1
+        if expected2 != None:
+            map = loadData(name)
+            assert part2(map) == expected2
 
-runTest("TEST1", 132)
-runTest("TEST2", 136)
-runTest("TEST3", 81)
-runTest("TEST4", None, 32)
+    print("")
+    print("********************************")
+    print("* Advent of Code 2019 - Day 18 *")
+    print("********************************")
+    print("")
 
-print("All tests passed")
+    if DEBUG:
+        runTest("TEST1", 132)
+        runTest("TEST2", 136)
+        runTest("TEST3", 81)
+        runTest("TEST4", None, 32)
 
-map = loadData('PUZZLE')
+        print("All tests passed")
 
-t = time.perf_counter()
-print("Answer part 1 is", part1(map, True))
-t = int((time.perf_counter()-t) * 100)/100
-print(f"Part 1 executed in {t} seconds")
+    map = loadData('PUZZLE')
+    print("Answer part 1 is", part1(map, DEBUG))
 
-map = loadData('PUZZLE')
-
-t = time.perf_counter()
-print("Answer part 2 is", part2(map, True))
-t = int((time.perf_counter()-t) * 100)/100
-print(f"Part 2 executed in {t} seconds")
+    map = loadData('PUZZLE')
+    print("Answer part 2 is", part2(map, DEBUG))

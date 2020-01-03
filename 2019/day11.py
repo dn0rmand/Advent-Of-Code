@@ -1,152 +1,152 @@
 from IntCode import IntCode
 from typing import NamedTuple
 
-#from collections import defaultdict
+def day11():
 
-class Direction:
-    x: int
-    y: int
+    class Direction:
+        x: int
+        y: int
 
-    def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
+        def __init__(self, x: int, y: int) -> None:
+            self.x = x
+            self.y = y
 
-    def turn(self, direction: int) -> None:
-        if direction == 0:
-            if self.x == 0 and self.y == -1:
-                self.x = -1
-                self.y = 0
-            elif self.x == -1 and self.y == 0:
-                self.x = 0
-                self.y = 1
-            elif self.x == 0 and self.y == 1:
-                self.x = 1
-                self.y = 0
+        def turn(self, direction: int) -> None:
+            if direction == 0:
+                if self.x == 0 and self.y == -1:
+                    self.x = -1
+                    self.y = 0
+                elif self.x == -1 and self.y == 0:
+                    self.x = 0
+                    self.y = 1
+                elif self.x == 0 and self.y == 1:
+                    self.x = 1
+                    self.y = 0
+                else:
+                    self.x = 0
+                    self.y = -1
             else:
-                self.x = 0
-                self.y = -1
-        else:
-            if self.x == 0 and self.y == -1:
-                self.x = 1
-                self.y = 0
-            elif self.x == 1 and self.y == 0:
-                self.x = 0
-                self.y = 1
-            elif self.x == 0 and self.y == 1:
-                self.x = -1
-                self.y = 0
-            else:
-                self.x = 0
-                self.y = -1
+                if self.x == 0 and self.y == -1:
+                    self.x = 1
+                    self.y = 0
+                elif self.x == 1 and self.y == 0:
+                    self.x = 0
+                    self.y = 1
+                elif self.x == 0 and self.y == 1:
+                    self.x = -1
+                    self.y = 0
+                else:
+                    self.x = 0
+                    self.y = -1
 
-class Position:
-    x: int
-    y: int
+    class Position:
+        x: int
+        y: int
 
-    def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
+        def __init__(self, x: int, y: int) -> None:
+            self.x = x
+            self.y = y
 
-    def max(self, o) -> None:
-        self.x = max(self.x, o.x)
-        self.y = max(self.y, o.y)
+        def max(self, o) -> None:
+            self.x = max(self.x, o.x)
+            self.y = max(self.y, o.y)
 
-    def min(self, o) -> None:
-        self.x = min(self.x, o.x)
-        self.y = min(self.y, o.y)
+        def min(self, o) -> None:
+            self.x = min(self.x, o.x)
+            self.y = min(self.y, o.y)
 
-    def __add__(self, o : Direction):
-        return Position(self.x + o.x, self.y + o.y)
+        def __add__(self, o : Direction):
+            return Position(self.x + o.x, self.y + o.y)
 
-    def __key(self):
-        return (self.x, self.y)
+        def __key(self):
+            return (self.x, self.y)
 
-    def __hash__(self):
-        return hash((self.x, self.y))
+        def __hash__(self):
+            return hash((self.x, self.y))
 
-    def __eq__(self, other):
-        return self.__key() == other.__key()
+        def __eq__(self, other):
+            return self.__key() == other.__key()
 
-class Robot:
-    def __init__(self) -> None:
-        self.map = {}
-        self.pos = Position(0, 0)
-        self.direction = Direction(0, -1)
-        self.state = 0
-        self.minpos= Position(0, 0)
-        self.maxpos= Position(0, 0)
-
-    def processCommand(self, command: int) -> None:
-        if self.state == 0:
-            self.state = 1
-            self.setColor(command)
-        else:
+    class Robot:
+        def __init__(self) -> None:
+            self.map = {}
+            self.pos = Position(0, 0)
+            self.direction = Direction(0, -1)
             self.state = 0
-            self.turn(command)
+            self.minpos= Position(0, 0)
+            self.maxpos= Position(0, 0)
 
-    def setColor(self, color: int) -> None:
-        self.map[self.pos] = color
+        def processCommand(self, command: int) -> None:
+            if self.state == 0:
+                self.state = 1
+                self.setColor(command)
+            else:
+                self.state = 0
+                self.turn(command)
 
-    def getColor(self, x: int = None, y:int = None) -> int:
-        pos = self.pos
+        def setColor(self, color: int) -> None:
+            self.map[self.pos] = color
 
-        if not (x == None and y == None):
-            pos = Position(x, y)
+        def getColor(self, x: int = None, y:int = None) -> int:
+            pos = self.pos
 
-        if self.map.get(pos) == None:
-            return 0
-        else:
-            return self.map.get(pos)
+            if not (x == None and y == None):
+                pos = Position(x, y)
 
-    def turn(self, direction: int) -> None:
-        self.direction.turn(direction)
-        self.pos = self.pos + self.direction
-        self.maxpos.max(self.pos)
-        self.minpos.min(self.pos)
+            if self.map.get(pos) == None:
+                return 0
+            else:
+                return self.map.get(pos)
 
-def part1(program: IntCode) -> int:
-    robot = Robot()
+        def turn(self, direction: int) -> None:
+            self.direction.turn(direction)
+            self.pos = self.pos + self.direction
+            self.maxpos.max(self.pos)
+            self.minpos.min(self.pos)
 
-    output = lambda color: robot.processCommand(color)
+    def part1(program: IntCode) -> int:
+        robot = Robot()
 
-    def input():
-        while True:
-            yield robot.getColor()
+        output = lambda color: robot.processCommand(color)
 
-    program.initialize(input(), output)
-    program.execute(False)
+        def input():
+            while True:
+                yield robot.getColor()
 
-    answer = len(robot.map)
-    return answer
+        program.initialize(input(), output)
+        program.execute()
 
-def part2(program: IntCode) -> None:
-    robot = Robot()
-    robot.setColor(1) # start on white
+        answer = len(robot.map)
+        return answer
 
-    output = lambda color: robot.processCommand(color)
+    def part2(program: IntCode) -> None:
+        robot = Robot()
+        robot.setColor(1) # start on white
 
-    def input():
-        while True:
-            yield robot.getColor()
+        output = lambda color: robot.processCommand(color)
 
-    program.initialize(input(), output)
-    program.execute(False)
+        def input():
+            while True:
+                yield robot.getColor()
 
-    for y in range(robot.minpos.y, robot.maxpos.y+1):
-        for x in range(robot.minpos.x, robot.maxpos.x+1):
-            print(' ' if robot.getColor(x, y) == 0 else '#', end="")
-        print("")
+        program.initialize(input(), output)
+        program.execute()
 
-print("")
-print("********************************")
-print("* Advent of Code 2019 - Day 11 *")
-print("********************************")
-print("")
+        for y in range(robot.minpos.y, robot.maxpos.y+1):
+            for x in range(robot.minpos.x, robot.maxpos.x+1):
+                print(' ' if robot.getColor(x, y) == 0 else '#', end="")
+            print("")
 
-program = IntCode('2019/data/day11.data')
+    print("")
+    print("********************************")
+    print("* Advent of Code 2019 - Day 11 *")
+    print("********************************")
+    print("")
 
-print("Answer part 1 is", part1(program))
-print("Answer part 2 is")
-part2(program)
+    program = IntCode('2019/data/day11.data')
 
-print("")
+    print("Answer part 1 is", part1(program))
+    print("Answer part 2 is")
+    part2(program)
+
+    print("")

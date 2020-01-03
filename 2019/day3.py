@@ -1,58 +1,60 @@
 import math
 
-map = {}
+def day3():
 
-intersections = []
+    map = {}
 
-def addPoint(x, y, value, wire):
-    key = (x, y)
-    if key in map:
-        v , w = map.get(key)
-        if w != wire:
-            if x != 0 or y != 0:
-                intersections.append((x, y))
-            value += v
-        else:
-            value = min(v, value)
+    intersections = []
 
-    map[key] = (value, wire)
+    def addPoint(x, y, value, wire):
+        key = (x, y)
+        if key in map:
+            v , w = map.get(key)
+            if w != wire:
+                if x != 0 or y != 0:
+                    intersections.append((x, y))
+                value += v
+            else:
+                value = min(v, value)
 
-def loadData():
+        map[key] = (value, wire)
 
-    with open('2019/data/day3.data', 'rt') as file:
-        wire = 0
-        for line in file:
-            wire += 1
+    def loadData():
 
-            x, y, step  = 0, 0, 0
+        with open('2019/data/day3.data', 'rt') as file:
+            wire = 0
+            for line in file:
+                wire += 1
 
-            for move, value in ( (x[0], int(x[1:])) for x in line.split(',') ):
-                xx = -1 if move == 'L' else 1 if move == 'R' else 0
-                yy = -1 if move == 'U' else 1 if move == 'D' else 0
-                if xx == 0 and yy == 0:
-                    raise Exception('Invalid move')
+                x, y, step  = 0, 0, 0
 
-                for _ in range(0, value):
-                    step += 1
-                    y += yy
-                    x += xx
-                    addPoint(x, y, step, wire)
+                for move, value in ( (x[0], int(x[1:])) for x in line.split(',') ):
+                    xx = -1 if move == 'L' else 1 if move == 'R' else 0
+                    yy = -1 if move == 'U' else 1 if move == 'D' else 0
+                    if xx == 0 and yy == 0:
+                        raise Exception('Invalid move')
 
-def part1():
-    return min(( abs(x)+abs(y) for x, y in intersections ))
+                    for _ in range(0, value):
+                        step += 1
+                        y += yy
+                        x += xx
+                        addPoint(x, y, step, wire)
 
-def part2():
-    return min(( s for s ,_ in ( map.get((x, y)) for x, y in intersections )))
+    def part1():
+        return min(( abs(x)+abs(y) for x, y in intersections ))
 
-print("")
-print("*******************************")
-print("* Advent of Code 2019 - Day 3 *")
-print("*******************************")
-print("")
+    def part2():
+        return min(( s for s ,_ in ( map.get((x, y)) for x, y in intersections )))
 
-loadData()
+    print("")
+    print("*******************************")
+    print("* Advent of Code 2019 - Day 3 *")
+    print("*******************************")
+    print("")
 
-print("Answer part 1 is", part1())
-print("Answer part 2 is", part2())
+    loadData()
 
-print("")
+    print("Answer part 1 is", part1())
+    print("Answer part 2 is", part2())
+
+    print("")

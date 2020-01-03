@@ -69,7 +69,7 @@ class IntCodeDecoder(IntCode):
             if value > 0:
                 return (f"[sp+{ value }]", mode)
             else:
-                return (self.variableName(-value, False), mode) # local variables name
+                return (f"{self.variableName(-value, False)}(sp-{-value})", mode) # local variables name
         # elif passe == 3 and ip in self.variables:
         #     self.defaults[ip] = value
         #     return ("*_" + self.variables[ip], 0)
@@ -104,8 +104,9 @@ class IntCodeDecoder(IntCode):
 
                     print(f"\n{self.labels[ip]}:")
 
-                print(f"    {self.instructions[ip]}")
-                
+                if self.instructions[ip] != None:
+                    print(f"    {self.instructions[ip]}")
+
             else:
                 if ip in self.labels and self.labels[ip] != None:
                     skip = False
@@ -226,7 +227,7 @@ class IntCodeDecoder(IntCode):
 
                 action = "goto"
                 if previous != None and instructions[previous] == f"[sp] = { ip + self.instructions[ip] }":
-                    instructions.pop(previous)
+                    instructions[previous] = None # cannot remove or label aren't rendered
                     previous = None
                     action = "call"
 

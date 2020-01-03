@@ -1,50 +1,52 @@
 from IntCode import IntCode
 
-def part1(program: IntCode) -> int:
-    def input():
-        while True:
-            yield 1
+def day5():
 
-    lastValue = 0
+    def part1(program: IntCode) -> int:
+        def input():
+            while True:
+                yield 1
 
-    def output(value):
-        nonlocal lastValue
-        if not lastValue == 0:
-            raise Exception("Tests failed")
-        lastValue = value
+        lastValue = 0
 
-    program.initialize(input(), output)
-    program.execute(False)
+        def output(value):
+            nonlocal lastValue
+            if not lastValue == 0:
+                raise Exception("Tests failed")
+            lastValue = value
 
-    return lastValue
+        program.initialize(input(), output)
+        program.execute()
 
-def part2(program: IntCode) -> int:
-    def input():
-        while True:
-            yield 5
+        return lastValue
 
-    lastValue = None
+    def part2(program: IntCode) -> int:
+        def input():
+            while True:
+                yield 5
 
-    def output(value):
-        nonlocal lastValue
-        if not lastValue == None:
-            raise Exception("Tests failed")
-        lastValue = value
+        lastValue = None
 
-    program.initialize(input(), output)
-    program.execute(False)
+        def output(value):
+            nonlocal lastValue
+            if not lastValue == None:
+                raise Exception("Tests failed")
+            lastValue = value
 
-    return lastValue
+        program.initialize(input(), output)
+        program.execute()
 
-print("")
-print("*******************************")
-print("* Advent of Code 2019 - Day 5 *")
-print("*******************************")
-print("")
+        return lastValue
 
-program = IntCode('2019/data/day5.data')
+    print("")
+    print("*******************************")
+    print("* Advent of Code 2019 - Day 5 *")
+    print("*******************************")
+    print("")
 
-print("Answer part 1 is", part1( program ))
-print("Answer part 2 is", part2( program ))
+    program = IntCode('2019/data/day5.data')
 
-print("")
+    print("Answer part 1 is", part1( program ))
+    print("Answer part 2 is", part2( program ))
+
+    print("")

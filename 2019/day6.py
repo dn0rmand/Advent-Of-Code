@@ -1,72 +1,74 @@
 import math
 
-def loadData():
-    orbits = {}
-    orbited= {}
+def day6():
 
-    with open('2019/data/day6.data', 'rt') as data:
+    def loadData():
+        orbits = {}
+        orbited= {}
 
-        for line in data:
-            center, orbit = line.strip().split(')')
-            orbits[orbit] = center
-            if center in orbited:
-                orbited[center].append(orbit)
-            else:
-                orbited[center] = [orbit]
+        with open('2019/data/day6.data', 'rt') as data:
 
-    return orbits, orbited
+            for line in data:
+                center, orbit = line.strip().split(')')
+                orbits[orbit] = center
+                if center in orbited:
+                    orbited[center].append(orbit)
+                else:
+                    orbited[center] = [orbit]
 
-def part1(orbits):
-    visited = {}
+        return orbits, orbited
 
-    def countOrbits(value):
-        if value in visited:
-            return visited[value]
-        count = 0 if value not in orbits else 1 + countOrbits(orbits[value])
-        visited[value] = count
-        return count
+    def part1(orbits):
+        visited = {}
 
-    return sum(( countOrbits(c) for c in orbits ))
+        def countOrbits(value):
+            if value in visited:
+                return visited[value]
+            count = 0 if value not in orbits else 1 + countOrbits(orbits[value])
+            visited[value] = count
+            return count
 
-def part2(orbits, orbited):
-    answer = 0
+        return sum(( countOrbits(c) for c in orbits ))
 
-    if 'YOU' not in orbits or 'SAN' not in orbits:
-        raise Exception('Not fair')
+    def part2(orbits, orbited):
+        answer = 0
 
-    if orbits['YOU'] == orbits['SAN']:
-        return 0
+        if 'YOU' not in orbits or 'SAN' not in orbits:
+            raise Exception('Not fair')
 
-    states  = set([orbits['YOU']])
-    visited = set()
-    visited.add('YOU')
-    visited.add('SAN')
+        if orbits['YOU'] == orbits['SAN']:
+            return 0
 
-    moves = 0
-    while orbits['SAN'] not in states:
-        moves += 1
-        newStates = set()
-        for s in states:
-            visited.add(s)
+        states  = set([orbits['YOU']])
+        visited = set()
+        visited.add('YOU')
+        visited.add('SAN')
 
-            if s in orbits and orbits[s] not in visited:
-                newStates.add(orbits[s])
+        moves = 0
+        while orbits['SAN'] not in states:
+            moves += 1
+            newStates = set()
+            for s in states:
+                visited.add(s)
 
-            if s in orbited:
-                newStates.update((t for t in orbited[s] if t not in visited))
+                if s in orbits and orbits[s] not in visited:
+                    newStates.add(orbits[s])
 
-        states = newStates
+                if s in orbited:
+                    newStates.update((t for t in orbited[s] if t not in visited))
 
-    return moves
+            states = newStates
 
-print("")
-print("*******************************")
-print("* Advent of Code 2019 - Day 6 *")
-print("*******************************")
-print("")
+        return moves
 
-orbits, orbited = loadData()
-print("Answer part 1 is", part1(orbits))
-print("Answer part 2 is", part2(orbits, orbited))
+    print("")
+    print("*******************************")
+    print("* Advent of Code 2019 - Day 6 *")
+    print("*******************************")
+    print("")
 
-print("")
+    orbits, orbited = loadData()
+    print("Answer part 1 is", part1(orbits))
+    print("Answer part 2 is", part2(orbits, orbited))
+
+    print("")

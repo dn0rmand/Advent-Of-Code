@@ -1,39 +1,41 @@
 from IntCode import IntCode
 
-def run(program, noun, verb):
-    program.initialize(None, None)
-    program.poke(1, noun)
-    program.poke(2, verb)
+def day2():
 
-    program.execute(True)
+    def run(program, noun, verb):
+        program.initialize(None, None)
+        program.poke(1, noun)
+        program.poke(2, verb)
 
-    return program.peek(0)
+        program.execute()
 
-def part1(program):
-    answer = run(program, 12, 2)
-    return answer
+        return program.peek(0)
 
-def part2(program):
-    target = 19690720
-    start = run(program, 0, 0)
+    def part1(program):
+        answer = run(program, 12, 2)
+        return answer
 
-    verb = (target-start) % 360000
-    noun = int((target-start-verb) / 360000)
+    def part2(program):
+        target = 19690720
+        start = run(program, 0, 0)
 
-    if run(program, noun, verb) == target:
-        return noun * 100 + verb
+        verb = (target-start) % 360000
+        noun = int((target-start-verb) / 360000)
 
-    return 0
+        if run(program, noun, verb) == target:
+            return noun * 100 + verb
 
-print("")
-print("*******************************")
-print("* Advent of Code 2019 - Day 2 *")
-print("*******************************")
-print("")
+        return 0
 
-program = IntCode('2019/data/day2.data')
+    print("")
+    print("*******************************")
+    print("* Advent of Code 2019 - Day 2 *")
+    print("*******************************")
+    print("")
 
-print("Answer part 1 is", part1( program ))
-print("Answer part 2 is", part2( program ))
+    program = IntCode('2019/data/day2.data')
 
-print("")
+    print("Answer part 1 is", part1( program ))
+    print("Answer part 2 is", part2( program ))
+
+    print("")

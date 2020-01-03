@@ -1,65 +1,67 @@
 from IntCode import IntCode
 
-def checkPoint(program: IntCode, x: int, y: int) -> bool:
-    result = 0
+def day19():
 
-    def output(code):
-        nonlocal result
-        result = code
+    def checkPoint(program: IntCode, x: int, y: int) -> bool:
+        result = 0
 
-    def input():
-        yield x
-        yield y
+        def output(code):
+            nonlocal result
+            result = code
 
-    program.initialize(input(), output)
-    program.execute(False)
+        def input():
+            yield x
+            yield y
 
-    return result
+        program.initialize(input(), output)
+        program.execute()
 
-def part1(program: IntCode, dump: bool = False) -> int:
-    count = 0
+        return result
 
-    for y in range(0, 50):
-        for x in range(0, 50):
-            c = checkPoint(program, x, y)
+    def part1(program: IntCode, dump: bool = False) -> int:
+        count = 0
+
+        for y in range(0, 50):
+            for x in range(0, 50):
+                c = checkPoint(program, x, y)
+                if dump:
+                    print('X' if c == 1 else '.', end="")
+                count += c
             if dump:
-                print('X' if c == 1 else '.', end="")
-            count += c
-        if dump:
-            print("")
+                print("")
 
-    return count
+        return count
 
-def part2(program: IntCode) -> int:
+    def part2(program: IntCode) -> int:
 
-    def check(x: int, y: int) -> bool:
-        if y < 0:
-            return False
+        def check(x: int, y: int) -> bool:
+            if y < 0:
+                return False
 
-        return checkPoint(program, x, y) == 1
+            return checkPoint(program, x, y) == 1
 
-    y = None
-    x = 50
+        y = None
+        x = 50
 
-    for yy in range(49, 0, -1):
-        if checkPoint(program, x, yy):
-            y = yy
-            break
+        for yy in range(49, 0, -1):
+            if checkPoint(program, x, yy):
+                y = yy
+                break
 
-    while True:
-        if check(x, y-99) and check(x+99, y-99):
-            return x*10000 + (y-99)
-        x += 1
-        while checkPoint(program, x, y+1):
-            y += 1
+        while True:
+            if check(x, y-99) and check(x+99, y-99):
+                return x*10000 + (y-99)
+            x += 1
+            while checkPoint(program, x, y+1):
+                y += 1
 
-print("")
-print("********************************")
-print("* Advent of Code 2019 - Day 19 *")
-print("********************************")
-print("")
+    print("")
+    print("********************************")
+    print("* Advent of Code 2019 - Day 19 *")
+    print("********************************")
+    print("")
 
-program = IntCode('2019/data/day19.data')
+    program = IntCode('2019/data/day19.data')
 
-print("Answer part 1 is", part1(program))
-print("Answer part 2 is", part2(program))
+    print("Answer part 1 is", part1(program))
+    print("Answer part 2 is", part2(program))

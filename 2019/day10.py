@@ -1,125 +1,127 @@
 import math
 
-def loadMap() -> []:
-    map = []
-    with open('2019/data/day10.data', 'rt') as file:
-        for data in file:
-            line = [c for c in data.rstrip('\n')]
-            map.append(line)
+def day10():
 
-    return map
+    def loadMap() -> []:
+        map = []
+        with open('2019/data/day10.data', 'rt') as file:
+            for data in file:
+                line = [c for c in data.rstrip('\n')]
+                map.append(line)
 
-def getAsteroidInSight(map: [], x: int, y: int, ox: int, oy: int) -> (int, int):
-    HEIGHT = len(map)
-    WIDTH  = len(map[0])
+        return map
 
-    x += ox
-    y += oy
-    while x >= 0 and x < WIDTH and y >= 0 and y < HEIGHT:
-        if not map[y][x] == '.':
-            return (x, y)
+    def getAsteroidInSight(map: [], x: int, y: int, ox: int, oy: int) -> (int, int):
+        HEIGHT = len(map)
+        WIDTH  = len(map[0])
 
         x += ox
         y += oy
+        while x >= 0 and x < WIDTH and y >= 0 and y < HEIGHT:
+            if not map[y][x] == '.':
+                return (x, y)
 
-    return None
+            x += ox
+            y += oy
 
-def getAsteroidsInSight(map: [], x: int, y: int):
-    HEIGHT = len(map)
-    WIDTH  = len(map[0])
+        return None
 
-    for ox in range(0, WIDTH):
-        oxx = (oy for oy in range(0, HEIGHT) if ox+oy != 0 and math.gcd(ox, oy) == 1)
-        for oy in oxx:
-            r = getAsteroidInSight(map, x, y, ox, oy)
-            if not r == None:
-                yield (r[0], r[1], ox, oy, 1)
+    def getAsteroidsInSight(map: [], x: int, y: int):
+        HEIGHT = len(map)
+        WIDTH  = len(map[0])
 
-            if ox > 0:
-                r = getAsteroidInSight(map, x, y, -ox, oy)
+        for ox in range(0, WIDTH):
+            oxx = (oy for oy in range(0, HEIGHT) if ox+oy != 0 and math.gcd(ox, oy) == 1)
+            for oy in oxx:
+                r = getAsteroidInSight(map, x, y, ox, oy)
                 if not r == None:
-                    yield (r[0], r[1], ox, oy, 2)
+                    yield (r[0], r[1], ox, oy, 1)
 
-            if oy > 0:
-                r = getAsteroidInSight(map, x, y, ox, -oy)
-                if not r == None:
-                    yield (r[0], r[1], ox, oy, 0)
+                if ox > 0:
+                    r = getAsteroidInSight(map, x, y, -ox, oy)
+                    if not r == None:
+                        yield (r[0], r[1], ox, oy, 2)
 
-            if oy > 0 and ox > 0:
-                r = getAsteroidInSight(map, x, y, -ox, -oy)
-                if not r == None:
-                    yield (r[0], r[1], ox, oy, 3)
+                if oy > 0:
+                    r = getAsteroidInSight(map, x, y, ox, -oy)
+                    if not r == None:
+                        yield (r[0], r[1], ox, oy, 0)
 
-def part1(map: []) -> int:
-    HEIGHT = len(map)
-    WIDTH  = len(map[0])
+                if oy > 0 and ox > 0:
+                    r = getAsteroidInSight(map, x, y, -ox, -oy)
+                    if not r == None:
+                        yield (r[0], r[1], ox, oy, 3)
 
-    best = (0, -1, -1)
+    def part1(map: []) -> int:
+        HEIGHT = len(map)
+        WIDTH  = len(map[0])
 
-    for x in range(0, HEIGHT):
-        for y in range(0, WIDTH):
-            if map[y][x] == '.':
-                continue
-            v = len([a for a in getAsteroidsInSight(map, x, y)])
-            if v > best[0]:
-                best = (v, x, y)
+        best = (0, -1, -1)
 
-    return best
+        for x in range(0, HEIGHT):
+            for y in range(0, WIDTH):
+                if map[y][x] == '.':
+                    continue
+                v = len([a for a in getAsteroidsInSight(map, x, y)])
+                if v > best[0]:
+                    best = (v, x, y)
 
-def part2(map : [], centerX: int, centerY: int) -> int:
-    def sortKey(asteroid):
-        _,_,ox, oy, q = asteroid
-        key = q * 10000
-        if q == 0:
-            key += (ox / oy)
+        return best
 
-        elif q == 1:
-            if not ox == 0:
-                key += (oy / ox)
-            else:
-                key += 9000
-
-        elif q == 2:
-            if not oy == 0:
+    def part2(map : [], centerX: int, centerY: int) -> int:
+        def sortKey(asteroid):
+            _,_,ox, oy, q = asteroid
+            key = q * 10000
+            if q == 0:
                 key += (ox / oy)
-            else:
-                key += 9000
 
-        elif q == 3:
-            key += oy/ox
+            elif q == 1:
+                if not ox == 0:
+                    key += (oy / ox)
+                else:
+                    key += 9000
 
-        return key
+            elif q == 2:
+                if not oy == 0:
+                    key += (ox / oy)
+                else:
+                    key += 9000
 
-    count = 0
-    asnwer = 0
-    while count < 200:
-        asteroids = [a for a in getAsteroidsInSight(map, centerX, centerY)]
-        if len(asteroids) == 0:
-            raise Exception("No more asteroids but didn't reach 200 yet")
+            elif q == 3:
+                key += oy/ox
 
-        ast = sorted(asteroids, key=sortKey)
-        for a in ast:
-            count += 1
-            x,y,ox,oy,q = a
-            # print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
-            if count == 200:
-                answer = x*100 + y
-                break
-            map[y][x] = '.'
+            return key
 
-    return answer
+        count = 0
+        asnwer = 0
+        while count < 200:
+            asteroids = [a for a in getAsteroidsInSight(map, centerX, centerY)]
+            if len(asteroids) == 0:
+                raise Exception("No more asteroids but didn't reach 200 yet")
 
-print("")
-print("********************************")
-print("* Advent of Code 2019 - Day 10 *")
-print("********************************")
-print("")
+            ast = sorted(asteroids, key=sortKey)
+            for a in ast:
+                count += 1
+                x,y,ox,oy,q = a
+                # print(f"{count} = ({x}, {y}) - dx={ox}, dy={oy}, quadrant: {q+1}")
+                if count == 200:
+                    answer = x*100 + y
+                    break
+                map[y][x] = '.'
 
-map = loadMap()
+        return answer
 
-count, x, y = part1(map)
+    print("")
+    print("********************************")
+    print("* Advent of Code 2019 - Day 10 *")
+    print("********************************")
+    print("")
 
-print("Answer part 1 is", count)
-print("Answer part 2 is", part2(map, x, y))
+    map = loadMap()
 
-print("")
+    count, x, y = part1(map)
+
+    print("Answer part 1 is", count)
+    print("Answer part 2 is", part2(map, x, y))
+
+    print("")
