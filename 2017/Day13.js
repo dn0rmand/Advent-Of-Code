@@ -8,7 +8,7 @@ module.exports = function()
         input: fs.createReadStream('Data/Day13.data')
     });
 
-    const sleep = require("sleep");
+    const sleep = require("atomic-sleep");
     const consoleControl = require('console-control-strings');
     
     readInput.on('line', (line) => processLine(line)).on('close', () => { dumpResult(); process.exit(0); });
@@ -84,7 +84,7 @@ module.exports = function()
         {
             let backCode = '\x1b[' + (2+maxRange) + 'A'; // consoleControl.previousLine(num = 1);
             process.stdout.write(backCode);
-            sleep.usleep(80000);            
+            sleep(80);            
         }
 
         process.stdout.write(consoleControl.showCursor());

@@ -1,6 +1,6 @@
 module.exports = function()
 {
-    const sleep = require("sleep");
+    const sleep = require("atomic-sleep");
     const consoleControl = require('console-control-strings')    
     const parser = require('../tools/parser.js');
     const fs = require('fs');
@@ -36,12 +36,7 @@ module.exports = function()
 
     function wait()
     {
-        sleep.usleep(50000);
-        // var start = process.hrtime();
-        // var end = process.hrtime(start);
-
-        // while(end[1] < 30000000)
-        //     end = process.hrtime(start);
+        sleep(50);
     }
 
     function DrawScreen(final, color)

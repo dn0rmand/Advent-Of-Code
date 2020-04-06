@@ -4,6 +4,7 @@
   "description": "Advent of Code",
   "main": "start.js",
   "dependencies": {
+    "atomic-sleep": "^1.0.0",
     "blessed": "^0.1.81",
     "clone": "^2.1.2",
     "console-control-strings": "^1.1.0",
@@ -14,8 +15,7 @@
     "prompt": "^1.0.0",
     "prompt-sync": "^4.1.6",
     "rot-13": "^1.0.0",
-    "simple-console-color": "^1.0.6",
-    "sleep": "^5.2.3"
+    "simple-console-color": "^1.0.6"
   },
   "devDependencies": {},
   "scripts": {
