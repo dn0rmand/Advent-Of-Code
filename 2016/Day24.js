@@ -39,11 +39,11 @@ module.exports = function()
         }
     })
     .on('close', () => {
-       _allPaths = getAllPath();
-       _segments = getSegments();
-       var distance = getShortest();
-       console.log("Shortest path is " + distance + " steps long");
-        process.exit(0);
+      _allPaths = getAllPath();
+      _segments = getSegments();
+      var distance = getShortest();
+      console.log("Shortest path is " + distance + " steps long");
+      process.exit(0);
     });
 
     function getAllPath()

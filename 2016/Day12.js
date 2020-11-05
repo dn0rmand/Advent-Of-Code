@@ -20,4 +20,5 @@ module.exports = async function()
     compiler.execute();
  
     console.log("A = " + compiler.$registers.a);
+    process.exit(0);
 }

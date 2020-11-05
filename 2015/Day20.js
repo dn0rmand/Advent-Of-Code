@@ -1,75 +1,43 @@
-module.exports = function() 
+const day20 = function () 
 {
-    const isFloat = require('is-float');
-    const input = 34000000;
+    const TARGET = 34000000;
+    const MAX_HOUSE = 1000000;
 
-    function delivers(house, elf, v2)
+    function part1() 
     {
-        var s = house / elf;
-        if (Math.floor(s) != s)
-            return false;
-        if (v2)
-            return (elf * 50) >= house;
-        else
-            return true;
-    }
-
-    function getPresentCountV1(house)
-    {
-        var presents = 0;
-        
-        for(var elf = 1; elf <= house; elf++)
+        const houses = new Uint32Array(MAX_HOUSE);
+        houses.fill(10); // Elf 1
+        for (let elf = 2; elf < MAX_HOUSE; elf++) 
         {
-            if (delivers(house, elf, false))
-                presents += (10*elf);
+            for (let i = elf; i < MAX_HOUSE; i += elf) 
+            {
+                houses[i] += elf * 10;
+            }
         }
-
-        return presents;
+        const result = houses.findIndex(v => v >= TARGET)
+        console.log(`\rPart1 - First house to get at least ${TARGET} presents is house #${result}`);
+        return result;
     }
 
-    function getPresentCountV2(house)
+    function part2() 
     {
-        var presents = 0;
-        
-        for(var elf = 1; elf <= house; elf++)
-        {
-            if (delivers(house, elf, true))
-                presents += (11*elf);
-        }
+        const houses = new Uint32Array(MAX_HOUSE);
 
-        return presents;
+        for (let elf = 1; elf < MAX_HOUSE; elf++) 
+        {
+            for (let i = elf, p = 50; p && i < MAX_HOUSE; i += elf, p--) 
+            {
+                houses[i] += elf * 11;
+            }
+        }
+        const result = houses.findIndex(v => v >= TARGET)
+        console.log(`\rPart2 - First house to get at least ${TARGET} presents is house #${result}`);
+        return result;
     }
 
-    function runTest(fn)
-    {
-        for(var h = 1; h < 10; h++)
-        {
-            var p = fn(h);
-            console.log("House " + h + " get " + p + " presents.");
-        }
-    }
-
-    // console.log("Test for Part 1");
-    // runTest(getPresentCountV1);
-
-    // console.log("Test for Part 2");
-    // runTest(getPresentCountV2);
-
-    var house = 509000;
-
-    while(true)
-    {
-        var presents = getPresentCountV2(house);
-        if ((house % 100) == 0)
-            process.stdout.write("\r" + house + ' -> ' + (input-presents) + " missing presents   ");
-        if (presents >= input) 
-        {
-            console.log('');
-            console.log("House " + house + " -> " + presents + " presents");
-            break;
-        }
-        house++;
-    }
-
+    part1();
+    part2();
     process.exit(0);
 }
+
+module.exports = day20;

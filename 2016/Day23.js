@@ -14,7 +14,7 @@ module.exports = async function(test)
     compiler.execute();
     
     console.log("A = " + compiler.$registers.a);
-
+    process.exit(0);
     /*
 
     cpy x y copies x (either an integer or the value of a register) into register y.

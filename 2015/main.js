@@ -29,8 +29,9 @@ var days = [
 ];
 
 const prettyHrtime = require('pretty-hrtime');
+process.chdir(__dirname);
 var start;
-var currentDay = 25;
+var currentDay = 1;
 
 process.$exit = process.exit;
 process.exit = function()

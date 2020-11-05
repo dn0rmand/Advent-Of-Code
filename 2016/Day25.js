@@ -42,4 +42,5 @@ module.exports = async function()
     while (failed);
 
     console.log("Part 1: A = " + a);
+    process.exit(0);
 };
