@@ -1,9 +1,7 @@
-module.exports = function() 
+const day19 = function() 
 {
-    const assert    = require('assert');
     const fs        = require('fs');
     const readline  = require('readline');
-    const consoleControl = require('console-control-strings')    
 
     const readInput = readline.createInterface({
         input: fs.createReadStream('Data/Day19.data')
@@ -28,9 +26,9 @@ module.exports = function()
 
     function calibrate(converter, input)
     {
-        var molecules = new Set();
+        const molecules = new Set();
 
-        for (let molecule of search(converter, input))
+        for (const molecule of search(converter, input))
         {
             molecules.add(molecule);
         }
@@ -38,23 +36,23 @@ module.exports = function()
         return molecules.size;
     }
 
-    function *search(converter, input, callback)
+    function *search(converter, input)
     {
         if (converter.$keys === undefined) 
             converter.$keys = Object.keys(converter);
 
-        for (var i = 0; i < converter.$keys.length; i++)
+        for (let i = 0; i < converter.$keys.length; i++)
         {
-            var search  = converter.$keys[i];
-            var index   = input.indexOf(search);
-            var convert = converter[search];
-            var slen    = search.length;
+            const search  = converter.$keys[i];
+            let index   = input.indexOf(search);
+            const convert = converter[search];
+            const slen    = search.length;
 
             while (index >= 0)
             {
-                for (var r = 0; r < convert.length ; r++)
+                for (let r = 0; r < convert.length ; r++)
                 {
-                    var molecule = input.substring(0, index) + convert[r] + input.substring(index+slen);
+                    const molecule = input.substring(0, index) + convert[r] + input.substring(index+slen);
                     yield molecule;
                 }
                 index = input.indexOf(search, index+1);
@@ -62,41 +60,27 @@ module.exports = function()
         }
     }
 
-    function findShortestPath(input)
+    function findShortestPath(molecule)
     {
-        var minStep = undefined;
-        var visited = {};
+        let steps = 0;
 
-        function deepSearch(molecule, step)
+        while(molecule !== 'e')
         {
-            if (minStep !== undefined)
-                return; 
-            
-            if (molecule === 'e')
+            ++steps;
+
+            for(const newMolecule of search(decrypt, molecule))
             {
-                minStep = step;
-                return;
-            }
-
-            var v = visited[molecule];
-            if (v !== undefined && v <= step)
-                return;
-            visited[molecule] = step;
-            
-           if (typeof(global.gc) == "function")
-                global.gc();
-
-            for (let m of search(decrypt, molecule)) 
-            {   
-                deepSearch(m, step+1);
-                if (minStep !== undefined)
+                if (newMolecule === 'e')
+                {
+                    molecule = newMolecule;
                     break;
+                }
+                else if (newMolecule.length <= molecule.length)
+                    molecule = newMolecule;
             }
         }
 
-        deepSearch(input, 0);
-
-        return minStep;
+        return steps;
     }
 
     function setValue(obj, key, value)
@@ -120,3 +104,7 @@ module.exports = function()
             throw "invalid input";
     }
 }
+
+module.exports = day19;
+
+day19();
