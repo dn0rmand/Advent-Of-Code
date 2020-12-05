@@ -63,24 +63,31 @@ const day19 = function()
     function findShortestPath(molecule)
     {
         let steps = 0;
-
-        while(molecule !== 'e')
+        let states = [molecule];
+        
+        while(states.length > 0)
         {
             ++steps;
 
-            for(const newMolecule of search(decrypt, molecule))
+            const newStates = [];
+
+            for(const molecule of states)
             {
-                if (newMolecule === 'e')
+                for(const newMolecule of search(decrypt, molecule))
                 {
-                    molecule = newMolecule;
-                    break;
+                    if (newMolecule === 'e')
+                    {
+                        return steps;
+                    }
+
+                    newStates.push(newMolecule);
                 }
-                else if (newMolecule.length <= molecule.length)
-                    molecule = newMolecule;
             }
+
+            states = newStates.sort((a, b) => a.length - b.length).slice(0, 100);
         }
 
-        return steps;
+        throw "NOT FOUND";
     }
 
     function setValue(obj, key, value)
