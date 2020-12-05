@@ -41,19 +41,19 @@ function part1()
 
     const passportValidation = {
         // (Birth Year)
-        'byr': value => value !== undefined,
+        'byr': value => value,
         // (Issue Year)
-        'iyr': value => value !== undefined,
+        'iyr': value => value,
         // (Expiration Year)
-        'eyr': value => value !== undefined,
+        'eyr': value => value,
         // (Height)
-        'hgt': value => value !== undefined,
+        'hgt': value => value,
         // (Hair Color)
-        'hcl': value => value !== undefined,
+        'hcl': value => value,
         // (Eye Color)
-        'ecl': value => value !== undefined,
+        'ecl': value => value,
         // (Passport ID)
-        'pid': value => value !== undefined,
+        'pid': value => value,
         // (Country ID)
         'cid': _ => true,
     };
@@ -76,30 +76,30 @@ function part2()
 
     const passportValidation = {
         // (Birth Year) - four digits; at least 1920 and at most 2002
-        'byr': value => value !== undefined && +value >= 1920 && +value <= 2002,
+        'byr': value => value && +value >= 1920 && +value <= 2002,
 
         // (Issue Year) - four digits; at least 2010 and at most 2020.
-        'iyr': value => value !== undefined && +value >= 2010 && +value <= 2020,
+        'iyr': value => value && +value >= 2010 && +value <= 2020,
 
         // (Expiration Year) - four digits; at least 2020 and at most 2030
-        'eyr': value => value !== undefined && +value >= 2020 && +value <= 2030,
+        'eyr': value => value && +value >= 2020 && +value <= 2030,
 
         // (Height) - a number followed by either cm or in
         //     If cm, the number must be at least 150 and at most 193.
         //     If in, the number must be at least 59 and at most 76.
-        'hgt': value => value !== undefined && (
+        'hgt': value => value && (
                             value.match(/^1(([5-8]\d)|(9[0-3]))cm$/) ||
                             value.match(/^((59)|(6\d)|(7[0-6]))in$/)
                         ),
 
         // (Hair Color) - a # followed by exactly six characters 0-9 or a-f
-        'hcl': value => value !== undefined && value.match(/^#[0123456789abcdef]{6}$/),
+        'hcl': value => value && value.match(/^#[0123456789abcdef]{6}$/),
 
         // (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
-        'ecl': value => value !== undefined && value.match(/^(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)$/),
+        'ecl': value => value && value.match(/^(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)$/),
 
         // (Passport ID) - a nine-digit number, including leading zeroes.
-        'pid': value => value !== undefined && value.match(/^\d{9}$/),
+        'pid': value => value && value.match(/^\d{9}$/),
 
         // (Country ID)
         'cid': value => true,
