@@ -12,9 +12,8 @@ function loadData()
     return entries;
 }
 
-function part1()
+function part1(input)
 {
-    const input = loadData();
     const preamble = input.slice(0, 25);
     let answer = -1;
 
@@ -43,10 +42,9 @@ function part1()
     return answer;
 }
 
-function part2()
-{
-    const input = loadData();
-    const target = part1();
+function part2(input, target)
+{    
+    target = target || part1();
 
     let sum = 0;
     let start = 0;
@@ -84,5 +82,15 @@ function part2()
 }
 
 console.log('--- Advent of Code day 9 ---');
-console.log(`Part 1: ${part1()}`);
-console.log(`Part 2: ${part2()}`);
+
+
+console.time('Day9');
+
+const input = loadData();
+const part1Answer = part1(input);
+const part2Answer = part2(input, part1Answer);
+
+console.log(`Part 1: ${part1Answer}`);
+console.log(`Part 2: ${part2Answer}`);
+
+console.timeLog('Day9', 'to execute both parts of day 9');
