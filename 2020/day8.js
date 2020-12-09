@@ -1,75 +1,99 @@
-const VirtualMachine = require('advent_tools/assembly2020');
+const { VirtualMachine, Instruction } = require('advent_tools/assembly2020');
+const readFile = require('advent_tools/readfile');
 
-function part1()
+function part1(fileContent)
 {
-    const vm = new VirtualMachine(__filename);
-    const executed = [];
+    const vm = new VirtualMachine(fileContent);
 
-    while(! executed[vm.ip]) {
-        executed[vm.ip] = 1;
+    for(let inst = vm.instructions[vm.ip]; ! inst.visited; inst = vm.instructions[vm.ip])
+    {
+        inst.visited = 1;
         vm.step();
     }
 
     return vm.accumulator;
 }
 
-function part2()
+function part2(fileContent)
 {
-    const vm = new VirtualMachine(__filename);
+    const vm = new VirtualMachine(fileContent);
 
     targetIp = vm.instructions.length;
 
-    function testProgram()
+    function testProgram(context)
     {
-        vm.reset();
+        vm.ip = context.ip;
+        vm.accumulator = context.accumulator;
 
-        const executed = [];
-        while(vm.ip !== targetIp) 
+        while(vm.ip !== targetIp)
         {
-            if (executed[vm.ip])
+            if (vm.ip < 0 || vm.ip > targetIp)
                 return false;
 
-            executed[vm.ip] = 1;
+            if (vm.instructions[vm.ip].visited)
+                return false;
+
             vm.step();
         }
 
         return true;
     }
 
-    // try to replace jmp with nop
+    // Find looping point
 
-    for(let i = vm.instructions.length-1; i >= 0 ; i--) 
+    const tracks = [];
+
+    // Find looping point
+    for(let instruction = vm.instructions[vm.ip]; !instruction.visited; instruction = vm.instructions[vm.ip])
     {
-        const instruction = vm.instructions[i];
-        const fct = instruction.execute;
-
-        if (instruction.token === 'jmp') 
+        if (instruction.token !== 'acc')
         {
-            // Change to a nop and try
-            instruction.execute = _ => 1;
+            tracks.push({ ip: vm.ip, accumulator: vm.accumulator });
+        }
+        instruction.visited = 1;
+        vm.step();
+    }
 
-            if (testProgram()) 
-                return vm.accumulator;
+    // go backward
 
-            // restore
-            instruction.execute = fct;
-        } 
-        else if (instruction.token === 'nop') 
+    const nop = Instruction.create("nop", 0);
+    const jmp = Instruction.create("jmp", 0);
+
+    while (tracks.length > 0)
+    {
+        const track = tracks.pop();
+        const old = vm.instructions[track.ip];
+
+        try
         {
-            // Change to a nop and try
-            instruction.execute = _ => instruction.value;
+            if (old.token === 'jmp')
+            {
+                vm.instructions[track.ip] = nop;
+            }
+            else
+            {
+                jmp.value = old.value;
+                vm.instructions[track.ip] = jmp;
+            }
 
-            if (testProgram()) 
+            if (testProgram(track))
+            {
                 return vm.accumulator;
-
-            // restore
-            instruction.execute = fct;
+            }
+        }
+        finally
+        {
+            // restore instruction
+            vm.instructions[track.ip] = old;
         }
     }
-    
+
     throw "No solutions";
 }
 
 console.log('--- Advent of Code day 8 ---');
-console.log(`Part 1: ${part1()}`);
-console.log(`Part 2: ${part2()}`);
+
+const fileContent = [...readFile(__filename)];
+
+console.log(`Part 1: ${part1(fileContent)}`);
+console.log(`Part 2: ${part2(fileContent)}`);
