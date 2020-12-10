@@ -43,27 +43,27 @@ function part1(input)
 }
 
 function part2(input, target)
-{    
+{
     target = target || part1();
 
     let sum = 0;
     let start = 0;
     let end = 0;
 
-    for(let i = 0; !end && i < input.length; i++) 
+    for(let i = 0; !end && i < input.length; i++)
     {
         const value = input[i];
         sum += value;
-        if (sum === target && i > start+1) 
+        if (sum === target && i > start+1)
         {
             end = i+1;
         }
-        else 
+        else
         {
-            while (sum > target) 
+            while (sum > target)
             {
                 sum -= input[start++];
-                if (sum === target && i > start+1) 
+                if (sum === target && i > start+1)
                 {
                     end = i+1;
                     break;
@@ -82,7 +82,6 @@ function part2(input, target)
 }
 
 console.log('--- Advent of Code day 9 ---');
-
 
 console.time('Day9');
 

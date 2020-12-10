@@ -28,7 +28,7 @@ function decode(data)
 {
     let minRow = 0, maxRow = 127;
     let minCol = 0, maxCol = 7;
-    
+
     for(const d of data)
     {
         switch(d)
@@ -87,6 +87,6 @@ function part2()
     throw "Seat not found";
 }
 
-console.log('--- Advent of Code day 3 ---');
+console.log('--- Advent of Code day 5 ---');
 console.log(`Part 1: ${part1()}`);
 console.log(`Part 2: ${part2()}`);
