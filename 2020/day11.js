@@ -194,7 +194,7 @@ console.log('--- Advent of Code day 11 ---');
 
 console.time('Day11-1');
 console.log(`Part 1: ${part1()}`);
-console.timeLog('Day11-1', 'to execute part 2 of day 11');
+console.timeLog('Day11-1', 'to execute part 1 of day 11');
 
 console.time('Day11-2');
 console.log(`Part 2: ${part2()}`);
