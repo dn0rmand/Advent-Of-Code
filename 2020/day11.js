@@ -31,10 +31,15 @@ function part1()
             return state[oy][ox] === '#';
         }
 
-        const count = occupied(-1,-1) + occupied( 0,-1) + occupied( 1,-1) +
-                      occupied(-1, 0) +                   occupied( 1, 0) +
-                      occupied(-1, 1) + occupied( 0, 1) + occupied( 1, 1);
-
+        const count = occupied(-1,-1) + 
+                      occupied( 0,-1) + 
+                      occupied( 1,-1) +
+                      occupied(-1, 0) +
+                      occupied( 1, 0) +
+                      occupied(-1, 1) + 
+                      occupied( 0, 1) + 
+                      occupied( 1, 1);
+   
         return count;
     }
 
@@ -100,30 +105,34 @@ function part2()
 
     function countVisible(x, y)
     {
-        function inner(x, y, ox, oy)
+        function seeOccupiedSeat(ox, oy)
         {
-            x += ox;
-            y += oy;
+            while (true) 
+            {
+                x += ox;
+                y += oy;
 
-            if (x < 0 || x >= width || y < 0 || y >= height) return 0;
+                if (x < 0 || x >= width || y < 0 || y >= height) 
+                    break;
 
-            const c = state[y][x];
-            if (c === '#')
-                return 1;
-            if (c === '.')
-                return inner(x, y, ox, oy);
+                const c = state[y][x];
+                if (c === '#')
+                    return 1;
+                if (c !== '.')
+                    break;
+            }
 
             return 0;
         }
 
-        let count = inner(x, y, 0, 1) +
-                    inner(x, y, 0,-1) +
-                    inner(x, y, 1, 0) +
-                    inner(x, y,-1, 0) +
-                    inner(x, y, 1, 1) +
-                    inner(x, y, 1,-1) +
-                    inner(x, y,-1, 1) +
-                    inner(x, y,-1,-1);
+        let count = seeOccupiedSeat( 0, 1) +
+                    seeOccupiedSeat( 0,-1) +
+                    seeOccupiedSeat( 1, 0) +
+                    seeOccupiedSeat(-1, 0) +
+                    seeOccupiedSeat( 1, 1) +
+                    seeOccupiedSeat( 1,-1) +
+                    seeOccupiedSeat(-1, 1) +
+                    seeOccupiedSeat(-1,-1);
 
         return count;
     }
