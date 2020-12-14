@@ -27,7 +27,7 @@ function loadData()
 
 function part1(input)
 {
-    function getMask(mask) 
+    function getMask(mask)
     {
         let or   = 0n;
         let and  = 2n**36n-1n;
@@ -40,10 +40,10 @@ function part1(input)
                 or |= bit;
             }
         }
-        return { or, and }; 
+        return { or, and };
     }
 
-    const memory = [];
+    const memory = {};
     let mask   = { or: 0n, and: 0n };
 
     for(const entry of input)
@@ -55,21 +55,27 @@ function part1(input)
         }
     }
 
-    return memory.reduce((a, v) => a + (v || 0n), 0n);
+    let total = 0n;
+    for(const idx in memory)
+    {
+        total += (memory[idx] || 0n);
+    }
+
+    return total;
 }
 
 function part2(input)
 {
-    const memory = [];
+    const memory = {};
     let mask = '';
 
-    function setValue(address, value) 
+    function setValue(address, value)
     {
         address = BigInt(address);
 
         const AND = 2n**36n - 1n;
 
-        function inner(index, bit, address) 
+        function inner(index, bit, address)
         {
             bit >>= 1n;
             if (index >= 36) {
