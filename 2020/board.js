@@ -12,9 +12,11 @@ async function getBoard()
 {
     let isLive = false;
 
-    for (let arg of process.argv)
-        if (arg.toLowerCase() === "live")
+    for (let arg of process.argv) {
+        if (arg.toLowerCase() === "live") {
             isLive = true;
+        }
+    }
 
     let json;
 
@@ -27,7 +29,7 @@ async function getBoard()
             method: 'GET',
             headers: {
                 'Host': 'adventofcode.com',
-                'Cookie':  'session=53616c7465645f5fdb22ca174af266c773270192cf230888cc7641843fcdb4449a2eec3f9d75e2d7f4ceee1c54a2073c',
+                'Cookie':  'session=53616c7465645f5f453b828424d900dc8aad58ac80f17c0a834c03c5c4df1434cbe1f88fa42d3c41c78600e755b5708f',
             }
         };
 
