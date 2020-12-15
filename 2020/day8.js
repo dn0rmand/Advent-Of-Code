@@ -1,6 +1,8 @@
 const { VirtualMachine, Instruction } = require('advent_tools/assembly2020');
 const readFile = require('advent_tools/readfile');
 
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function part1(fileContent)
 {
     const vm = new VirtualMachine(fileContent);
@@ -91,9 +93,13 @@ function part2(fileContent)
     throw "No solutions";
 }
 
-console.log('--- Advent of Code day 8 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
 
 const fileContent = [...readFile(__filename)];
 
+console.time('both');
+
 console.log(`Part 1: ${part1(fileContent)}`);
 console.log(`Part 2: ${part2(fileContent)}`);
+
+console.timeLog('both', `to execute both parts of day ${DAY}`);

@@ -1,5 +1,7 @@
 const assert = require('assert');
 
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function loadTestData()
 {
     return [
@@ -60,7 +62,7 @@ function part1()
 
     const input = loadData();
     const trees = calculateTrees(input, slope);
-    
+
     return trees;
 }
 
@@ -81,10 +83,15 @@ function part2()
 
     const input = loadData();
     const trees = slopes.reduce((a, slope) => a * calculateTrees(input, slope), 1);
-    
+
     return trees;
 }
 
-console.log('--- Advent of Code day 3 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
+
+console.time('both');
+
 console.log(`Part 1: ${part1()}`);
 console.log(`Part 2: ${part2()}`);
+
+console.timeLog('both', `to execute both parts of day ${DAY}`);

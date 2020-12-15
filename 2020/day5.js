@@ -1,5 +1,7 @@
 const assert = require('assert');
 
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function loadTestData()
 {
     return [
@@ -87,6 +89,11 @@ function part2()
     throw "Seat not found";
 }
 
-console.log('--- Advent of Code day 5 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
+
+console.time('both');
+
 console.log(`Part 1: ${part1()}`);
 console.log(`Part 2: ${part2()}`);
+
+console.timeLog('both', `to execute both parts of day ${DAY}`);

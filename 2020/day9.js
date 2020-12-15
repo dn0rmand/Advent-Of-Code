@@ -1,3 +1,5 @@
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function loadData()
 {
     const readFile = require("advent_tools/readfile");
@@ -81,9 +83,9 @@ function part2(input, target)
     throw "NO SOLUTION";
 }
 
-console.log('--- Advent of Code day 9 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
 
-console.time('Day9');
+console.time('both');
 
 const input = loadData();
 const part1Answer = part1(input);
@@ -92,4 +94,4 @@ const part2Answer = part2(input, part1Answer);
 console.log(`Part 1: ${part1Answer}`);
 console.log(`Part 2: ${part2Answer}`);
 
-console.timeLog('Day9', 'to execute both parts of day 9');
+console.timeLog('both', `to execute both parts of day ${DAY}`);

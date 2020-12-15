@@ -1,3 +1,5 @@
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function loadData()
 {
     const readFile = require("advent_tools/readfile");
@@ -7,18 +9,18 @@ function loadData()
 
     for(const line of readFile(__filename))
     {
-        if (line === '') 
+        if (line === '')
         {
-            if (group !== undefined) 
+            if (group !== undefined)
             {
                 group.questions = Object.keys(group.questions);
                 input.push(group);
                 group = undefined;
             }
-        } 
-        else 
+        }
+        else
         {
-            if (group === undefined) 
+            if (group === undefined)
             {
                 group = {
                     questions: {},
@@ -35,7 +37,7 @@ function loadData()
         }
     }
 
-    if (group !== undefined) 
+    if (group !== undefined)
     {
         group.questions = Object.keys(group.questions);
         input.push(group);
@@ -64,6 +66,11 @@ function part2()
     return answer;
 }
 
-console.log('--- Advent of Code day 6 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
+
+console.time('both');
+
 console.log(`Part 1: ${part1()}`);
 console.log(`Part 2: ${part2()}`);
+
+console.timeLog('both', `to execute both parts of day ${DAY}`);

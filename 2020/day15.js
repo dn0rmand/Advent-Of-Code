@@ -1,3 +1,5 @@
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 const assert = require('assert');
 
 function search(input, target)
@@ -6,8 +8,8 @@ function search(input, target)
 
     let count = 0;
     let last  = 0;
-    for(const i of input) 
-    { 
+    for(const i of input)
+    {
         indexes[i] = count++;
         last = i;
     }
@@ -16,7 +18,7 @@ function search(input, target)
     while (count < target) {
         last = next;
         const index = indexes[next];
-        indexes[next] = count++; 
+        indexes[next] = count++;
 
         if (index === -1) {
             next = 0;
@@ -38,7 +40,7 @@ function part2(input)
     return search(input, 30000000);
 }
 
-console.log('--- Advent of Code day 14 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
 
 assert.strictEqual(part1([0, 3, 6]), 436);
 assert.strictEqual(part1([1, 3, 2]), 1);
@@ -52,9 +54,8 @@ const input = [20, 9, 11, 0, 1, 2];
 
 console.time('part-1');
 console.log(`Part 1: ${part1(input)}`);
-console.timeLog('part-1', 'to execute part 1 of day 14');
+console.timeLog('part-1', `to execute part 1 of day ${DAY}`);
 
 console.time('part-2');
 console.log(`Part 2: ${part2(input)}`);
-console.timeLog('part-2', 'to execute part 2 of day 14');
-
+console.timeLog('part-2', `to execute part 2 of day ${DAY}`);

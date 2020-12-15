@@ -1,3 +1,5 @@
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 function loadData()
 {
     const readFile = require("advent_tools/readfile");
@@ -31,15 +33,15 @@ function part1()
             return state[oy][ox] === '#';
         }
 
-        const count = occupied(-1,-1) + 
-                      occupied( 0,-1) + 
+        const count = occupied(-1,-1) +
+                      occupied( 0,-1) +
                       occupied( 1,-1) +
                       occupied(-1, 0) +
                       occupied( 1, 0) +
-                      occupied(-1, 1) + 
-                      occupied( 0, 1) + 
+                      occupied(-1, 1) +
+                      occupied( 0, 1) +
                       occupied( 1, 1);
-   
+
         return count;
     }
 
@@ -107,12 +109,12 @@ function part2()
     {
         function seeOccupiedSeat(ox, oy)
         {
-            while (true) 
+            while (true)
             {
                 x += ox;
                 y += oy;
 
-                if (x < 0 || x >= width || y < 0 || y >= height) 
+                if (x < 0 || x >= width || y < 0 || y >= height)
                     break;
 
                 const c = state[y][x];
@@ -190,12 +192,12 @@ function part2()
     return occupied;
 }
 
-console.log('--- Advent of Code day 11 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
 
 console.time('Day11-1');
 console.log(`Part 1: ${part1()}`);
-console.timeLog('Day11-1', 'to execute part 1 of day 11');
+console.timeLog('Day11-1', `to execute part 1 of day ${DAY}`);
 
 console.time('Day11-2');
 console.log(`Part 2: ${part2()}`);
-console.timeLog('Day11-2', 'to execute part 2 of day 11');
+console.timeLog('Day11-2', `to execute part 2 of day ${DAY}`);

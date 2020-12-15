@@ -1,3 +1,5 @@
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
+
 /*
          N
          |
@@ -41,7 +43,7 @@ function loadData()
 
     const entries = [];
 
-    const simplify = ({ direction, distance }) => 
+    const simplify = ({ direction, distance }) =>
     {
         if (direction === LEFT || direction === RIGHT) {
             if (distance % 90 !== 0) {
@@ -163,7 +165,7 @@ function part2()
                 [WX, WY] = [-WY, WX];
                 break;
             }
-            
+
             case LEFT:
                 if (distance === 180) {
                     WX = -WX;
@@ -190,14 +192,14 @@ function part2()
     return Math.abs(X) + Math.abs(Y);
 }
 
-console.log('--- Advent of Code day 12 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
 
 const input = loadData();
 
 console.time('part-1');
 console.log(`Part 1: ${part1(input)}`);
-console.timeLog('part-1', 'to execute part 1 of day 12');
+console.timeLog('part-1', `to execute part 1 of day ${DAY}`);
 
 console.time('part-2');
 console.log(`Part 2: ${part2(input)}`);
-console.timeLog('part-2', 'to execute part 2 of day 12');
+console.timeLog('part-2', `to execute part 2 of day ${DAY}`);

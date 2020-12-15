@@ -14,12 +14,19 @@ module.exports = function(filename)
         } else {
             filename = "Data/" + filename;
         }
-        const stream = new readline(filename);
-
-        let line;
-        while (line = stream.next())
+        try
         {
-            yield line.toString('ascii');
+            const stream = new readline(filename);
+
+            let line;
+            while (line = stream.next())
+            {
+                yield line.toString('ascii');
+            }
+        }
+        catch
+        {
+
         }
     }
 

@@ -1,4 +1,4 @@
-const assert = require('assert');
+const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
 function loadData()
 {
@@ -16,7 +16,7 @@ function loadData()
 
         const root = input.split('|')[0];
         const values = input.split('|')[1].split(',').filter(v => v);
-    
+
         entries[root] = {
 
         };
@@ -32,7 +32,7 @@ function loadData()
 
 function part1()
 {
-    const input = loadData();    
+    const input = loadData();
     const keys  = Object.keys(input);
     const counted = {};
 
@@ -54,7 +54,7 @@ function part1()
 
 function part2()
 {
-    const input = loadData();    
+    const input = loadData();
 
     const calculate = bag => {
         const content = input[bag];
@@ -67,6 +67,11 @@ function part2()
     return count;
 }
 
-console.log('--- Advent of Code day 7 ---');
+console.log(`--- Advent of Code day ${DAY} ---`);
+
+console.time('both');
+
 console.log(`Part 1: ${part1()}`);
 console.log(`Part 2: ${part2()}`);
+
+console.timeLog('both', `to execute both parts of day ${DAY}`);
