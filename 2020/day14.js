@@ -66,7 +66,7 @@ function part1(input)
 
 function part2(input)
 {
-    const memory = {};
+    const memory = new Map();
     let mask = '';
 
     function setValue(address, value)
@@ -79,7 +79,7 @@ function part2(input)
         {
             bit >>= 1n;
             if (index >= 36) {
-                memory[Number(address)] = value;
+                memory.set(address, value);
             } else {
                 if (mask[index] === '0') {
                     inner(index+1, bit, address);
@@ -106,9 +106,9 @@ function part2(input)
     }
 
     let total = 0n;
-    for(const idx in memory)
+    for(const value of memory.values())
     {
-        total += (memory[idx] || 0n);
+        total += value;
     }
     return total;
 }
