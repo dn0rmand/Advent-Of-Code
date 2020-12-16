@@ -10,7 +10,7 @@ class Rule
         this.max = +max;
     }
 
-    valid(v) 
+    valid(v)
     {
         return v >= this.min && v <= this.max;
     }
@@ -30,15 +30,15 @@ class Field
         {
             const values = r.split('-');
             const rule = new Rule(values[0], values[1]);
-            this.rules.push(rule);                
+            this.rules.push(rule);
         }
     }
 
-    get position() 
+    get position()
     {
         if (this.positions.length === 1)
             return this.positions[0];
-        
+
         return -1;
     }
 
@@ -69,6 +69,16 @@ class Ticket
             }
         }
         return rate;
+    }
+
+    invalid(fields)
+    {
+        for(const value of this.values) {
+            if (! fields.some(field => field.valid(value))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -114,7 +124,7 @@ function part1()
     const input = loadData();
 
     let answer = 0;
-    for(const ticket of input.tickets) 
+    for(const ticket of input.tickets)
     {
         answer += ticket.errorRate(input.fields);
     }
@@ -125,12 +135,12 @@ function part2()
 {
     const data = loadData();
 
-    const tickets = data.tickets.filter(ticket => ticket.errorRate(data.fields) === 0);
+    const tickets = data.tickets.filter(ticket => !ticket.invalid(data.fields));
 
     tickets.push(data.myTicket);
 
     const positions = data.fields.length;
-    
+
     for(const field of data.fields) {
         for(let position = 0; position < positions; position++) {
             if (! tickets.some(ticket => field.invalid(ticket.values[position]))) {
