@@ -29,9 +29,9 @@ async function getBoard()
             method: 'GET',
             headers: {
                 'Host': 'adventofcode.com',
-                'Cookie':  'session=53616c7465645f5f453b828424d900dc8aad58ac80f17c0a834c03c5c4df1434cbe1f88fa42d3c41c78600e755b5708f',
+                'Cookie':  'session=53616c7465645f5f1a3ccf97d8667865131dcb8ce1b525acdc2cf6102c05cf9c850de00cd4701209469c3b17141dfce7',
             }
-        };
+        };        
 
         json = await new Promise((resolve, reject) => {
             https.get(options, (res) =>

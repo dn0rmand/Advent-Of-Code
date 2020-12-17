@@ -1,5 +1,4 @@
 /.vscode
 /node_modules
 *.code-workspace
-board.json
 __pycache__/
