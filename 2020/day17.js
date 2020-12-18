@@ -1,8 +1,9 @@
 const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
 const TURNS = 6;
+const MAX_SIZE = 16 * (TURNS+1)
 
-class Cube 
+class Cube
 {
     constructor(x, y, z, w, count)
     {
@@ -11,10 +12,10 @@ class Cube
         this.z = z;
         this.w = w;
         this.neighbourCount = count || 0;
-        this.key = `${x}:${y}:${z}:${w}`;
+        this.key = (((x*MAX_SIZE)+y)*MAX_SIZE + z)*MAX_SIZE + w;
     }
 
-    *neighbours(part2) 
+    *neighbours(part2)
     {
         const ox = [this.x-1, this.x, this.x+1];
         const oy = [this.y-1, this.y, this.y+1];
@@ -35,10 +36,6 @@ class Cube
                 }
             }
         }
-        if (!part2 && total !== 26)
-            throw "NOT CORRECT";
-        if (part2 && total !== 80)
-            throw "NOT CORRECT";
     }
 }
 
@@ -69,7 +66,7 @@ function turn(cubes, part2)
 {
     const neighbours = new Map();
 
-    cubes.forEach(cube => 
+    cubes.forEach(cube =>
     {
         for(const neighbour of cube.neighbours(part2))
         {
@@ -83,14 +80,14 @@ function turn(cubes, part2)
 
     const output = new Map();
 
-    neighbours.forEach(cube => 
+    neighbours.forEach(cube =>
     {
-        if (cube.neighbourCount === 2 && cubes.has(cube.key)) 
+        if (cube.neighbourCount === 2 && cubes.has(cube.key))
         {
             // already active so stay active
             output.set(cube.key, cube);
-        } 
-        else if (cube.neighbourCount === 3) 
+        }
+        else if (cube.neighbourCount === 3)
         {
             // either stay active or become active
             output.set(cube.key, cube);
