@@ -1,128 +1,131 @@
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-function loadData()
+module.exports = function()
 {
-    const readFile = require("advent_tools/readfile");
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    const entries = [];
-
-    for(const line of readFile(__filename))
+    function loadData()
     {
-        const values = line.split(' = ');
-        if (values[0] === 'mask') {
-            const mask = values[1];
-            entries.push({ mask });
-        } else if (values[0].substr(0, 3) === 'mem') {
-            const address = +(values[0].substring(4, values[0].length-1));
-            const value   = BigInt(values[1]);
+        const readFile = require("advent_tools/readfile");
 
-            entries.push({ address, value });
-        }
-    }
+        const entries = [];
 
-    if (entries.length === 0 || entries[0].mask === undefined) {
-        throw "input need to start with the mask";
-    }
+        for(const line of readFile(__filename))
+        {
+            const values = line.split(' = ');
+            if (values[0] === 'mask') {
+                const mask = values[1];
+                entries.push({ mask });
+            } else if (values[0].substr(0, 3) === 'mem') {
+                const address = +(values[0].substring(4, values[0].length-1));
+                const value   = BigInt(values[1]);
 
-    return entries;
-}
-
-function part1(input)
-{
-    function getMask(mask)
-    {
-        let or   = 0n;
-        let and  = 2n**36n-1n;
-        let bit  = 2n**36n;
-        for(const c of mask) {
-            bit >>= 1n;
-            if (c === '0') {
-                and ^= bit;
-            } else if (c === '1') {
-                or |= bit;
+                entries.push({ address, value });
             }
         }
-        return { or, and };
-    }
 
-    const memory = {};
-    let mask   = { or: 0n, and: 0n };
-
-    for(const entry of input)
-    {
-        if (entry.mask !== undefined) {
-            mask = getMask(entry.mask);
-        } else {
-            memory[entry.address] = (entry.value & mask.and) | mask.or;
+        if (entries.length === 0 || entries[0].mask === undefined) {
+            throw "input need to start with the mask";
         }
+
+        return entries;
     }
 
-    let total = 0n;
-    for(const idx in memory)
+    function part1(input)
     {
-        total += (memory[idx] || 0n);
-    }
-
-    return total;
-}
-
-function part2(input)
-{
-    const memory = new Map();
-    let mask = '';
-
-    function setValue(address, value)
-    {
-        address = BigInt(address);
-
-        const AND = 2n**36n - 1n;
-
-        function inner(index, bit, address)
+        function getMask(mask)
         {
-            bit >>= 1n;
-            if (index >= 36) {
-                memory.set(address, value);
-            } else {
-                if (mask[index] === '0') {
-                    inner(index+1, bit, address);
-                } else if (mask[index] === '1') {
-                    inner(index+1, bit, address | bit);
-                } else {
-                    const and = AND ^ bit;
-
-                    inner(index+1, bit, address & and);
-                    inner(index+1, bit, address | bit);
+            let or   = 0n;
+            let and  = 2n**36n-1n;
+            let bit  = 2n**36n;
+            for(const c of mask) {
+                bit >>= 1n;
+                if (c === '0') {
+                    and ^= bit;
+                } else if (c === '1') {
+                    or |= bit;
                 }
             }
+            return { or, and };
         }
 
-        inner(0, 2n**36n, address);
-    }
+        const memory = {};
+        let mask   = { or: 0n, and: 0n };
 
-    for(const entry of input) {
-        if (entry.mask !== undefined) {
-            mask = entry.mask;
-        } else {
-            setValue(entry.address, entry.value);
+        for(const entry of input)
+        {
+            if (entry.mask !== undefined) {
+                mask = getMask(entry.mask);
+            } else {
+                memory[entry.address] = (entry.value & mask.and) | mask.or;
+            }
         }
+
+        let total = 0n;
+        for(const idx in memory)
+        {
+            total += (memory[idx] || 0n);
+        }
+
+        return total;
     }
 
-    let total = 0n;
-    for(const value of memory.values())
+    function part2(input)
     {
-        total += value;
+        const memory = new Map();
+        let mask = '';
+
+        function setValue(address, value)
+        {
+            address = BigInt(address);
+
+            const AND = 2n**36n - 1n;
+
+            function inner(index, bit, address)
+            {
+                bit >>= 1n;
+                if (index >= 36) {
+                    memory.set(address, value);
+                } else {
+                    if (mask[index] === '0') {
+                        inner(index+1, bit, address);
+                    } else if (mask[index] === '1') {
+                        inner(index+1, bit, address | bit);
+                    } else {
+                        const and = AND ^ bit;
+
+                        inner(index+1, bit, address & and);
+                        inner(index+1, bit, address | bit);
+                    }
+                }
+            }
+
+            inner(0, 2n**36n, address);
+        }
+
+        for(const entry of input) {
+            if (entry.mask !== undefined) {
+                mask = entry.mask;
+            } else {
+                setValue(entry.address, entry.value);
+            }
+        }
+
+        let total = 0n;
+        for(const value of memory.values())
+        {
+            total += value;
+        }
+        return total;
     }
-    return total;
-}
 
-console.log(`--- Advent of Code day ${DAY} ---`);
+    console.log(`--- Advent of Code day ${DAY} ---`);
 
-const input = loadData();
+    const input = loadData();
 
-console.time('part-1');
-console.log(`Part 1: ${part1(input)}`);
-console.timeLog('part-1', `to execute part 1 of day ${DAY}`);
+    console.time(`${DAY}-part-1`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
-console.time('part-2');
-console.log(`Part 2: ${part2(input)}`);
-console.timeLog('part-2', `to execute part 2 of day ${DAY}`);
+    console.time(`${DAY}-part-2`);
+    console.log(`Part 2: ${part2(input)}`);
+    console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
+};

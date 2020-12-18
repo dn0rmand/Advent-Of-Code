@@ -1,97 +1,100 @@
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-function loadData()
+module.exports = function()
 {
-    const readFile = require("advent_tools/readfile");
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    const entries = [];
-
-    for(const line of readFile(__filename))
+    function loadData()
     {
-        entries.push(+line);
+        const readFile = require("advent_tools/readfile");
+
+        const entries = [];
+
+        for(const line of readFile(__filename))
+        {
+            entries.push(+line);
+        }
+
+        return entries;
     }
 
-    return entries;
-}
-
-function part1(input)
-{
-    const preamble = input.slice(0, 25);
-    let answer = -1;
-
-    for(let i = preamble.length; i < input.length; i++) {
-        const value = input[i];
-        let found = false;
-
-        for(const c of preamble) {
-            const v = value-c;
-            if (v !== c && v >= 0 && preamble.includes(v)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (! found)
-        {
-            answer = value;
-            break;
-        }
-
-        preamble.shift();
-        preamble.push(value);
-    }
-
-    return answer;
-}
-
-function part2(input, target)
-{
-    target = target || part1();
-
-    let sum = 0;
-    let start = 0;
-    let end = 0;
-
-    for(let i = 0; !end && i < input.length; i++)
+    function part1(input)
     {
-        const value = input[i];
-        sum += value;
-        if (sum === target && i > start+1)
-        {
-            end = i+1;
-        }
-        else
-        {
-            while (sum > target)
-            {
-                sum -= input[start++];
-                if (sum === target && i > start+1)
-                {
-                    end = i+1;
+        const preamble = input.slice(0, 25);
+        let answer = -1;
+
+        for(let i = preamble.length; i < input.length; i++) {
+            const value = input[i];
+            let found = false;
+
+            for(const c of preamble) {
+                const v = value-c;
+                if (v !== c && v >= 0 && preamble.includes(v)) {
+                    found = true;
                     break;
                 }
             }
+
+            if (! found)
+            {
+                answer = value;
+                break;
+            }
+
+            preamble.shift();
+            preamble.push(value);
         }
+
+        return answer;
     }
 
-    if (sum === target)
+    function part2(input, target)
     {
-        const values = input.slice(start, end).sort((a, b) => a-b);
-        return values[0] + values[values.length-1]
+        target = target || part1();
+
+        let sum = 0;
+        let start = 0;
+        let end = 0;
+
+        for(let i = 0; !end && i < input.length; i++)
+        {
+            const value = input[i];
+            sum += value;
+            if (sum === target && i > start+1)
+            {
+                end = i+1;
+            }
+            else
+            {
+                while (sum > target)
+                {
+                    sum -= input[start++];
+                    if (sum === target && i > start+1)
+                    {
+                        end = i+1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (sum === target)
+        {
+            const values = input.slice(start, end).sort((a, b) => a-b);
+            return values[0] + values[values.length-1]
+        }
+
+        throw "NO SOLUTION";
     }
 
-    throw "NO SOLUTION";
-}
+    console.log(`--- Advent of Code day ${DAY} ---`);
 
-console.log(`--- Advent of Code day ${DAY} ---`);
+    console.time(`${DAY}-both`);
 
-console.time('both');
+    const input = loadData();
+    const part1Answer = part1(input);
+    const part2Answer = part2(input, part1Answer);
 
-const input = loadData();
-const part1Answer = part1(input);
-const part2Answer = part2(input, part1Answer);
+    console.log(`Part 1: ${part1Answer}`);
+    console.log(`Part 2: ${part2Answer}`);
 
-console.log(`Part 1: ${part1Answer}`);
-console.log(`Part 2: ${part2Answer}`);
-
-console.timeLog('both', `to execute both parts of day ${DAY}`);
+    console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
+};

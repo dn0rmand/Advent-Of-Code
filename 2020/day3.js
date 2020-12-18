@@ -1,97 +1,100 @@
-const assert = require('assert');
-
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-function loadTestData()
+module.exports = function()
 {
-    return [
-        '..##.......',
-        '#...#...#..',
-        '.#....#..#.',
-        '..#.#...#.#',
-        '.#...##..#.',
-        '..#.##.....',
-        '.#.#.#....#',
-        '.#........#',
-        '#.##...#...',
-        '#...##....#',
-        '.#..#...#.#',
-    ];
-}
+    const assert = require('assert');
 
-function loadData()
-{
-    const readFile = require("advent_tools/readfile");
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    const entries = [];
-
-    for(const line of readFile(__filename))
+    function loadTestData()
     {
-        entries.push(line);
+        return [
+            '..##.......',
+            '#...#...#..',
+            '.#....#..#.',
+            '..#.#...#.#',
+            '.#...##..#.',
+            '..#.##.....',
+            '.#.#.#....#',
+            '.#........#',
+            '#.##...#...',
+            '#...##....#',
+            '.#..#...#.#',
+        ];
     }
 
-    return entries;
-}
+    function loadData()
+    {
+        const readFile = require("advent_tools/readfile");
 
-function calculateTrees(input, {  right, down })
-{
-    let x = 0, y = 0;
-    const width = input[0].length;
+        const entries = [];
 
-    assert.strictEqual(input[y][x], '.');
-
-    let trees = 0;
-    while (y < input.length) {
-        x = (x + right) % width;
-        y = y + down;
-
-        if (y < input.length && input[y][x] === '#') {
-            trees++;
+        for(const line of readFile(__filename))
+        {
+            entries.push(line);
         }
+
+        return entries;
     }
 
-    return trees;
-}
+    function calculateTrees(input, {  right, down })
+    {
+        let x = 0, y = 0;
+        const width = input[0].length;
 
-function part1()
-{
-    const slope = {right: 3, down: 1};
+        assert.strictEqual(input[y][x], '.');
 
-    const testInput = loadTestData();
-    assert.strictEqual(calculateTrees(testInput, slope), 7);
+        let trees = 0;
+        while (y < input.length) {
+            x = (x + right) % width;
+            y = y + down;
 
-    const input = loadData();
-    const trees = calculateTrees(input, slope);
+            if (y < input.length && input[y][x] === '#') {
+                trees++;
+            }
+        }
 
-    return trees;
-}
+        return trees;
+    }
 
-function part2()
-{
-    const slopes = [
-        {right: 1, down: 1},
-        {right: 3, down: 1},
-        {right: 5, down: 1},
-        {right: 7, down: 1},
-        {right: 1, down: 2},
-    ];
+    function part1()
+    {
+        const slope = {right: 3, down: 1};
 
-    const testInput = loadTestData();
+        const testInput = loadTestData();
+        assert.strictEqual(calculateTrees(testInput, slope), 7);
 
-    const testTrees = slopes.reduce((a, slope) => a * calculateTrees(testInput, slope), 1);
-    assert.strictEqual(testTrees, 336);
+        const input = loadData();
+        const trees = calculateTrees(input, slope);
 
-    const input = loadData();
-    const trees = slopes.reduce((a, slope) => a * calculateTrees(input, slope), 1);
+        return trees;
+    }
 
-    return trees;
-}
+    function part2()
+    {
+        const slopes = [
+            {right: 1, down: 1},
+            {right: 3, down: 1},
+            {right: 5, down: 1},
+            {right: 7, down: 1},
+            {right: 1, down: 2},
+        ];
 
-console.log(`--- Advent of Code day ${DAY} ---`);
+        const testInput = loadTestData();
 
-console.time('both');
+        const testTrees = slopes.reduce((a, slope) => a * calculateTrees(testInput, slope), 1);
+        assert.strictEqual(testTrees, 336);
 
-console.log(`Part 1: ${part1()}`);
-console.log(`Part 2: ${part2()}`);
+        const input = loadData();
+        const trees = slopes.reduce((a, slope) => a * calculateTrees(input, slope), 1);
 
-console.timeLog('both', `to execute both parts of day ${DAY}`);
+        return trees;
+    }
+
+    console.log(`--- Advent of Code day ${DAY} ---`);
+
+    console.time(`${DAY}-both`);
+
+    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 2: ${part2()}`);
+
+    console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
+};

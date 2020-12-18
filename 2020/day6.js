@@ -1,76 +1,79 @@
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-function loadData()
+module.exports = function()
 {
-    const readFile = require("advent_tools/readfile");
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    const input = [];
-    let group = undefined;
-
-    for(const line of readFile(__filename))
+    function loadData()
     {
-        if (line === '')
+        const readFile = require("advent_tools/readfile");
+
+        const input = [];
+        let group = undefined;
+
+        for(const line of readFile(__filename))
         {
-            if (group !== undefined)
+            if (line === '')
             {
-                group.questions = Object.keys(group.questions);
-                input.push(group);
-                group = undefined;
+                if (group !== undefined)
+                {
+                    group.questions = Object.keys(group.questions);
+                    input.push(group);
+                    group = undefined;
+                }
+            }
+            else
+            {
+                if (group === undefined)
+                {
+                    group = {
+                        questions: {},
+                        persons: [],
+                    };
+                }
+
+                for (const entry of line.split(' '))
+                {
+                    const values = entry.split('');
+                    group.persons.push(values);
+                    values.forEach((question) => group.questions[question] = 1);
+                }
             }
         }
-        else
+
+        if (group !== undefined)
         {
-            if (group === undefined)
-            {
-                group = {
-                    questions: {},
-                    persons: [],
-                };
-            }
-
-            for (const entry of line.split(' '))
-            {
-                const values = entry.split('');
-                group.persons.push(values);
-                values.forEach((question) => group.questions[question] = 1);
-            }
+            group.questions = Object.keys(group.questions);
+            input.push(group);
         }
+
+        return input;
     }
 
-    if (group !== undefined)
+    function part1()
     {
-        group.questions = Object.keys(group.questions);
-        input.push(group);
+        const input = loadData();
+
+        const answer = input.reduce((count, group) => count + group.questions.length, 0);
+
+        return answer;
     }
 
-    return input;
-}
+    function part2()
+    {
+        const input = loadData();
 
-function part1()
-{
-    const input = loadData();
+        const answer = input.reduce((a, group) =>
+            a + group.questions.reduce((a, question) => a + (group.persons.some((v) => !v.includes(question)) ? 0 : 1), 0)
+        , 0);
 
-    const answer = input.reduce((count, group) => count + group.questions.length, 0);
+        return answer;
+    }
 
-    return answer;
-}
+    console.log(`--- Advent of Code day ${DAY} ---`);
 
-function part2()
-{
-    const input = loadData();
+    console.time(`${DAY}-both`);
 
-    const answer = input.reduce((a, group) =>
-        a + group.questions.reduce((a, question) => a + (group.persons.some((v) => !v.includes(question)) ? 0 : 1), 0)
-    , 0);
+    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 2: ${part2()}`);
 
-    return answer;
-}
-
-console.log(`--- Advent of Code day ${DAY} ---`);
-
-console.time('both');
-
-console.log(`Part 1: ${part1()}`);
-console.log(`Part 2: ${part2()}`);
-
-console.timeLog('both', `to execute both parts of day ${DAY}`);
+    console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
+};

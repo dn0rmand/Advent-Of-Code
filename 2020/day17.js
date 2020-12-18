@@ -1,134 +1,137 @@
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-const TURNS = 6;
-const MAX_SIZE = 16 * (TURNS+1)
-
-class Cube
+module.exports = function()
 {
-    constructor(x, y, z, w, count)
-    {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
-        this.neighbourCount = count || 0;
-        this.key = (((x*MAX_SIZE)+y)*MAX_SIZE + z)*MAX_SIZE + w;
-    }
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    forEachNeighbours(part2, callback)
-    {
-        const ox = [this.x-1, this.x, this.x+1];
-        const oy = [this.y-1, this.y, this.y+1];
-        const oz = [this.z-1, this.z, this.z+1];
-        const ow = part2 ? [this.w-1, this.w, this.w+1] : [this.w];
+    const TURNS = 6;
+    const MAX_SIZE = 16 * (TURNS+1)
 
-        for(const x of ox) 
+    class Cube
+    {
+        constructor(x, y, z, w, count)
         {
-            for(const y of oy) 
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+            this.neighbourCount = count || 0;
+            this.key = (((x*MAX_SIZE)+y)*MAX_SIZE + z)*MAX_SIZE + w;
+        }
+
+        forEachNeighbours(part2, callback)
+        {
+            const ox = [this.x-1, this.x, this.x+1];
+            const oy = [this.y-1, this.y, this.y+1];
+            const oz = [this.z-1, this.z, this.z+1];
+            const ow = part2 ? [this.w-1, this.w, this.w+1] : [this.w];
+
+            for(const x of ox)
             {
-                for(const z of oz) 
+                for(const y of oy)
                 {
-                    for(const w of ow) 
+                    for(const z of oz)
                     {
-                        if (x !== this.x || y !== this.y || z !== this.z || w !== this.w)
+                        for(const w of ow)
                         {
-                            callback(new Cube(x, y, z, w, 1));
+                            if (x !== this.x || y !== this.y || z !== this.z || w !== this.w)
+                            {
+                                callback(new Cube(x, y, z, w, 1));
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
-function loadData()
-{
-    const readFile = require("advent_tools/readfile");
-
-    const cubes = new Map();
-
-    let y = 0;
-    for(const line of readFile(__filename))
+    function loadData()
     {
-        for (let x = 0; x < line.length; x++)
+        const readFile = require("advent_tools/readfile");
+
+        const cubes = new Map();
+
+        let y = 0;
+        for(const line of readFile(__filename))
         {
-            if (line[x] === '#')
+            for (let x = 0; x < line.length; x++)
             {
-                const cube = new Cube(x, y, 0, 0);
-                cubes.set(cube.key, cube);
+                if (line[x] === '#')
+                {
+                    const cube = new Cube(x, y, 0, 0);
+                    cubes.set(cube.key, cube);
+                }
             }
+            y++;
         }
-        y++;
+
+        return cubes;
     }
 
-    return cubes;
-}
-
-function turn(cubes, part2)
-{
-    const neighbours = new Map();
-
-    cubes.forEach(cube =>
+    function turn(cubes, part2)
     {
-        cube.forEachNeighbours(part2, neighbour => 
+        const neighbours = new Map();
+
+        cubes.forEach(cube =>
         {
-            const old = neighbours.get(neighbour.key);
-            if (old)
-                old.neighbourCount += neighbour.neighbourCount;
-            else
-                neighbours.set(neighbour.key, neighbour);
+            cube.forEachNeighbours(part2, neighbour =>
+            {
+                const old = neighbours.get(neighbour.key);
+                if (old)
+                    old.neighbourCount += neighbour.neighbourCount;
+                else
+                    neighbours.set(neighbour.key, neighbour);
+            });
         });
-    });
 
-    const output = new Map();
+        const output = new Map();
 
-    neighbours.forEach(cube =>
-    {
-        if (cube.neighbourCount === 2 && cubes.has(cube.key))
+        neighbours.forEach(cube =>
         {
-            // already active so stay active
-            output.set(cube.key, cube);
-        }
-        else if (cube.neighbourCount === 3)
-        {
-            // either stay active or become active
-            output.set(cube.key, cube);
-        }
-    });
+            if (cube.neighbourCount === 2 && cubes.has(cube.key))
+            {
+                // already active so stay active
+                output.set(cube.key, cube);
+            }
+            else if (cube.neighbourCount === 3)
+            {
+                // either stay active or become active
+                output.set(cube.key, cube);
+            }
+        });
 
-    return output;
-}
-
-function part1()
-{
-    let cubes = loadData();
-
-    for(let cycle = 0; cycle < TURNS; cycle++)
-    {
-        cubes = turn(cubes);
+        return output;
     }
 
-    return cubes.size;
-}
-
-function part2()
-{
-    let cubes = loadData();
-
-    for(let cycle = 0; cycle < TURNS; cycle++)
+    function part1()
     {
-        cubes = turn(cubes, true);
+        let cubes = loadData();
+
+        for(let cycle = 0; cycle < TURNS; cycle++)
+        {
+            cubes = turn(cubes);
+        }
+
+        return cubes.size;
     }
 
-    return cubes.size;
-}
+    function part2()
+    {
+        let cubes = loadData();
 
-console.log(`--- Advent of Code day ${DAY} ---`);
+        for(let cycle = 0; cycle < TURNS; cycle++)
+        {
+            cubes = turn(cubes, true);
+        }
 
-console.time('part-1');
-console.log(`Part 1: ${part1()}`);
-console.timeLog('part-1', `to execute part 1 of day ${DAY}`);
+        return cubes.size;
+    }
 
-console.time('part-2');
-console.log(`Part 2: ${part2()}`);
-console.timeLog('part-2', `to execute part 2 of day ${DAY}`);
+    console.log(`--- Advent of Code day ${DAY} ---`);
+
+    console.time(`${DAY}-part-1`);
+    console.log(`Part 1: ${part1()}`);
+    console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
+
+    console.time(`${DAY}-part-2`);
+    console.log(`Part 2: ${part2()}`);
+    console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
+};

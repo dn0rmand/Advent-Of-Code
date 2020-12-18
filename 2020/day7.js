@@ -1,77 +1,80 @@
-const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
-
-function loadData()
+module.exports = function()
 {
-    const readFile = require('advent_tools/readfile');
+    const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    const entries = {};
-
-    for(const line of readFile(__filename))
+    function loadData()
     {
-        let input = line.replace(/ bags?\.?/g, '');
+        const readFile = require('advent_tools/readfile');
 
-        input = input.replace(/, /g, ',');
-        input = input.replace(/ contain /g, '|');
-        input = input.replace(/no other/g, '');
+        const entries = {};
 
-        const root = input.split('|')[0];
-        const values = input.split('|')[1].split(',').filter(v => v);
+        for(const line of readFile(__filename))
+        {
+            let input = line.replace(/ bags?\.?/g, '');
 
-        entries[root] = {
+            input = input.replace(/, /g, ',');
+            input = input.replace(/ contain /g, '|');
+            input = input.replace(/no other/g, '');
 
-        };
+            const root = input.split('|')[0];
+            const values = input.split('|')[1].split(',').filter(v => v);
 
-        values.forEach(value => {
-            const data = value.split(' ', 1)[0];
-            entries[root][value.substring(data.length+1)] = +data;
-        });
-    }
+            entries[root] = {
 
-    return entries;
-}
+            };
 
-function part1()
-{
-    const input = loadData();
-    const keys  = Object.keys(input);
-    const counted = {};
-
-    const calculate = bag => {
-        if (counted[bag]) {
-            return 0;
+            values.forEach(value => {
+                const data = value.split(' ', 1)[0];
+                entries[root][value.substring(data.length+1)] = +data;
+            });
         }
 
-        counted[bag] = 1;
-        const goodKeys = keys.filter(key => !counted[key] && input[key][bag]);
-
-        return goodKeys.reduce((a, key) => a + calculate(key), 1);
+        return entries;
     }
 
-    const count = calculate('shiny gold') - 1; // don't include 'shiny gold' itself
+    function part1()
+    {
+        const input = loadData();
+        const keys  = Object.keys(input);
+        const counted = {};
 
-    return count;
-}
+        const calculate = bag => {
+            if (counted[bag]) {
+                return 0;
+            }
 
-function part2()
-{
-    const input = loadData();
+            counted[bag] = 1;
+            const goodKeys = keys.filter(key => !counted[key] && input[key][bag]);
 
-    const calculate = bag => {
-        const content = input[bag];
+            return goodKeys.reduce((a, key) => a + calculate(key), 1);
+        }
 
-        return Object.keys(content).reduce((a, key) => a + (content[key] * calculate(key)), 1);
+        const count = calculate('shiny gold') - 1; // don't include 'shiny gold' itself
+
+        return count;
     }
 
-    const count = calculate('shiny gold')-1; // don't include 'shiny gold' itself
+    function part2()
+    {
+        const input = loadData();
 
-    return count;
-}
+        const calculate = bag => {
+            const content = input[bag];
 
-console.log(`--- Advent of Code day ${DAY} ---`);
+            return Object.keys(content).reduce((a, key) => a + (content[key] * calculate(key)), 1);
+        }
 
-console.time('both');
+        const count = calculate('shiny gold')-1; // don't include 'shiny gold' itself
 
-console.log(`Part 1: ${part1()}`);
-console.log(`Part 2: ${part2()}`);
+        return count;
+    }
 
-console.timeLog('both', `to execute both parts of day ${DAY}`);
+    console.log(`--- Advent of Code day ${DAY} ---`);
+
+    console.time(`${DAY}-both`);
+
+    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 2: ${part2()}`);
+
+    console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
+};
