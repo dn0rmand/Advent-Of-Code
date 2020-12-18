@@ -15,22 +15,24 @@ class Cube
         this.key = (((x*MAX_SIZE)+y)*MAX_SIZE + z)*MAX_SIZE + w;
     }
 
-    *neighbours(part2)
+    forEachNeighbours(part2, callback)
     {
         const ox = [this.x-1, this.x, this.x+1];
         const oy = [this.y-1, this.y, this.y+1];
         const oz = [this.z-1, this.z, this.z+1];
         const ow = part2 ? [this.w-1, this.w, this.w+1] : [this.w];
 
-        let total = 0;
-        for(const x of ox) {
-            for(const y of oy) {
-                for(const z of oz) {
-                    for(const w of ow) {
+        for(const x of ox) 
+        {
+            for(const y of oy) 
+            {
+                for(const z of oz) 
+                {
+                    for(const w of ow) 
+                    {
                         if (x !== this.x || y !== this.y || z !== this.z || w !== this.w)
                         {
-                            total++;
-                            yield new  Cube(x, y, z, w, 1);
+                            callback(new Cube(x, y, z, w, 1));
                         }
                     }
                 }
@@ -68,14 +70,14 @@ function turn(cubes, part2)
 
     cubes.forEach(cube =>
     {
-        for(const neighbour of cube.neighbours(part2))
+        cube.forEachNeighbours(part2, neighbour => 
         {
             const old = neighbours.get(neighbour.key);
             if (old)
                 old.neighbourCount += neighbour.neighbourCount;
             else
                 neighbours.set(neighbour.key, neighbour);
-        }
+        });
     });
 
     const output = new Map();
