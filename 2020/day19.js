@@ -1,4 +1,4 @@
-module.exports = function() 
+const day19 = module.exports = function() 
 {
     const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
@@ -6,7 +6,16 @@ module.exports = function()
     {
         constructor(c)
         {
+            this.character = c;
             this.generate = () => c;
+        }
+
+        *matches(_rules, message, position)
+        {
+            if (message[position] === this.character)
+            {
+                yield 1;
+            }
         }
     }
 
@@ -14,7 +23,13 @@ module.exports = function()
     {
         constructor(id)
         {
+            this.id = id;
             this.generate = rules => rules[id].generate(rules)
+        }
+
+        *matches(rules, message, index)
+        {
+            yield *rules[this.id].matches(rules, message, index);
         }
     }
 
@@ -36,6 +51,29 @@ module.exports = function()
             }
 
             return result;
+        }
+
+        *matches(rules, message, index)
+        {
+            const self = this;
+
+            function *inner(ruleIndex, position)
+            {
+                if (ruleIndex >= self.subRules.length)
+                {
+                    yield position;
+                    return;
+                }
+                const rule = self.subRules[ruleIndex];
+                const expression = typeof(rule) === 'number' ? rules[rule] : rule;
+
+                for(const pos of expression.matches(rules, message, index + position))
+                {                    
+                    yield *inner(ruleIndex+1, pos + position);
+                }
+            }
+
+            yield *inner(0, 0);
         }
     }
 
@@ -74,6 +112,14 @@ module.exports = function()
 
             const regx = `(${result.join('|')})`;
             return regx;
+        }
+
+        *matches(rules, message, index)
+        {
+            for(const rule of this.subRules)
+            {
+                yield *rule.matches(rules, message, index);
+            }
         }
     }
 
@@ -154,7 +200,34 @@ module.exports = function()
         const regx  = rule0.generate(input.rules);
         const expression = new RegExp(`^${regx}$`, 's');
 
-        let total = input.messages.reduce((a, message) => a + expression.test(message), 0);
+        let total  = input.messages.reduce((a, message) => a + expression.test(message), 0);
+        let total2 = input.messages.reduce((a, message) => {
+            for(const l of rule0.matches(input.rules, message, 0))
+            {
+                if (l === message.length)
+                {
+                    return a + 1;
+                }
+            }
+            return a; 
+        }, 0)
+        return total;
+    }
+
+    function part1b(input)
+    {
+        const rule0 = input.rules[0];
+
+        let total = input.messages.reduce((a, message) => {
+            for(const l of rule0.matches(input.rules, message, 0))
+            {
+                if (l === message.length)
+                {
+                    return a + 1;
+                }
+            }
+            return a; 
+        }, 0);
 
         return total;
     }
@@ -190,17 +263,57 @@ module.exports = function()
         return total;
     }
 
+    function part2b(input)
+    {
+        const rule0 = input.rules[0];
+        const rule11 = new ComplexRuleExpression([
+            '42 31', 
+            '42 11 31',
+        ]);
+
+        const rule8 = new ComplexRuleExpression([
+            '42', 
+            '42 8',
+        ]);
+
+        input.rules[8] = rule8;
+        input.rules[11]= rule11;
+
+        let total = input.messages.reduce((a, message) => {
+            for(const l of rule0.matches(input.rules, message, 0))
+            {
+                if (l === message.length)
+                {
+                    return a + 1;
+                }
+            }
+            return a; 
+        }, 0);
+
+        return total;
+    }
+
     console.log(`--- Advent of Code day ${DAY} ---`);
 
     console.time(`${DAY}-load`);
     const input = loadData();
     console.timeEnd(`${DAY}-load`);
 
-    console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1(input)}`);
-    console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
+    // console.time(`${DAY}-part-1`);
+    // console.log(`Part 1: ${part1(input)}`);
+    // console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
-    console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2(input)}`);
-    console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
+    console.time(`${DAY}-part-1b`);
+    console.log(`Part 1: ${part1b(input)}`);
+    console.timeLog(`${DAY}-part-1b`, `to execute part 1 of day ${DAY}`);
+
+    // console.time(`${DAY}-part-2`);
+    // console.log(`Part 2: ${part2(input)}`);
+    // console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
+
+    console.time(`${DAY}-part-2b`);
+    console.log(`Part 2: ${part2b(input)}`);
+    console.timeLog(`${DAY}-part-2b`, `to execute part 2 of day ${DAY}`);
 };
+
+day19();
