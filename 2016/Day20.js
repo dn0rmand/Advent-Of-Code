@@ -69,7 +69,7 @@ module.exports = function()
             if (e.end >= s) 
             {
                 var c = (e.end - s) + 1;
-                console.log(c);
+                // console.log(c);
                 ips -= c;
                 lastEnd = e.end + 1;
             }

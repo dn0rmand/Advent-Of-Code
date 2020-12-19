@@ -95,7 +95,7 @@ module.exports = function()
         {
             step++;
 
-            console.log("Step " + step + " - " + nodes.length + " nodes");
+            // console.log("Step " + step + " - " + nodes.length + " nodes");
             for (var i = 0; i < nodes.length; i++)
             {
                 var node = nodes[i];

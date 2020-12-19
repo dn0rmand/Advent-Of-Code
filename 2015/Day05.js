@@ -81,8 +81,8 @@ module.exports = function()
                 break;
         }
 
-        if (criteria1 && ! criteria2)
-            console.log(line + ' is naughty due to criteria 2');
+        // if (criteria1 && ! criteria2)
+        //     console.log(line + ' is naughty due to criteria 2');
 
         return (criteria1 && criteria2);
     }

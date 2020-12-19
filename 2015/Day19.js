@@ -113,5 +113,3 @@ const day19 = function()
 }
 
 module.exports = day19;
-
-day19();
