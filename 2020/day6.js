@@ -48,19 +48,15 @@ module.exports = function()
         return input;
     }
 
-    function part1()
+    function part1(input)
     {
-        const input = loadData();
-
         const answer = input.reduce((count, group) => count + group.questions.length, 0);
 
         return answer;
     }
 
-    function part2()
+    function part2(input)
     {
-        const input = loadData();
-
         const answer = input.reduce((a, group) =>
             a + group.questions.reduce((a, question) => a + (group.persons.some((v) => !v.includes(question)) ? 0 : 1), 0)
         , 0);
@@ -70,10 +66,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.log(`Part 2: ${part2(input)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

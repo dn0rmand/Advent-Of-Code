@@ -48,25 +48,27 @@ module.exports = function()
         return 0;
     }
 
-    function part1()
+    function part1(input)
     {
-        const answer = search(loadData(), 2020, 2);
+        const answer = search(input, 2020, 2);
         return answer;
     }
 
-    function part2()
+    function part2(input)
     {
-        const answer = search(loadData(), 2020, 3);
+        const answer = search(input, 2020, 3);
         return answer;
     }
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 1: ${part1(input)}`);
     console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 2: ${part2(input)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };

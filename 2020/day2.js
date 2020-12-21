@@ -27,10 +27,8 @@ module.exports = function()
         return entries;
     }
 
-    function part1()
+    function part1(input)
     {
-        const input = loadData();
-
         const isValid = (min, max, count) => min <= count && count <= max;
         const countLetter = (pwd, letter) => pwd.reduce((a, l) => a + (l === letter), 0);
 
@@ -40,10 +38,8 @@ module.exports = function()
         return validPasswords;
     }
 
-    function part2()
+    function part2(input)
     {
-        const input = loadData();
-
         const validPasswords = input.reduce((valid, { password, rule: { letter, min, max }}) =>
             valid + ((password[min-1] === letter && password[max-1] !== letter) ||
                     (password[min-1] !== letter && password[max-1] === letter))
@@ -54,10 +50,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+    
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.log(`Part 2: ${part2(input)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

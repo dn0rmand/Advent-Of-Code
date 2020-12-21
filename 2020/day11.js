@@ -16,10 +16,8 @@ module.exports = function()
         return entries;
     }
 
-    function part1()
+    function part1(state)
     {
-        let state = loadData();
-
         const height= state.length;
         const width = state[0].length;
 
@@ -100,10 +98,8 @@ module.exports = function()
         return occupied;
     }
 
-    function part2()
+    function part2(state)
     {
-        let state = loadData();
-
         const height= state.length;
         const width = state[0].length;
 
@@ -196,11 +192,13 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    let state = loadData();
+
     console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 1: ${part1(state)}`);
     console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 2: ${part2(state)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };

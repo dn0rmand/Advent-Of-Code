@@ -1,7 +1,5 @@
 module.exports = function()
 {
-    const { input } = require("blessed");
-
     const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
     class Rule
@@ -121,10 +119,8 @@ module.exports = function()
         return input;
     }
 
-    function part1()
+    function part1(input)
     {
-        const input = loadData();
-
         let answer = 0;
         for(const ticket of input.tickets)
         {
@@ -133,10 +129,8 @@ module.exports = function()
         return answer;
     }
 
-    function part2()
+    function part2(data)
     {
-        const data = loadData();
-
         const tickets = data.tickets.filter(ticket => !ticket.invalid(data.fields));
 
         tickets.push(data.myTicket);
@@ -185,11 +179,13 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 1: ${part1(input)}`);
     console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 2: ${part2(input)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };

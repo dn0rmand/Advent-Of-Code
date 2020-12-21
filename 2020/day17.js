@@ -101,9 +101,9 @@ module.exports = function()
         return output;
     }
 
-    function part1()
+    function part1(input)
     {
-        let cubes = loadData();
+        let cubes = input;
 
         for(let cycle = 0; cycle < TURNS; cycle++)
         {
@@ -113,9 +113,9 @@ module.exports = function()
         return cubes.size;
     }
 
-    function part2()
+    function part2(input)
     {
-        let cubes = loadData();
+        let cubes = input;
 
         for(let cycle = 0; cycle < TURNS; cycle++)
         {
@@ -127,11 +127,13 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1()}`);
+    console.log(`Part 1: ${part1(input)}`);
     console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 2: ${part2(input)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };

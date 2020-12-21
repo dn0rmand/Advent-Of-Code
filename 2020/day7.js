@@ -32,9 +32,8 @@ module.exports = function()
         return entries;
     }
 
-    function part1()
+    function part1(input)
     {
-        const input = loadData();
         const keys  = Object.keys(input);
         const counted = {};
 
@@ -54,10 +53,8 @@ module.exports = function()
         return count;
     }
 
-    function part2()
+    function part2(input)
     {
-        const input = loadData();
-
         const calculate = bag => {
             const content = input[bag];
 
@@ -71,10 +68,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.log(`Part 2: ${part2(input)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

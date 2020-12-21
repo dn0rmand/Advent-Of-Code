@@ -39,10 +39,8 @@ module.exports = function()
         return passports;
     }
 
-    function part1()
+    function part1(passports)
     {
-        const passports = loadData();
-
         const passportValidation = {
             // (Birth Year)
             'byr': value => value,
@@ -74,10 +72,8 @@ module.exports = function()
         return answer;
     }
 
-    function part2()
+    function part2(passports)
     {
-        const passports = loadData();
-
         const passportValidation = {
             // (Birth Year) - four digits; at least 1920 and at most 2002
             'byr': value => value && +value >= 1920 && +value <= 2002,
@@ -123,10 +119,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const passports = loadData();
+
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(passports)}`);
+    console.log(`Part 2: ${part2(passports)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

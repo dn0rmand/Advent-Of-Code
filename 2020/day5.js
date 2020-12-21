@@ -58,25 +58,15 @@ module.exports = function()
         return (minRow * 8) + minCol;
     }
 
-    function part1()
+    function part1(input)
     {
-        const testInput = loadTestData();
-
-        assert.strictEqual(decode(testInput[0]), 357);
-        assert.strictEqual(decode(testInput[1]), 567);
-        assert.strictEqual(decode(testInput[2]), 119);
-        assert.strictEqual(decode(testInput[3]), 820);
-
-        const input = loadData();
-
         return input.reduce((a, v) => Math.max(a, decode(v)), 0);
     }
 
-    function part2()
+    function part2(input)
     {
         const MAX = 128*8;
 
-        const input = loadData();
         const map   = input.reduce((a, v) => {
             a[decode(v)] = 1;
             return a;
@@ -93,10 +83,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.log(`Part 2: ${part2(input)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

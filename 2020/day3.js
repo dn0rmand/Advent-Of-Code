@@ -55,20 +55,20 @@ module.exports = function()
         return trees;
     }
 
-    function part1()
+    function part1(input)
     {
         const slope = {right: 3, down: 1};
 
-        const testInput = loadTestData();
-        assert.strictEqual(calculateTrees(testInput, slope), 7);
+        // const testInput = loadTestData();
+        // assert.strictEqual(calculateTrees(testInput, slope), 7);
 
-        const input = loadData();
+        // const input = loadData();
         const trees = calculateTrees(input, slope);
 
         return trees;
     }
 
-    function part2()
+    function part2(input)
     {
         const slopes = [
             {right: 1, down: 1},
@@ -78,12 +78,12 @@ module.exports = function()
             {right: 1, down: 2},
         ];
 
-        const testInput = loadTestData();
+        // const testInput = loadTestData();
 
-        const testTrees = slopes.reduce((a, slope) => a * calculateTrees(testInput, slope), 1);
-        assert.strictEqual(testTrees, 336);
+        // const testTrees = slopes.reduce((a, slope) => a * calculateTrees(testInput, slope), 1);
+        // assert.strictEqual(testTrees, 336);
 
-        const input = loadData();
+        // const input = loadData();
         const trees = slopes.reduce((a, slope) => a * calculateTrees(input, slope), 1);
 
         return trees;
@@ -91,10 +91,12 @@ module.exports = function()
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
+    const input = loadData();
+
     console.time(`${DAY}-both`);
 
-    console.log(`Part 1: ${part1()}`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 1: ${part1(input)}`);
+    console.log(`Part 2: ${part2(input)}`);
 
     console.timeLog(`${DAY}-both`, `to execute both parts of day ${DAY}`);
 };

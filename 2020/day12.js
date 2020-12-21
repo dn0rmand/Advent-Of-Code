@@ -156,7 +156,7 @@ module.exports = function()
         return Math.abs(X) + Math.abs(Y);
     }
 
-    function part2()
+    function part2(input)
     {
         let X = 0, Y = 0;
         let WX = 10, WY = -1;
