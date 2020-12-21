@@ -1,7 +1,7 @@
 module.exports = function()
 {
     const sleep = require("atomic-sleep");
-    const consoleControl = require('console-control-strings')    
+    const consoleControl = require('console-control-strings')
     const parser = require('../tools/parser.js');
     const fs = require('fs');
     const readline = require('readline');
@@ -22,13 +22,13 @@ module.exports = function()
     process.stdout.write(consoleControl.hideCursor());
 
     readInput
-    .on('line', (line) => { 
+    .on('line', (line) => {
         processLine(line);
         DrawScreen();
     })
     .on('close', () => {
         var pixels = DrawScreen(true, 'brightRed');
-        console.log("Done ...");
+        console.log("\nDone ...");
         console.log(pixels + " pixels");
         process.stdout.write(consoleControl.showCursor());
         process.exit(0);
@@ -36,7 +36,7 @@ module.exports = function()
 
     function wait()
     {
-        sleep(50);
+        // sleep(50);
     }
 
     function DrawScreen(final, color)
@@ -49,9 +49,9 @@ module.exports = function()
 
         var pixels = 0;
         for(var x = 0; x < 52; x++)
-            process.stdout.write(' ');        
+            process.stdout.write(' ');
 
-        process.stdout.write(consoleControl.nextLine(1));                
+        process.stdout.write(consoleControl.nextLine(1));
 
         for(var y = 0; y < 6; y++)
         {
@@ -67,13 +67,13 @@ module.exports = function()
                     process.stdout.write(' ');
             }
             process.stdout.write(' ');
-            process.stdout.write(consoleControl.nextLine(1));    
-        }    
+            process.stdout.write(consoleControl.nextLine(1));
+        }
 
         for(var x = 0; x < 52; x++)
-            process.stdout.write(' ');        
+            process.stdout.write(' ');
 
-        process.stdout.write(consoleControl.nextLine(1));                
+        process.stdout.write(consoleControl.nextLine(1));
         process.stdout.write(consoleControl.color('reset'));
 
         if (final !== true) {
@@ -86,7 +86,7 @@ module.exports = function()
     function processLine(line)
     {
         var parse = new parser(line);
-        
+
         var token = parse.getToken();
 
         if (token == 'rect')
@@ -112,7 +112,7 @@ module.exports = function()
 
                 var yy = parse.getNumber();
                 parse.expectToken('by');
-                var by = parse.getNumber(); 
+                var by = parse.getNumber();
                 var newrow = [];
                 for(var x = 0; x < 50; x++)
                     newrow[(x + by) % 50] = screen[yy][x];
@@ -127,7 +127,7 @@ module.exports = function()
 
                 var xx = parse.getNumber();
                 parse.expectToken('by');
-                var by = parse.getNumber(); 
+                var by = parse.getNumber();
                 var newcol = [];
 
                 for(var y = 0; y < 6; y++)

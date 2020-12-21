@@ -32,8 +32,9 @@ const prettyHrtime = require('pretty-hrtime');
 process.chdir(__dirname);
 var currentDay = 1;
 var start ;
-
+var totalTime = process.hrtime(start);
 process.$exit = process.exit;
+
 process.exit = function()
 {
     if (currentDay < days.length)
@@ -42,23 +43,23 @@ process.exit = function()
         {
             var end = process.hrtime(start);
             words = prettyHrtime(end, {verbose:true});
-            console.log(words); // '1 millisecond 209 microseconds'            
+            console.log(words); // '1 millisecond 209 microseconds'
         }
         console.log('');
         console.log("Running Day " + currentDay + " puzzle");
         var puzzle = days[currentDay++];
-        
+
         start = process.hrtime();
         puzzle();
     }
     else
     {
-        var end = process.hrtime(start);
+        var end = process.hrtime(totalTime);
 
         words = prettyHrtime(end, {verbose:true});
-        console.log("All Done!"); 
+        console.log("All Done!");
         console.log(words); // '1 millisecond 209 microseconds'
-        process.$exit(0); 
+        process.$exit(0);
     }
 }
 

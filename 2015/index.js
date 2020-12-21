@@ -32,17 +32,18 @@ const prettyHrtime = require('pretty-hrtime');
 process.chdir(__dirname);
 var start;
 var currentDay = 1;
+var totalTime = process.hrtime();
 
 process.$exit = process.exit;
 process.exit = function()
 {
     if (currentDay < days.length)
-    {                
+    {
         if (start !== undefined)
         {
             var end = process.hrtime(start);
             words = prettyHrtime(end, {verbose:true});
-            console.log(words); // '1 millisecond 209 microseconds'            
+            console.log(words); // '1 millisecond 209 microseconds'
         }
         console.log('');
         console.log("Running Day " + currentDay + " puzzle of Advent of Code 2015");
@@ -53,11 +54,11 @@ process.exit = function()
     }
     else
     {
-        var end = process.hrtime(start);
+        var end = process.hrtime(totalTime);
         words = prettyHrtime(end, {verbose:true});
-        console.log("All Done!"); 
+        console.log("All Done!");
         console.log(words); // '1 millisecond 209 microseconds'
-        process.$exit(0); 
+        process.$exit(0);
     }
 }
 

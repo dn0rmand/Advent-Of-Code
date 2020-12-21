@@ -10,7 +10,7 @@ module.exports = function()
 
     const sleep = require("atomic-sleep");
     const consoleControl = require('console-control-strings');
-    
+
     readInput.on('line', (line) => processLine(line)).on('close', () => { dumpResult(); process.exit(0); });
     //#endregion
 
@@ -22,10 +22,10 @@ module.exports = function()
         function newLine()
         {
             for(let depth = 0; depth < layers.length; depth++)
-                process.stdout.write(' ');        
+                process.stdout.write(' ');
 
-            process.stdout.write('  ');        
-            process.stdout.write(consoleControl.nextLine(1));                
+            process.stdout.write('  ');
+            process.stdout.write(consoleControl.nextLine(1));
         }
 
         const color = "brightWhite";
@@ -41,8 +41,8 @@ module.exports = function()
             if (y === 1 && myPosition < 0)
             {
                 process.stdout.write(consoleControl.color("brightRed"));
-                process.stdout.write('✺');                
-                process.stdout.write(consoleControl.color(color));            
+                process.stdout.write('✺');
+                process.stdout.write(consoleControl.color(color));
             }
             else
                 process.stdout.write(' ');
@@ -58,33 +58,33 @@ module.exports = function()
                 else if (depth == myPosition && y == 1)
                 {
                     process.stdout.write(consoleControl.color("brightRed"));
-                    process.stdout.write('✺');                
+                    process.stdout.write('✺');
                     process.stdout.write(consoleControl.color(color));
                 }
                 else
-                    process.stdout.write(' ');                
+                    process.stdout.write(' ');
             }
 
             if (y === 1 && myPosition >= layers.length)
             {
                 process.stdout.write(consoleControl.color("brightRed"));
-                process.stdout.write('✺');                
-                process.stdout.write(consoleControl.color(color));            
+                process.stdout.write('✺');
+                process.stdout.write(consoleControl.color(color));
             }
             else
                 process.stdout.write(' ');
-            process.stdout.write(consoleControl.nextLine(1));    
-        }    
+            process.stdout.write(consoleControl.nextLine(1));
+        }
 
         newLine();
 
         process.stdout.write(consoleControl.color('reset'));
 
-        if (final !== true) 
+        if (final !== true)
         {
             let backCode = '\x1b[' + (2+maxRange) + 'A'; // consoleControl.previousLine(num = 1);
             process.stdout.write(backCode);
-            sleep(80);            
+            sleep(80);
         }
 
         process.stdout.write(consoleControl.showCursor());
@@ -121,7 +121,7 @@ module.exports = function()
             {
                 if (stopIfCaught === true)
                     return -1;
-                    
+
                 cost += depth * range;
             }
         }
@@ -133,6 +133,7 @@ module.exports = function()
     {
         solve1();
         solve2();
+        console.log('');
     }
 
     function solve1()
@@ -172,7 +173,7 @@ module.exports = function()
         parse.expectOperator(':');
         let range = parse.getNumber();
 
-        layers[depth] = range; 
+        layers[depth] = range;
 
         maxRange = Math.max(range, maxRange);
     }
