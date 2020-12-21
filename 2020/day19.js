@@ -315,5 +315,3 @@ const day19 = module.exports = function()
     console.log(`Part 2: ${part2b(input)}`);
     console.timeLog(`${DAY}-part-2b`, `to execute part 2 of day ${DAY}`);
 };
-
-day19();
