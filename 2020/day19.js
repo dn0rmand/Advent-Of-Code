@@ -10,11 +10,11 @@ const day19 = module.exports = function()
             this.generate = () => c;
         }
 
-        *matches(_rules, message, position)
+        matches(_rules, message, position, callback)
         {
             if (message[position] === this.character)
             {
-                yield 1;
+                callback(1);
             }
         }
     }
@@ -27,9 +27,9 @@ const day19 = module.exports = function()
             this.generate = rules => rules[id].generate(rules)
         }
 
-        *matches(rules, message, index)
+        matches(rules, message, index, callback)
         {
-            yield *rules[this.id].matches(rules, message, index);
+            rules[this.id].matches(rules, message, index, callback);
         }
     }
 
@@ -53,27 +53,26 @@ const day19 = module.exports = function()
             return result;
         }
 
-        *matches(rules, message, index)
+        matches(rules, message, index, callback)
         {
             const self = this;
 
-            function *inner(ruleIndex, position)
+            function inner(ruleIndex, position)
             {
                 if (ruleIndex >= self.subRules.length)
                 {
-                    yield position;
+                    callback(position);
                     return;
                 }
                 const rule = self.subRules[ruleIndex];
                 const expression = typeof(rule) === 'number' ? rules[rule] : rule;
 
-                for(const pos of expression.matches(rules, message, index + position))
-                {                    
-                    yield *inner(ruleIndex+1, pos + position);
-                }
+                expression.matches(rules, message, index + position, pos => {
+                    inner(ruleIndex+1, pos + position);
+                });
             }
 
-            yield *inner(0, 0);
+            inner(0, 0, callback);
         }
     }
 
@@ -114,11 +113,11 @@ const day19 = module.exports = function()
             return regx;
         }
 
-        *matches(rules, message, index)
+        matches(rules, message, index, callback)
         {
             for(const rule of this.subRules)
             {
-                yield *rule.matches(rules, message, index);
+                rule.matches(rules, message, index, callback);
             }
         }
     }
@@ -201,16 +200,6 @@ const day19 = module.exports = function()
         const expression = new RegExp(`^${regx}$`, 's');
 
         let total  = input.messages.reduce((a, message) => a + expression.test(message), 0);
-        let total2 = input.messages.reduce((a, message) => {
-            for(const l of rule0.matches(input.rules, message, 0))
-            {
-                if (l === message.length)
-                {
-                    return a + 1;
-                }
-            }
-            return a; 
-        }, 0)
         return total;
     }
 
@@ -219,14 +208,14 @@ const day19 = module.exports = function()
         const rule0 = input.rules[0];
 
         let total = input.messages.reduce((a, message) => {
-            for(const l of rule0.matches(input.rules, message, 0))
-            {
+            rule0.matches(input.rules, message, 0, l => {
                 if (l === message.length)
                 {
-                    return a + 1;
+                    a++
                 }
-            }
-            return a; 
+            });
+
+            return a;
         }, 0);
 
         return total;
@@ -280,13 +269,10 @@ const day19 = module.exports = function()
         input.rules[11]= rule11;
 
         let total = input.messages.reduce((a, message) => {
-            for(const l of rule0.matches(input.rules, message, 0))
-            {
+            rule0.matches(input.rules, message, 0, l => {
                 if (l === message.length)
-                {
-                    return a + 1;
-                }
-            }
+                    a++;
+            });
             return a; 
         }, 0);
 
