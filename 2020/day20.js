@@ -1,4 +1,4 @@
-const day20 = module.exports = function() 
+const day20 = module.exports = function()
 {
     const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
@@ -43,8 +43,45 @@ const day20 = module.exports = function()
             this.id   = id;
             this.data = [];
             this.possibleMatches = [];
-            this.states = [];
+            this.states = [
+                { rotation: 0, flipped: false },
+                { rotation: 1, flipped: false },
+                { rotation: 2, flipped: false },
+                { rotation: 3, flipped: false },
+
+                { rotation: 0, flipped: true },
+                { rotation: 1, flipped: true },
+                { rotation: 2, flipped: true },
+                { rotation: 3, flipped: true },
+            ];
+            this.state     = 0;
             this.imageSize = IMAGE_SIZE
+        }
+
+        get(x, y)
+        {
+            const { rotation, flipped } = this.states[this.state];
+            if (flipped) {
+                x = this.imageSize-1-x;
+            }
+
+            switch(rotation)
+            {
+                case 1: {
+                    [x, y] = [this.imageSize - 1 - y, x];
+                    break;
+                }
+                case 2:
+                    x = this.imageSize - 1 - x;
+                    y = this.imageSize - 1 - y;
+                    break;
+                case 3: {
+                    [x, y] = [y, this.imageSize - 1 - x];
+                    break;
+                }
+            }
+
+            return this.data[y][x];
         }
 
         addRow(row)
@@ -71,19 +108,19 @@ const day20 = module.exports = function()
             this.left = 0;
 
             for(let i = 0; i < this.imageSize; i++) {
-                this.top   = (this.top   * 2) + (this.data[0][i] === '#' ? 1 : 0);
-                this.right = (this.right * 2) + (this.data[i][this.imageSize-1] === '#');
-                this.bottom= (this.bottom* 2) + (this.data[this.imageSize-1][this.imageSize-1-i] === '#');
-                this.left  = (this.left  * 2) + (this.data[this.imageSize-1-i][0] === '#');
+                this.top   = (this.top   * 2) + (this.get(i, 0) === '#' ? 1 : 0);
+                this.right = (this.right * 2) + (this.get(this.imageSize-1, i) === '#');
+                this.bottom= (this.bottom* 2) + (this.get(this.imageSize-1-i, this.imageSize-1) === '#');
+                this.left  = (this.left  * 2) + (this.get(0, this.imageSize-1-i) === '#');
             }
         }
 
         isPossibleMatch(image)
         {
             const canValueMatch = value => (
-                value === image.top || 
-                value === image.right || 
-                value === image.bottom || 
+                value === image.top ||
+                value === image.right ||
+                value === image.bottom ||
                 value === image.left);
 
             if (canValueMatch(getMirror(this.top)))
@@ -117,7 +154,7 @@ const day20 = module.exports = function()
         {
             for(let y = 0; y < this.imageSize; y++)
             {
-                if (this.data[y][0] !== image.data[y][this.imageSize-1])
+                if (this.get(0, y) !== image.get(this.imageSize-1,y))
                     return false;
             }
             return true;
@@ -127,7 +164,7 @@ const day20 = module.exports = function()
         {
             for(let x = 0; x < this.imageSize; x++)
             {
-                if (this.data[0][x] !== image.data[this.imageSize-1][x])
+                if (this.get(x, 0) !== image.get(x, this.imageSize-1))
                     return false;
             }
             return true;
@@ -135,7 +172,7 @@ const day20 = module.exports = function()
 
         flipVertical(oldData)
         {
-            const data = Array(this.imageSize); 
+            const data = Array(this.imageSize);
             for(let y1 = 0, y2 = this.imageSize-1; y1 < y2; y1++, y2--)
             {
                 data[y1] = oldData[y2];
@@ -157,10 +194,10 @@ const day20 = module.exports = function()
         rotate(oldData)
         {
             const data = Array(this.imageSize);
-            for(let x = 0; x < this.imageSize; x++) 
+            for(let x = 0; x < this.imageSize; x++)
             {
                 const row = Array(this.imageSize);
-                for(let y = this.imageSize; y; y--) 
+                for(let y = this.imageSize; y; y--)
                 {
                     row[this.imageSize-y] = oldData[y-1][x];
                 }
@@ -173,39 +210,6 @@ const day20 = module.exports = function()
         next()
         {
             this.state = (this.state+1) % this.states.length;
-            this.data  = this.states[this.state];
-        }
-
-        buildStates()
-        {            
-            const makeKey = data => data.reduce((a, v) => a+v, '');
-            const visited = new Set();
-
-            const self = this;
-
-            const add = data => {
-                const key = makeKey(data);
-                if (! visited.has(key)) {
-                    visited.add(key);
-                    self.states.push(data);
-                }
-                return data;
-            };
-
-            let current = this.data;
-
-            for(let i = 0; i < 4; i++) 
-            {
-                const next = add(current);
-                
-                add(this.flipHorizontal(current));
-                add(this.flipVertical(current));
-
-                current = this.rotate(current);
-            }
-
-            this.state = 0;
-            this.data  = this.states[0];
         }
     }
 
@@ -253,7 +257,7 @@ const day20 = module.exports = function()
                     image1.possibleMatches.push(image2);
                     image2.possibleMatches.push(image1);
                 }
-            } 
+            }
         }
 
         images.sort((a, b) => a.possibleMatches.length - b.possibleMatches.length);
@@ -278,8 +282,6 @@ const day20 = module.exports = function()
     function generateImage(images)
     {
         // const images = prepare();
-
-        images.forEach(image => image.buildStates());
 
         const SIZE = Math.sqrt(images.length);
         if (SIZE !== Math.floor(SIZE))
@@ -311,7 +313,7 @@ const day20 = module.exports = function()
 
         //
 
-        function search(pos, possibleMatches) 
+        function search(pos, possibleMatches)
         {
             if (pos >= positions.length)
                 return true;
@@ -330,11 +332,11 @@ const day20 = module.exports = function()
                 possibleMatches = possibleMatches.filter(img1 => top.possibleMatches.some(img2 => img1.id === img2.id));
             }
 
-            for(const image of possibleMatches) 
+            for(const image of possibleMatches)
             {
-                for(let i = 0; i < image.states.length; i++) 
+                for(let i = 0; i < image.states.length; i++)
                 {
-                    if ((!left || image.matchLeft(left)) && (!top || image.matchTop(top))) 
+                    if ((!left || image.matchLeft(left)) && (!top || image.matchTop(top)))
                     {
                         used[image.id] = true;
                         fullImage[y][x] = image;
@@ -354,7 +356,7 @@ const day20 = module.exports = function()
 
         const corners = images.filter(img => img.possibleMatches.length === 2);
 
-        if (! search(0, corners)) 
+        if (! search(0, corners))
             throw "Can't do it :(";
 
         // Now generate the big image
@@ -368,7 +370,7 @@ const day20 = module.exports = function()
 
                 for(let y = 0; y < IMAGE_SIZE-2; y++)
                 for(let x = 0; x < IMAGE_SIZE-2; x++)
-                    picture[yp+y][xp+x] = image.data[y+1][x+1];
+                    picture[yp+y][xp+x] = image.get(x+1, y+1);
             }
         }
 
@@ -382,9 +384,9 @@ const day20 = module.exports = function()
             for(let ox = 0; ox < SEA_MONSTER_WIDTH; ox++)
             for(let oy = 0; oy < SEA_MONSTER_HEIGHT; oy++)
             {
-                if (SEA_MONSTER[oy][ox] === ' ') 
+                if (SEA_MONSTER[oy][ox] === ' ')
                     continue; // ignore spaces
-                if (picture.data[y+oy][x+ox] !== '#') 
+                if (picture.get(x+ox, y+oy) !== '#')
                     return false;
             }
 
@@ -410,10 +412,9 @@ const day20 = module.exports = function()
     function part2(images)
     {
         const picture = new Image(0);
-        
+
         picture.data = generateImage(images);
         picture.imageSize = picture.data.length;
-        picture.buildStates();
 
         let total = 0;
         for(let i = 0; i < picture.states.length; i++)

@@ -164,5 +164,3 @@ const day21 = module.exports = function()
     console.log(`Part 2: ${part2(input)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };
-
-day21();
