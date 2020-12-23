@@ -4,23 +4,38 @@ const day23 = module.exports = function()
 
     const INPUT = '318946572';
 
+    const ONE_MILLION = 1000000;
+
     function loadData(part)
     {
         const input = {
-            map: [],
+            one: undefined,
             list: undefined,
-            max: 0,
         };
 
-        let first = undefined;
-        let last = undefined;
+        const map = Array(part === 2 ? ONE_MILLION+1 : 11);
 
-        const addValue = value => {
-            input.max = Math.max(value, input.max);
+        let first = undefined;
+        let last  = undefined;
+
+        const constructValue = value => {
+            if (map[value])
+                return map[value];
 
             const o = { value };
 
-            input.map[value] = o;
+            map[value] = o;
+
+            if (value-1 > 0) {
+                o.previous = map[value-1] || constructValue(value-1);
+            }
+
+            return o;
+        };
+
+        const addValue = value => {
+            const o = constructValue(value);
+
             if (first) {
                 last.next = o;
                 last = o;
@@ -36,49 +51,48 @@ const day23 = module.exports = function()
         }
 
         if (part === 2) {
-            while (input.max <  1000000) {
-                addValue(input.max+1);
-            }
+            for(let i = 10; i <= ONE_MILLION; i++)
+                addValue(i);
         }
 
+        map[1].previous = map[part === 2 ? ONE_MILLION : 9];
+
+        // close the loop
         last.next = first;
         input.list = first;
+        input.one = map[1];
+
         return input;
     }
 
-    function run({ list, map, max }, moves)
+    function run(current, moves)
     {
-        let current = list;
-
         for(let move = 0; move < moves; move++) {
-            const section = [ current.next, current.next.next, current.next.next.next ];
+            const v1 = current.next;
+            const v2 = v1.next;
+            const v3 = v2.next;
 
-            let target = current.value-1;
-            if (target <= 0)
-                target = max;
-
-            while (section.some(v => target === v.value))
+            let target = current.previous;
+            while (target === v1 || target === v2 || target === v3)
             {
-                if (--target <= 0)
-                    target = max;
+                target = target.previous;
             }
 
-            target  = map[target];
-            current = current.next = section[2].next;
+            current = current.next = v3.next;
 
-            section[2].next = target.next;
-            target.next = section[0];
+            v3.next = target.next;
+            target.next = v1;
         }
-
-        return map;
     }
 
     function part1()
     {
-        const map = run(loadData(1), 100);
+        const { list, one } = loadData(1);
+
+        run(list, 100);
 
         let result = '';
-        for(let o = map[1].next; o.value !== 1; o = o.next)
+        for(let o = one.next; o.value !== 1; o = o.next)
             result += o.value;
 
         return result;
@@ -86,9 +100,10 @@ const day23 = module.exports = function()
 
     function part2()
     {
-        const map = run(loadData(2), 10000000);
+        const { list, one } = loadData(2);
 
-        const one = map[1];
+        run(list, 10000000);
+
         const cup1 = one.next.value;
         const cup2 = one.next.next.value;
 
@@ -99,9 +114,11 @@ const day23 = module.exports = function()
 
     console.time(`${DAY}-part-1`);
     console.log(`Part 1: ${part1()}`);
-    console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
+    console.timeEnd(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
     console.log(`Part 2: ${part2()}`);
-    console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
+    console.timeEnd(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };
+
+day23();
