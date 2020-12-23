@@ -8,11 +8,6 @@ const day23 = module.exports = function()
 
     function loadData(part)
     {
-        const input = {
-            one: undefined,
-            list: undefined,
-        };
-
         const map = Array(part === 2 ? ONE_MILLION+1 : 11);
 
         let first = undefined;
@@ -59,10 +54,8 @@ const day23 = module.exports = function()
 
         // close the loop
         last.next = first;
-        input.list = first;
-        input.one = map[1];
 
-        return input;
+        return { list: first, one: map[1] };
     }
 
     function run(current, moves)
