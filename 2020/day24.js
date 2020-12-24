@@ -11,6 +11,12 @@ const day24 = module.exports = function()
         ne: { x: 0.5, y:-0.5 },
     }
 
+    function makeKey(X, Y)
+    {
+        const value = ((Math.abs(X) * 100 + Math.abs(Y)) * 4) + (X < 0 ? 1 : 0) + (Y < 0 ? 2 : 0);
+        return value;
+    }
+
     function loadData()
     {
         const readFile = require("advent_tools/readfile");
@@ -61,106 +67,52 @@ const day24 = module.exports = function()
         return entries;
     }
 
-    function getNeighbours(tiles, noInit)
-    {
-        const neighbours = new Map();
-
-        // initialize
-
-        if (! noInit) {
-            tiles.forEach(({X, Y}, tk) => 
-                neighbours.set(tk, {
-                    X,
-                    Y,
-                    count: 0,
-                    black: true,
-                })
-            );
-        }
-
-        // calculate
-        tiles.forEach(({X, Y}, tk) => {
-            if (! neighbours.has(tk)) {
-                neighbours.set(tk, {
-                    X,
-                    Y,
-                    count: 0,
-                    black: true,
-                });
-            }
-
-            for(const key in DIRECTIONS) {
-                const {x, y} = DIRECTIONS[key];
-
-                const k = `${X+x}:${Y+y}`;
-                const neighbour = neighbours.get(k);
-                if (neighbour) {
-                    neighbour.count++;
-                } else {
-                    neighbours.set(k, { 
-                        X: X+x, 
-                        Y: Y+y, 
-                        count: 1,
-                        black: tiles.has(k)
-                    });
-                }
-            }
-        });
-
-        return neighbours;
-    }
-
     function process(tiles)
     {
-        const neighbours = new Map();
+        const neighbours = [];
 
-        tiles.forEach((tile, tileKey) => {
-            if (! neighbours.has(tileKey)) {
-                tile.count = 0;
-                tile.black = true;
-                neighbours.set(tileKey, tile);
-            }
-
-            const {X , Y} = tile;
-
+        tiles.forEach(({X, Y}) => {
             for(const key in DIRECTIONS) {
-                const {x, y} = DIRECTIONS[key];
+                const direction = DIRECTIONS[key];
+                const xx = X + direction.x;
+                const yy = Y + direction.y;
 
-                const k = `${X+x}:${Y+y}`;
-                const neighbour = neighbours.get(k);
+                const k = ((Math.abs(xx) * 100 + Math.abs(yy)) * 4) + (xx < 0 ? 1 : 0) + (yy < 0 ? 2 : 0);
+
+                const neighbour = neighbours[k];
                 if (neighbour) {
                     neighbour.count++;
                 } else {
-                    neighbours.set(k, { 
-                        X: X+x, 
-                        Y: Y+y, 
+                    neighbours[k]= { 
+                        X: xx, 
+                        Y: yy, 
                         count: 1,
-                        black: tiles.has(k)
-                    });
+                        black: tiles[k] !== undefined
+                    };
                 }
             }
         });
 
-        const output = new Map();
+        tiles = [];
 
         neighbours.forEach((tile, key) => {
             if (tile.black) {
                 if (tile.count > 0 && tile.count <= 2) {
-                    output.set(key, tile);
+                    tiles[key] = tile;
                 }
             } else if (tile.count === 2) {
-                output.set(key, tile);
+                tiles[key] = tile;
             }
         });
 
-        return output;
+        return tiles;
     }
 
     function initialize()
     {
         const input = loadData();
         
-        const tiles = new Map();
+        const tiles = [];
 
         for(const directions of input) 
         {
@@ -172,11 +124,13 @@ const day24 = module.exports = function()
                 Y += y;
             }
 
-            const key = `${X}:${Y}`;
-            if (tiles.has(key))
-                tiles.delete(key);
-            else
-                tiles.set(key, { X, Y });
+            const key = ((Math.abs(X) * 100 + Math.abs(Y)) * 4) + (X < 0 ? 1 : 0) + (Y < 0 ? 2 : 0);
+
+            if (tiles[key]) {
+                delete tiles[key];
+            } else {
+                tiles[key] = { X, Y };
+            }
         }
 
         return tiles;
@@ -186,27 +140,29 @@ const day24 = module.exports = function()
     {
         const tiles = initialize();
 
-        return tiles.size;
+        return { tiles, count: tiles.reduce(a => a+1, 0) };
     }
 
-    function part2()
+    function part2(tiles)
     {
-        let tiles = initialize();
-
         for(let day = 0; day < 100; day++) {
+            
             tiles = process(tiles);
         }
 
-        return tiles.size;
+        return tiles.reduce(a => a+1, 0);
     }
 
     console.log(`--- Advent of Code day ${DAY} ---`);
 
     console.time(`${DAY}-part-1`);
-    console.log(`Part 1: ${part1()}`);
+    
+    const { tiles, count } = part1();
+
+    console.log(`Part 1: ${ count }`);
     console.timeLog(`${DAY}-part-1`, `to execute part 1 of day ${DAY}`);
 
     console.time(`${DAY}-part-2`);
-    console.log(`Part 2: ${part2()}`);
+    console.log(`Part 2: ${part2(tiles)}`);
     console.timeLog(`${DAY}-part-2`, `to execute part 2 of day ${DAY}`);
 };
