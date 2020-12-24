@@ -22,7 +22,7 @@ var allDays = [
     require("./day21.js"),///21
     require("./day22.js"),///22
     require("./day23.js"),///23
-    // require("./day24.js"),///24
+    require("./day24.js"),///24
     // require("./day25.js"),///25
 ];
 
