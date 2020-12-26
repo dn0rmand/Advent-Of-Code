@@ -2,8 +2,7 @@ const day25 = module.exports = function()
 {
     const DAY = +(__filename.match(/^.*\/day(\d*)\.js$/)[1]);
 
-    // const DOOR_PUBLIC_KEY = 17807724;
-    // const CARD_PUBLIC_KEY = 5764801;
+    require('tools/numberHelper');
 
     const DOOR_PUBLIC_KEY = 17786549;
     const CARD_PUBLIC_KEY = 7573546;
@@ -27,12 +26,7 @@ const day25 = module.exports = function()
     {
         const { loop, publicKey } = getMinLoopSize(DOOR_PUBLIC_KEY, CARD_PUBLIC_KEY);
 
-        let handShake = 1;
-
-        for(let i = 0; i < loop; i++)
-            handShake = (handShake * publicKey) % 20201227;
-
-        return handShake;
+        return publicKey.modPow(loop, 20201227);
     }
 
     console.log(`--- Advent of Code day ${DAY} ---`);
