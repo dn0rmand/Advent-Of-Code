@@ -24,6 +24,7 @@ var allDays = [
     require("./day23.js"),//23
     require("./day24.js"),//24
     require("./day25.js"),//25
+    require("./day26.js"),//26
 ];
 
 function getDays()
@@ -37,8 +38,8 @@ function getDays()
         {
             const day = +(process.argv[++i]) - 1;
 
-            if (day < 0 || day >= 25) {
-                throw "Invalid day. Should be 1..25";
+            if (day < 0 || day >= 26) {
+                throw "Invalid day. Should be 1..26";
             }
             if (allDays[day])
                 days.push(allDays[day]);
