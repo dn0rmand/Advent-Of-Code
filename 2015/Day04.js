@@ -2,20 +2,27 @@ module.exports = function()
 {
     const crypto = require('crypto');
     var input = 'bgvyzdsv';
-    var index = -1;
 
-    while(true)
+    var md5 = crypto.createHash('md5');
+
+    function run(part, check)
     {
-        index++;
-        var key = input + index;
-        var hash = crypto.createHash('md5').update(key).digest("hex");
-
-        if (hash.startsWith('000000'))
+        var index = -1;
+        while(true)
         {
-            console.log("Result is " + index);
-            break;
+            index++;
+            var key  = input + index;
+            var hash = md5.copy().update(key).digest();
+
+            if (hash[0] === 0 && hash[1] === 0 && hash[2] <= check)
+            {
+                console.log(`Result for part ${part} is ${index}`);
+                break;
+            }
         }
     }
 
+    run(1, 15);
+    run(2, 0);
     process.exit(0);
 }

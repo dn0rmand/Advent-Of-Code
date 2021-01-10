@@ -2,43 +2,25 @@ module.exports = function()
 {
     const input = '3113322113';
 
-    var data = input;
-    for(var i = 0; i < 40; i++)
+    function *lookAndSay(data)
     {
-        data = lookAndSay(data);
-    }
+        let previous;
+        let count = 0;
 
-    console.log("After 40 times, length is " + data.length);
-
-    for(var i = 0; i < 10; i++)
-    {
-        data = lookAndSay(data);
-    }
-
-    console.log("After 50 times, length is " + data.length);
-
-    process.exit(0);
-
-    function lookAndSay(data)
-    {
-        var newData = "";
-        var previous;
-        var count = 0;
-
-        for(var i = 0; i < data.length; i++)
+        for(const c of data)
         {
-            var c = data[i];
             if (c == previous)
             {
                 count++;
             }
             else if (count > 0)
             {
-               if (count > 9)
-                console.log(count);
-               newData += count + previous;
-               previous = c;
-               count = 1;
+                for (const cc of count.toString())
+                    yield cc;
+
+                yield previous;
+                previous = c;
+                count = 1;
             }
             else
             {
@@ -46,13 +28,31 @@ module.exports = function()
                 count    = 1;
             }
         }
+
         if (count > 0)
         {
-            newData += count + previous;
-            previous = c;
-            count = 1;            
+            for (const cc of count.toString())
+                yield cc;
+            yield previous;
         }
-
-        return newData;
     }
+
+    function execute(times)
+    {
+        data = input;
+        for(let i = 0; i < times; i++)
+        {
+            data = lookAndSay(data);
+        }
+    
+        let count = 0;
+        for(const _ of data)
+            count++;
+
+        console.log(`After ${times} times, length is ${count}`);
+    }
+
+    execute(40);
+    execute(50);
+    process.exit(0);
 }
