@@ -1,4 +1,4 @@
-const day19 = module.exports = function()
+module.exports = function()
 {
     var puzzleInput = 3017957;
     console.log("initializing...")
@@ -152,5 +152,3 @@ const day19 = module.exports = function()
         return winner;
     }
 };
-
-day19()

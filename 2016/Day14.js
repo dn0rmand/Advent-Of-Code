@@ -1,4 +1,4 @@
-const day14 = module.exports = function()
+module.exports = function()
 {
     const crypto = require('crypto');
     
@@ -75,5 +75,3 @@ const day14 = module.exports = function()
     console.log('');
     process.exit(0);
 }
-
-day14();
